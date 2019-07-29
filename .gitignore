@@ -1,0 +1,4 @@
+*.vscode
+*.so
+*.jpg
+build
