@@ -5,14 +5,14 @@ int Graph::DFS(int n, int neighbor_idx, int deep){
     if(neighbor_idx == 0){
         float clique_score = 0.00;
         for(auto iter : vetexlist){
-            clique_score += node_list[(*iter)].score;
+            clique_score += node_list[iter].score;
         }
         if(clique_score > score){
             mx = deep;
             std::vector<int>::iterator iter = vetexlist.begin();
             max_clique_list.clear();
             for(;iter!=vetexlist.end();iter++){
-                maxcliquelist.push_back(*iter);
+                max_clique_list.push_back(*iter);
             }
         }
         return 1;

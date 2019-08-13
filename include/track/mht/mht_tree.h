@@ -2,8 +2,10 @@
 #define __TREE_NODE_H_
 
 #include <iostream>
+#include <opencv2/core/core.hpp>
+#include <memory>
 
-typedef treeNode{
+typedef struct treeNode{
     cv::Rect_<float> box;
     float score;
     int level;
@@ -21,18 +23,18 @@ class Tree{
     private:
         int id;
         std::shared_ptr<treeNode> root_node;
-        std::shared_prt<treeNode> head_node;
+        std::shared_ptr<treeNode> head_node;
         std::vector<std::shared_ptr<treeNode>> leaf_node;
 
     public:
 
-        Tree(std::shared_prt<Node> root, int N);
+        Tree(std::shared_ptr<treeNode> root, int N);
 
         /*set function*/
         int setHead();
 
         /*get function*/
-        std::shared_ptr<Node> getHead();
+        std::shared_ptr<treeNode> getHead();
         std::vector<std::shared_ptr<treeNode>> getLeafNode();
 
         int addNode(int, treeNode);

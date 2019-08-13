@@ -1,8 +1,9 @@
 #include <iostream>
+#include <vector>
 
-typedef VexNode{
+typedef struct VexNode{
     float score;
-    vector<int> path;
+    std::vector<int> path;
 } VexNode;
 
 class Graph{
@@ -23,7 +24,7 @@ class Graph{
 
     public:
         Graph(std::vector<VexNode>);
-        int DFS();
+        int DFS(int, int, int);
         int mwis();
         int print();
-}
+};

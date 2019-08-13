@@ -16,8 +16,8 @@ SET(CUDA_NVCC_FLAGS --disable-warnings;-std=c++11;-O3;-gencode arch=compute_75,c
 message(${CUDA_NVCC_FLAGS})
 
 # opencv
-link_directories("/usr/local/lib")
-include_directories("/usr/local/include/opencv4")
+link_directories("/home/yuany/opencv-346/lib")
+include_directories("/home/yuany/opencv-346/include")
 
 # 4. tensorRT
 include_directories(/usr/local/TensorRT-5.1.2.2/include)
@@ -49,10 +49,10 @@ FILE(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cu  ${CMAKE_SOURCE_DIR}
 
 # 7. 添加链接库
 LINK_LIBRARIES(opencv_ml opencv_objdetect opencv_imgproc opencv_core opencv_highgui opencv_imgcodecs opencv_shape opencv_videoio opencv_video)
-LINK_LIBRARIES(nvcaffe_parser nvinfer nvinfer_plugin nvparsers)
-LINK_LIBRARIES(avcodec avformat swscale avutil)
-LINK_LIBRARIES(cuda nvcuvid)
-LINK_LIBRARIES(glog)
+#LINK_LIBRARIES(nvcaffe_parser nvinfer nvinfer_plugin nvparsers)
+#LINK_LIBRARIES(avcodec avformat swscale avutil)
+#LINK_LIBRARIES(cuda nvcuvid)
+#LINK_LIBRARIES(glog)
 
 # 8.source directory，源文件目录
 #AUX_SOURCE_DIRECTORY(test DIR_SRCS)
@@ -69,4 +69,4 @@ CUDA_ADD_EXECUTABLE(${PROJECT_NAME} ${ALL_SRCS})
 # 11. 链接目标文件与库文件，添加可执行文件所需要的库，比如我们用到了libm.so（命名规则：lib+name+.so），就添加该库的名称
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} /usr/local/cuda-10.1/lib64/libcudart.so)
-target_link_libraries(${PROJECT_NAME} /usr/local/cuda-10.1/lib64/libcudnn.so)
+#target_link_libraries(${PROJECT_NAME} /usr/local/cuda-10.1/lib64/libcudnn.so)
