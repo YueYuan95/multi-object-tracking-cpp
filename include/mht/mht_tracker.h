@@ -1,3 +1,6 @@
+#ifndef _MHT_TRACKER_H_
+#define _MHT_TRACKER_H_
+
 #include <iostream>
 
 class MHT_tracker{
@@ -30,3 +33,5 @@ class MHT_tracker{
         int pruning();
         int morls();
 };
+
+#endif
