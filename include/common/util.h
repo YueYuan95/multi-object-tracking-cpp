@@ -5,3 +5,6 @@
 
 int TreeToGraph(std::vector<Tree>, Graph);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
+
+/*Unit Test Funtion*/
+int test_graph();
