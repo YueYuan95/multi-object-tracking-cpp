@@ -12,7 +12,7 @@ int main(){
 
   //test_graph();
     
-  //test_tree();
+  test_tree();
   
-  test_treeTograph();
+  //test_treeTograph();
 }

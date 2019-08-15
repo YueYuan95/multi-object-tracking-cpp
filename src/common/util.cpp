@@ -242,49 +242,74 @@ int test_treeTograph(){
 
 int test_tree(){
 
-    treeNode root = {{10,9,8,7},6,1,1,NULL};
+     treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
-    treeNode root_a = {{10,9,8,7},6,2,1,root_ptr};
-    treeNode root_b = {{10,9,8,7},6,2,2,root_ptr};
-    treeNode root_c = {{10,9,8,7},6,2,3,root_ptr};
-    treeNode root_d = {{10,9,8,7},6,2,4,root_ptr};
-
-    std::shared_ptr<treeNode> root_a_ptr(new treeNode(root_a));
-    std::shared_ptr<treeNode> root_b_ptr(new treeNode(root_b));
-    std::shared_ptr<treeNode> root_c_ptr(new treeNode(root_c));
-    std::shared_ptr<treeNode> root_d_ptr(new treeNode(root_d));
-
-    std::vector<std::shared_ptr<treeNode>> node_list;
-
-    node_list.push_back(root_a_ptr);
-    node_list.push_back(root_b_ptr);
-    node_list.push_back(root_c_ptr);
-    node_list.push_back(root_d_ptr);
-
-    std::map<int, std::vector<std::shared_ptr<treeNode>>> dict;
-    dict[0] = node_list;
-    //map<int, vector<std::shared_ptr<treeNode>>>:: iterator it;
-    //dict.insert(pair<int, std::vector<std::shared_ptr<treeNode>>> 1,testTree);
-    
     Tree test_tree(root_ptr,1,3);
 
-    //std::cout<<"id:"<<test_tree.getId()<<std::endl;
+    treeNode node_a = {{10,9,8,7},6,2,3,root_ptr};
+    treeNode node_b = {{10,9,8,7},6,2,2,root_ptr};
+
+    std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
+    std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
+    
+    treeNode node_c = {{10,9,8,7},6,3,4,node_a_ptr};
+    treeNode node_d = {{10,9,8,7},6,3,2,node_a_ptr};
+    treeNode node_e = {{10,9,8,7},6,3,1,node_b_ptr};
+    treeNode node_f = {{10,9,8,7},6,3,3,node_b_ptr};
+    
+    std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
+    std::shared_ptr<treeNode> node_d_ptr(new treeNode(node_d));
+    std::shared_ptr<treeNode> node_e_ptr(new treeNode(node_e));
+    std::shared_ptr<treeNode> node_f_ptr(new treeNode(node_f));
+    
+
+    std::vector<std::shared_ptr<treeNode>> node_list;
+    std::map<int, std::vector<std::shared_ptr<treeNode>>> dict;
+    
+    node_list.push_back(node_a_ptr);
+    node_list.push_back(node_b_ptr);
+    
+    dict[0] = node_list;
+    test_tree.addNode(dict);
+    
+    node_list.clear();
+    node_list.push_back(node_c_ptr);
+    node_list.push_back(node_d_ptr);
+    dict[0] = node_list;
+
+    node_list.clear();
+    node_list.push_back(node_e_ptr);
+    node_list.push_back(node_f_ptr);
+    dict[1] = node_list;
+
+    test_tree.addNode(dict);
+
+    //dict.clear();
+
+    std::cout<<"id:"<<test_tree.getId()<<std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     // std::cout<<"leaf_node:"<<&(test_tree.getLeafNode()[0])<<std::endl;
     //std::cout<<"head_node:"<<test_tree.getHead()<<std::endl;
     // std::cout<<"box:"<<test_tree.getRoot()->box<<std::endl;
-    if(test_tree.getRoot()==test_tree.getHead()){
+    /*if(test_tree.getRoot()==test_tree.getHead()){
         std::cout<<"yes"<<std::endl;
-    }
+    }*/
     
     
     //test_tree.addNode(dict);
-    //std::cout<<root_ptr->children[1]->index<<std::endl;
-    //std::cout<<root_ptr->children[1]->parent->index<<std::endl;
-
-
+    //test_tree.addNode(dict);
     test_tree.printTree(root_ptr);
 
+    //create a route:1-2-1
+    std::map<int, std::vector<int>> route;
+    std::vector<int> route_list;
+    route_list.push_back(1);
+    route_list.push_back(2);
+    route_list.push_back(1);
+    route[1]= route_list;
+
+    test_tree.pruning(route);
+    test_tree.printTree(root_ptr);
 }
