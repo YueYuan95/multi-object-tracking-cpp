@@ -1,5 +1,12 @@
 #include "util.h"
 
+/*
+ *===================================
+ *  Tree convert to Graph
+ *
+ *===================================
+*/
+
 int preorderTraversal(treeNode tree_node, std::vector<int>& path, 
                 std::vecteor<std::vector<int>>& path_list){
     
@@ -38,7 +45,9 @@ int backTraversal(treeNode tree_node, treeNode head_node, std::vector<int>& path
         return;
 
     }
-    backTraversal(tree_node.parent, head_node, path, path_list);
+    if(tree_node.parent != null){
+        backTraversal(tree_node.parent, head_node, path, path_list);
+    }
 }
 
 int TreeToGraph(std::vector<Tree> tree_list, Graph graph){
@@ -48,17 +57,29 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph graph){
 
     for(auto tree : tree_list){
         
-        //temp_node.path.clear();
-        //tmep_node.path.push_back();
-        
         //preorderTraversal(tree.getHead(),path, path_list);
         for(auto leaf : tree.leaf_node){
              path.clear();
              backTraversal(leaf, path, path_list, tree.getN());
         }
-        
+    }
+
+    for(auto path : path_list){
+        VexNode graph_node;
+        graph_node.path.clear();
+        for(int i = path.size()-1; i >=0; i--){
+            graph_node.path.push_back(path[i]);
+        }
     }
 }
+
+
+/*
+ *===================================
+ * Test Unit 
+ *
+ *===================================
+*/
 
 int test_graph(){
     std::vector<VexNode> vex_node_list;
@@ -90,5 +111,10 @@ int test_graph(){
     A.printGraph();
     A.mwis();
 }
+
+int test_treeTograph(){
+
+}
+
 
 
