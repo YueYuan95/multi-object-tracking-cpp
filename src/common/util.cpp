@@ -45,7 +45,7 @@ int test_graph(){
 
 int test_tree(){
 
-    treeNode root = {{10,9,8,7},6,2,1,NULL};
+    treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
     treeNode root_a = {{10,9,8,7},6,2,1,NULL};
@@ -67,21 +67,28 @@ int test_tree(){
 
     std::map<int, std::vector<std::shared_ptr<treeNode>>> dict;
     dict[1] = node_list;
+    
     //map<int, vector<std::shared_ptr<treeNode>>>:: iterator it;
     //dict.insert(pair<int, std::vector<std::shared_ptr<treeNode>>> 1,testTree);
     
     Tree test_tree(root_ptr,1,3);
-    //test_tree(root1,1,3);
-    //printf("")
-    // std::cout<<"id:"<<test_tree.getId()<<std::endl;
+
+    //std::cout<<"id:"<<test_tree.getId()<<std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     // std::cout<<"leaf_node:"<<&(test_tree.getLeafNode()[0])<<std::endl;
-    // std::cout<<"head_node:"<<test_tree.getHead()<<std::endl;
+    //std::cout<<"head_node:"<<test_tree.getHead()<<std::endl;
     // std::cout<<"box:"<<test_tree.getRoot()->box<<std::endl;
+    if(test_tree.getRoot()==test_tree.getHead()){
+        std::cout<<"yes"<<std::endl;
+    }
     
     
-    test_tree.addNode(dict);
+    //test_tree.addNode(dict);
+    //std::cout<<root_ptr->children[1]->index<<std::endl;
+    //std::cout<<root_ptr->children[1]->parent->index<<std::endl;
+
+
     test_tree.printTree(root_ptr);
 
 }

@@ -5,6 +5,7 @@
 #include <opencv2/core/core.hpp>
 #include <memory>
 #include <map>
+#include <deque>
 
 typedef struct treeNode{
     cv::Rect_<float> box;/*for drawing boxs*/
@@ -41,9 +42,9 @@ class Tree{
         std::vector<std::shared_ptr<treeNode>> getLeafNode();
 
         int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
-        int pruning();
-        
-        int printTree(std::shared_ptr<treeNode> root);
+        int pruning(std::map<int, std::vector<int>> route);
+
+        void printTree(std::shared_ptr<treeNode> root);
 
 };
 
