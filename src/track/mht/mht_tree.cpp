@@ -31,16 +31,31 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
         {
             if(leaf_node[i]->index==it->first)
             {
-                search_node.push_back(leaf_node[i]);
+                //search_node.push_back(leaf_node[i]);
+                leaf_node[i]->children = it->second;
+                
+                for(j=0; j<leaf_node[i]->children.size(); j++)
+                {
+                    search_node.push_back(leaf_node[i]->children[j]);
+                    leaf_node[i]->children[j]->parent = leaf_node[i];
+                }
             }
         }
-        for(j=0; j<search_node.size(); j++)
+        it++;
+        leaf_node.clear();
+        
+        for(i=0;i<<leaf_node.size(); i++)
+        {
+            leaf_node.push_back(search_node[i]);
+            leaf_node[i]->level++;
+        }
+        /*for(j=0; j<search_node.size(); j++)
         {
             search_node[j]->children = it->second;
             leaf_node = search_node[j]->children;
         }
-        it++;
-        search_node.clear();  
+        it++;*/
+         
     }
      
 
@@ -50,6 +65,25 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
 int Tree::pruning()
 {
 
+}
+
+int Tree::printTree(std::shared_ptr<treeNode> root)
+{
+    int i;
+    if(root != NULL){
+        //std::cout<<"Tree"<<std::endl;
+        std::cout<<"[";
+        for(i=0;i<root->children.size();i++)
+        {
+            std::cout<<root->children[i]->index<<" ";
+        }
+        std::cout<<"]";
+        // std::cout<<std::endl;
+        // for(i=0;i<root->children.size();i++){
+        //     printTree(root->children[i]);
+        // }
+    }
+    
 }
 
 int Tree::getId()
