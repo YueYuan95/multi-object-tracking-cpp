@@ -4,6 +4,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <deque>
 
 Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
 {
@@ -55,28 +56,114 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
 
 }
         
-int Tree::pruning()
+int Tree::pruning(std::map<int, std::vector<int>> route)
 {
+    //root is static
+    //int variable is the index of head_node
+    //vector saves the indexes of the nodes on the route
+    //int i ,j , count, is_valid;
+   // std::vector<int> route_list;
+    
+    //search for the head_node(if head_node is known, this step is unnesessary)
+   /* for(i=0; i<leaf_node.size();i++)
+    {
+        if(leaf_node[i]->index == route->first){
+            head_node = leaf_node[i];
+        }
+    }*/
+
+    //std::shared_ptr<treeNode> head_node_temp;
+    
+    int count;
+    //delete
+    std::map<int, std::vector<int>>::iterator it;
+    it = route.begin();
+    for(count=0;count<head_node->children.size();count++)
+    {
+        if(head_node->children[count]->index!=it->second[1])
+        {
+            head_node->children.erase(head_node->children.begin());
+            count--;
+        }
+    }
+    
+    head_node = head_node->children[0];
+    std::cout<<head_node->index<<std::endl;
+
+/*
+
+    if(head_node->children.size()>1)
+    {
+        count++;
+        for(i=0;i<head_node->children.size();i++)
+        {
+            route_list.push_back(i);//is that necessary?
+        }
+
+        for(i=0;i<head_node->children.size();i++)
+        {
+           head_node_temp = head_node->children[i];
+           for(j=0;j<head_node_temp->children.size();j++)
+           {
+                if(head_node_temp->children[j]->index == route->second[count])
+                {
+                    is_valid++;
+                }
+           }
+           
+        }
+            
+            head_node_temp = route_list[i];
+            for(j=0; j<head_node_temp->children.size(); j++)
+            {
+                if()
+            }
+            while(head_node_temp->children)
+        }
+    }*/
 
 }
 
-int Tree::printTree(std::shared_ptr<treeNode> root)
+void Tree::printTree(std::shared_ptr<treeNode> root)
 {
-    int i;
-    if(root != NULL){
-        //std::cout<<"Tree"<<std::endl;
-        std::cout<<"[";
-        for(i=0;i<root->children.size();i++)
-        {
-            std::cout<<root->children[i]->index<<" ";
-        }
-        std::cout<<"]";
-        // std::cout<<std::endl;
-        // for(i=0;i<root->children.size();i++){
-        //     printTree(root->children[i]);
-        // }
+    if(root == NULL)
+    {
+        return;
     }
-    
+
+    int i;
+    int current_level = 1;
+    std::cout<<"[";
+
+    std::deque<std::shared_ptr<treeNode>> queue_tree_node;
+    queue_tree_node.push_back(root);
+   
+    while(queue_tree_node.size())
+    {
+        
+        std::shared_ptr<treeNode> temp_node = queue_tree_node.front();
+        queue_tree_node.pop_front();
+
+        if(temp_node->level>current_level){
+            std::cout<<std::endl;
+            std::cout<<"[";
+            current_level = temp_node->level;
+        }
+        //print tree
+        std::cout<<temp_node->index;
+        
+        if(queue_tree_node.size()==0|| temp_node->parent!=queue_tree_node[0]->parent)
+        {
+            std::cout<<"]";
+        }
+
+        for(i=0;i<temp_node->children.size();i++){
+            if(temp_node->children[i]){
+                queue_tree_node.push_back(temp_node->children[i]);
+            }
+        }
+    }
+    std::cout<<std::endl;
 }
 
 int Tree::getN(){
