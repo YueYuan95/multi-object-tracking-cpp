@@ -1,5 +1,18 @@
 #include "mht_graph.h"
 
+Graph::Graph(){
+
+    m_node_list.clear();
+
+    m_max_clique.clear();
+
+    m_stk_list.clear();
+
+    m_adj_mat.clear();
+    m_dej_mat.clear();
+    
+}
+
 Graph::Graph(std::vector<VexNode> vex_node_list){
 
     m_node_list = vex_node_list;

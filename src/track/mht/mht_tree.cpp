@@ -6,13 +6,14 @@
 #include <vector>
 #include <deque>
 
-Tree::Tree(std::shared_ptr<treeNode> root, int id_, int N)
+Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
 {
         
-    id = id_;
+    id = i;
     root_node = root;
     leaf_node.push_back(root);//
     head_node = root;
+    N = n;
        
 }
 
@@ -20,61 +21,49 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
 {
     //search the indexes' nodes in leaf_node
     //then add the nodes' children
-    std::map< int, std::vector< std::shared_ptr<treeNode> > > ::iterator it;
+    std::map<int, std::vector<std::shared_ptr<treeNode>>>::iterator it;
     it = dict.begin();
-    int i, j;
-    int level;
-    std::vector<std::shared_ptr<treeNode>> search_node;
+    std::vector<std::shared_ptr<treeNode>> sub_children_node;
     while(it!=dict.end())
     {
-        
+        leaf_node[it->first]->children = it->second;
         //traverse in leaf_node
-        for(i=0; i<leaf_node.size(); i++)
-        {
-            if(leaf_node[i]->index==it->first)
-            {
-                //search_node.push_back(leaf_node[i]);
-                level = leaf_node[i]->level;
-                leaf_node[i]->children = it->second;
-            }
-        }
-    }
-    for(i=0;i<leaf_node.size();i++)
-    {
-        for(j=0;j<leaf_node[i]->children.size();j++)
-        {
-            search_node.push_back(leaf_node[i]->children[j]);
-        }
-        
-    }
-
-
-
+        //for(i=0; i<leaf_node.size(); i++)
+        //{
+        //    if(leaf_node[i]->index==it->first)
+        //    {
+        //        //search_node.push_back(leaf_node[i]);
+        //        leaf_node[i]->children = it->second;
+        //        
+        //        for(j=0; j<leaf_node[i]->children.size(); j++)
+        //        {
+        //            search_node.push_back(leaf_node[i]->children[j]);
+        //            leaf_node[i]->children[j]->parent = leaf_node[i];
+        //        }
+        //    }
+        //}
         it++;
-        leaf_node.clear();
-        
-        for(i=0;i<<search_node.size(); i++)
-        {
-            leaf_node.push_back(search_node[i]);
-            leaf_node[i]->level = level+1;
+        // leaf_node.clear();
+        // 
+        // for(i=0;i<leaf_node.size(); i++)
+        // {
+        //     leaf_node.push_back(search_node[i]);
+        //     leaf_node[i]->level++;
+        // }
+         /*for(j=0; j<search_node.size(); j++)
+         {
+             search_node[j]->children = it->second;
+             leaf_node = search_node[j]->children;
+         }
+         it++;*/
+    }
+    sub_children_node.clear();
+    for(int i=0;i<leaf_node.size();i++){
+        for(int j=0;j<leaf_node[i]->children.size();j++){
+            sub_children_node.push_back(leaf_node[i]->children[j]);
         }
-
-        /*for(j=0; j<search_node.size(); j++)
-        {
-            search_node[j]->children = it->second;
-            leaf_node = search_node[j]->children;
-        }
-        it++;*/
-        /*
-        for(j=0; j<leaf_node[i]->children.size(); j++)
-                {
-                    search_node.push_back(leaf_node[i]->children[j]);
-                    leaf_node[i]->children[j]->parent = leaf_node[i];
-                }
-                */
-         
-    
-     
+    }
+    leaf_node = sub_children_node; 
 
 
 }
@@ -183,6 +172,10 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
         }
     }
     std::cout<<std::endl;
+}
+
+int Tree::getN(){
+    return N;
 }
 
 int Tree::getId()

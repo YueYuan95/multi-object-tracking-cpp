@@ -37,14 +37,20 @@ class Tree{
         
         /*get function*/
         int getId();
+        int getN();
         std::shared_ptr<treeNode> getRoot();
         std::shared_ptr<treeNode> getHead();
         std::vector<std::shared_ptr<treeNode>> getLeafNode();
 
         int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
+<<<<<<< HEAD
         int pruning(std::map<int, std::vector<int>> route);
 
         void printTree(std::shared_ptr<treeNode> root);
+=======
+        int pruning(); 
+        int printTree(std::shared_ptr<treeNode> root);
+>>>>>>> cd366156b2d5f24be12521ad8c80df8eda010703
 
 };
 

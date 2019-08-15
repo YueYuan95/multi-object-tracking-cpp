@@ -10,8 +10,9 @@
 
 int main(){
 
-   //test_graph();
+  //test_graph();
     
-    test_tree();
+  //test_tree();
   
+  test_treeTograph();
 }

@@ -25,6 +25,7 @@ class Graph{
         std::vector<std::vector<int>> m_max_clique_list;
 
     public:
+        Graph();
         Graph(std::vector<VexNode>);
         int DFS(int);
         int mwis();
