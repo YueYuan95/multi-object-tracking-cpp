@@ -26,7 +26,7 @@ class MHT_tracker{
         int construct();
         /*
         * I think construct contain the gating and scoring 
-        int gating();
+        int gating(std::vector<cv::Rect_<float> det_result, std::vector<Tree> tree_list);
         int scoring();
         */
         int sovle_mwis();

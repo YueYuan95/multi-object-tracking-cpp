@@ -123,7 +123,8 @@ int test_graph(){
     
     Graph A(vex_node_list);
     A.printGraph();
-    A.mwis();
+    std::map<int, std::vector<int>> routes;
+    A.mwis(routes);
 }
 
 int test_treeTograph(){
@@ -235,16 +236,27 @@ int test_treeTograph(){
     tree_list.push_back(test_tree);
     tree_list.push_back(test_tree_2);
     tree_list.push_back(test_tree_3);
+
+    std::map<int, std::vector<int>> routes;
+    routes.clear();
     Graph graph;
     TreeToGraph(tree_list, graph);
     graph.printGraph();
-    graph.mwis();
+    graph.mwis(routes);
+    for(std::map<int, std::vector<int>>::iterator iter=routes.begin();iter != routes.end(); iter++){
+       for(int j=0; j < tree_list.size(); j++){
+            if(iter->first == tree_list[j].getId()){
+                tree_list[j].pruning(iter->second);
+                tree_list[j].printTree(tree_list[j].getRoot());
+            }
+       }
+    }
 }
 
 
 int test_tree(){
 
-     treeNode root = {{10,9,8,7},6,1,1,NULL};
+    treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
     Tree test_tree(root_ptr,1,3);
@@ -305,13 +317,11 @@ int test_tree(){
     test_tree.printTree(root_ptr);
 
     //create a route:1-2-1
-    std::map<int, std::vector<int>> route;
     std::vector<int> route_list;
     route_list.push_back(1);
     route_list.push_back(2);
     route_list.push_back(1);
-    route[1]= route_list;
 
-    test_tree.pruning(route);
+    test_tree.pruning(route_list);
     test_tree.printTree(root_ptr);
 }

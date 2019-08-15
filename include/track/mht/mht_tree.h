@@ -23,7 +23,7 @@ typedef struct treeNode{
 
 class Tree{
     private:
-        int id, N;
+        int id, N, label;
         std::shared_ptr<treeNode> root_node;
         std::shared_ptr<treeNode> head_node;
         std::vector<std::shared_ptr<treeNode>> leaf_node;
@@ -42,8 +42,10 @@ class Tree{
         std::shared_ptr<treeNode> getHead();
         std::vector<std::shared_ptr<treeNode>> getLeafNode();
 
+        int addNode(int, std::shared_ptr<treeNode>);
+        int changeLeaf();
         int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
-        int pruning(std::map<int, std::vector<int>> route);
+        int pruning(std::vector<int> route);
 
         void printTree(std::shared_ptr<treeNode> root);
 

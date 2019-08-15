@@ -86,9 +86,10 @@ int Graph::DFS(int n){
 
 }
 
-int Graph::mwis(){
+int Graph::mwis(std::map<int, std::vector<int>>& routes){
 
     m_max_clique.clear();
+    routes.clear();
     int n = m_node_list.size();
 
     std::vector<std::vector<int>> save_clique; 
@@ -115,6 +116,10 @@ int Graph::mwis(){
         std::cout<<path<<" ";
     }
     std::cout<<std::endl;
+
+    for(auto node_index : m_max_clique){
+        routes[m_node_list[node_index].id] = m_node_list[node_index].path;
+    }
 
 }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 typedef struct VexNode{
     float score;
@@ -29,7 +30,7 @@ class Graph{
         Graph();
         Graph(std::vector<VexNode>);
         int DFS(int);
-        int mwis();
+        int mwis(std::map<int,std::vector<int>>&);
         int printGraph();
 };
 
