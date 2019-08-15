@@ -59,7 +59,8 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
     std::vector<int> path; 
     std::vector<std::vector<int>> path_list;
-
+    std::vector<VexNode> graph_node_list;
+    
     for(auto tree : tree_list){
         
         std::cout<<"Tree No."<<tree.getId()<<std::endl;
@@ -69,19 +70,20 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
             path.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_list, tree.getN());
         }
+        for(auto path : path_list){
+            VexNode graph_node;
+            graph_node.path.clear();
+            for(int i = path.size()-1; i >=0; i--){
+                std::cout<<path[i]<<" ";
+                graph_node.id = tree.getId();
+                graph_node.path.push_back(path[i]);
+            }
+            std::cout<<std::endl;
+            graph_node_list.push_back(graph_node);
+         }
+         path_list.clear();
     }
-    std::cout<<"graph node size is "<<path_list.size()<<std::endl;
-    std::vector<VexNode> graph_node_list;
-    for(auto path : path_list){
-        VexNode graph_node;
-        graph_node.path.clear();
-        for(int i = path.size()-1; i >=0; i--){
-            std::cout<<path[i]<<" ";
-            graph_node.path.push_back(path[i]);
-        }
-        std::cout<<std::endl;
-        graph_node_list.push_back(graph_node);
-    }
+    
     graph = Graph(graph_node_list);
 }
 
@@ -95,28 +97,28 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
 int test_graph(){
     std::vector<VexNode> vex_node_list;
-    VexNode temp_node = {1.0, {1,3,4}};
+    VexNode temp_node = {1.0, 1, {1,3,4}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,3,2}};
+    temp_node = {1.0, 1, {1,3,2}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,2,1}};
+    temp_node = {1.0, 1, {1,2,1}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,2,3}};
+    temp_node = {1.0, 1, {1,2,3}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,2,1}};
+    temp_node = {1.0, 2, {2,2,1}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,2,3}};
+    temp_node = {1.0, 2, {2,2,3}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,1,0}};
+    temp_node = {1.0, 2, {2,1,0}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {0,0,5}};
+    temp_node = {1.0, 3, {0,0,5}};
     vex_node_list.push_back(temp_node);
     
     Graph A(vex_node_list);

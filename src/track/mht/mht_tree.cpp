@@ -26,21 +26,9 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
     while(it!=dict.end())
     {
         leaf_node[it->first]->children = it->second;
-        //traverse in leaf_node
-        //for(i=0; i<leaf_node.size(); i++)
-        //{
-        //    if(leaf_node[i]->index==it->first)
-        //    {
-        //        //search_node.push_back(leaf_node[i]);
-        //        leaf_node[i]->children = it->second;
-        //        
-        //        for(j=0; j<leaf_node[i]->children.size(); j++)
-        //        {
-        //            search_node.push_back(leaf_node[i]->children[j]);
-        //            leaf_node[i]->children[j]->parent = leaf_node[i];
-        //        }
-        //    }
-        //}
+        for(int i=0;i<it->second.size();i++){
+            it->second[i]->parent = leaf_node[it->first]; 
+        }
         it++;
         // leaf_node.clear();
         // 

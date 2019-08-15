@@ -6,6 +6,7 @@
 
 typedef struct VexNode{
     float score;
+    int id;
     std::vector<int> path;
 } VexNode;
 
