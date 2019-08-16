@@ -6,11 +6,14 @@
 #include <vector>
 #include <deque>
 
-Tree::Tree(std::shared_ptr<treeNode> root, int label_, int n)
+int Tree::tree_id = 1;
+
+Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
 {
-        
-    //id = i;
-    label = label_;
+       
+    id = tree_id;
+    tree_id++;
+    label = i;
     root_node = root;
     leaf_node.push_back(root);//
     head_node = root;
@@ -104,7 +107,9 @@ int Tree::pruning(std::vector<int> route)
     if(route[0] != head_node->index && route[0] != 0){
         std::cout<<"Head Index is not the frist of the path"<<std::endl;
     }
-
+    if(route[0] == 0){
+        return 1;
+    }
     std::vector<std::shared_ptr<treeNode>>::iterator iter;
     for(iter = head_node->children.begin(); iter != head_node->children.end();){
 
@@ -161,6 +166,32 @@ int Tree::pruning(std::vector<int> route)
 
 }
 
+int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
+
+    if(route[0] == 0){
+        return 0;
+    }
+    if(route[1] == head_node->index){
+        result = head_node->box;
+        return 1;
+    }else{
+
+        return 0;
+    }
+    
+    
+}
+
+int Tree::sentResult(cv::Rect_<float>& result){
+    
+    if((leaf_node[0]->level - head_node->level) == N){
+        result = head_node->box;
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 void Tree::printTree(std::shared_ptr<treeNode> root)
 {
     if(root == NULL)
@@ -207,7 +238,7 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
     }
     std::cout<<std::endl;
 }
-//int Tree::getId()
+int Tree::getId()
 {
     return id;
 }

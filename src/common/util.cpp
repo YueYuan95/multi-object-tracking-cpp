@@ -1,8 +1,4 @@
 #include "util.h"
-#include "mht_tree.h"
-#include <opencv2/core/core.hpp>
-#include <stdio.h>
-#include <math.h>
 
 
 /*
@@ -330,8 +326,8 @@ int test_tree(){
 int test_gating()
 {
     std::vector<cv::Rect_<float>> det_result;
-    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);
-    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);
+    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//160,175
+    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//
     cv::Rect_<float> box3 = cv::Rect(100,110,160,170);
     cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
@@ -340,10 +336,11 @@ int test_gating()
     det_result.push_back(box3);
     det_result.push_back(box4);
 
-    std::vector<std::shared_ptr<treeNode>> tree_list;
+    std::vector<Tree> tree_list;
+    //tree No.1
     treeNode root = {{100,90,80,70},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
-
+   
     Tree test(root_ptr,1,3);
 
     treeNode node_a = {{100,90,85,75},6,2,3,root_ptr};
@@ -352,10 +349,10 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
     std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
     
-    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};
-    treeNode node_d = {{100,110,140,150},6,3,2,node_a_ptr};//
-    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//
-    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};
+    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};//22.3607
+    treeNode node_d = {{100,110,140,150},6,3,2,node_a_ptr};//14
+    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//28
+    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};//30
     
     std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
     std::shared_ptr<treeNode> node_d_ptr(new treeNode(node_d));
@@ -385,5 +382,71 @@ int test_gating()
     test.addNode(dict);
     test.printTree(root_ptr);
 
+    //tree No.2,100->110
+    treeNode root2 = {{110,90,80,70},6,1,1,NULL};
+    std::shared_ptr<treeNode> root_ptr2(new treeNode(root2));
+
+    Tree test2(root_ptr2,1,3);
+
+    treeNode node_a2 = {{110,90,85,75},6,2,3,root_ptr2};
+    treeNode node_b2 = {{110,90,85,70},6,2,2,root_ptr2};
+
+    std::shared_ptr<treeNode> node_a_ptr2(new treeNode(node_a2));
+    std::shared_ptr<treeNode> node_b_ptr2(new treeNode(node_b2));
     
+    treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};
+    treeNode node_d2 = {{110,110,140,150},6,3,2,node_a_ptr2};//
+    treeNode node_e2 = {{110,110,160,170},6,3,1,node_b_ptr2};//
+    treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};
+    
+    std::shared_ptr<treeNode> node_c_ptr2(new treeNode(node_c2));
+    std::shared_ptr<treeNode> node_d_ptr2(new treeNode(node_d2));
+    std::shared_ptr<treeNode> node_e_ptr2(new treeNode(node_e2));
+    std::shared_ptr<treeNode> node_f_ptr2(new treeNode(node_f2));
+    
+
+    std::vector<std::shared_ptr<treeNode>> node_list2;
+    std::map<int, std::vector<std::shared_ptr<treeNode>>> dict2;
+    
+    node_list2.push_back(node_a_ptr2);
+    node_list2.push_back(node_b_ptr2);
+    
+    dict2[0] = node_list2;
+    test2.addNode(dict2);
+    
+    node_list2.clear();
+    node_list2.push_back(node_c_ptr2);
+    node_list2.push_back(node_d_ptr2);
+    dict2[0] = node_list2;
+
+    node_list2.clear();
+    node_list2.push_back(node_e_ptr2);
+    node_list2.push_back(node_f_ptr2);
+    dict2[1] = node_list2;
+
+    test2.addNode(dict2);
+    test2.printTree(root_ptr2);
+
+    tree_list.push_back(test);
+    tree_list.push_back(test2);
+
+    MHT_tracker test_tracker;
+    test_tracker.gating(det_result, tree_list);
+
+    int i;
+    std::cout<<"After Gating :"<<std::endl;
+    for(i=0; i<tree_list.size(); i++)
+    {
+        tree_list[i].printTree(tree_list[i].getRoot());
+        std::cout<<std::endl;
+    }
+    
+    std::cout<<""<<std::endl;
+    for(i=0; i<tree_list.size(); i++)
+    {
+        for(auto iter :tree_list[i].getLeafNode()){
+            std::cout<< iter->index ;
+        }
+        std::cout<<std::endl;
+    }
 }

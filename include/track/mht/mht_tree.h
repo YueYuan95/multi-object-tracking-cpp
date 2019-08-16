@@ -23,8 +23,8 @@ typedef struct treeNode{
 
 class Tree{
     private:
-        //static int id;
-        int N, label;
+        static int tree_id;
+        int id, N, label;
         std::shared_ptr<treeNode> root_node;
         std::shared_ptr<treeNode> head_node;
         std::vector<std::shared_ptr<treeNode>> leaf_node;
@@ -37,7 +37,7 @@ class Tree{
         int setHead();
         
         /*get function*/
-        //int getId();
+        int getId();
         int getLabel();
         int getN();
         std::shared_ptr<treeNode> getRoot();
@@ -49,6 +49,8 @@ class Tree{
         int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
         int pruning(std::vector<int> route);
 
+        int sentResult(std::vector<int>, cv::Rect_<float>&);
+        int sentResult(cv::Rect_<float>&);
         void printTree(std::shared_ptr<treeNode> root);
 
 };

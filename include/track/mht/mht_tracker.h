@@ -11,6 +11,8 @@ class MHT_tracker{
 
     public:
         
+        int N = 3;
+
         bool init(const std::string& model_dir, const byavs::TrackeParas& pas, const int gpu_id);
         bool inference(const byavs::TrackeInputGPUArray& inputs, byavs::TrackeResultGPUArray& resultArray);
         bool inference(const byavs::TrackeInputCPUArray& inputs, byavs::TrackeResultCPUArray& resultArray);
@@ -28,7 +30,7 @@ class MHT_tracker{
          * 
          */
         int construct();
-        void gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tree> tree_list);
+        void gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tree>& tree_list);
         /*
         * I think construct contain the gating and scoring 
         int gating(std::vector<cv::Rect_<float> det_result, std::vector<Tree> tree_list);
