@@ -1,5 +1,8 @@
 #include "util.h"
 #include "mht_tree.h"
+#include <opencv2/core/core.hpp>
+#include <stdio.h>
+#include <math.h>
 
 
 /*
@@ -59,7 +62,8 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
     std::vector<int> path; 
     std::vector<std::vector<int>> path_list;
-
+    std::vector<VexNode> graph_node_list;
+    
     for(auto tree : tree_list){
         
         std::cout<<"Tree No."<<tree.getId()<<std::endl;
@@ -69,19 +73,20 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
             path.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_list, tree.getN());
         }
+        for(auto path : path_list){
+            VexNode graph_node;
+            graph_node.path.clear();
+            for(int i = path.size()-1; i >=0; i--){
+                std::cout<<path[i]<<" ";
+                graph_node.id = tree.getId();
+                graph_node.path.push_back(path[i]);
+            }
+            std::cout<<std::endl;
+            graph_node_list.push_back(graph_node);
+         }
+         path_list.clear();
     }
-    std::cout<<"graph node size is "<<path_list.size()<<std::endl;
-    std::vector<VexNode> graph_node_list;
-    for(auto path : path_list){
-        VexNode graph_node;
-        graph_node.path.clear();
-        for(int i = path.size()-1; i >=0; i--){
-            std::cout<<path[i]<<" ";
-            graph_node.path.push_back(path[i]);
-        }
-        std::cout<<std::endl;
-        graph_node_list.push_back(graph_node);
-    }
+    
     graph = Graph(graph_node_list);
 }
 
@@ -95,33 +100,34 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
 int test_graph(){
     std::vector<VexNode> vex_node_list;
-    VexNode temp_node = {1.0, {1,3,4}};
+    VexNode temp_node = {1.0, 1, {1,3,4}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,3,2}};
+    temp_node = {1.0, 1, {1,3,2}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,2,1}};
+    temp_node = {1.0, 1, {1,2,1}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {1,2,3}};
+    temp_node = {1.0, 1, {1,2,3}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,2,1}};
+    temp_node = {1.0, 2, {2,2,1}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,2,3}};
+    temp_node = {1.0, 2, {2,2,3}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {2,1,0}};
+    temp_node = {1.0, 2, {2,1,0}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, {0,0,5}};
+    temp_node = {1.0, 3, {0,0,5}};
     vex_node_list.push_back(temp_node);
     
     Graph A(vex_node_list);
     A.printGraph();
-    A.mwis();
+    std::map<int, std::vector<int>> routes;
+    A.mwis(routes);
 }
 
 int test_treeTograph(){
@@ -233,10 +239,19 @@ int test_treeTograph(){
     tree_list.push_back(test_tree);
     tree_list.push_back(test_tree_2);
     tree_list.push_back(test_tree_3);
+
+    std::map<int, std::vector<int>> routes;
+    routes.clear();
     Graph graph;
     TreeToGraph(tree_list, graph);
     graph.printGraph();
-    graph.mwis();
+    graph.mwis(routes);
+    for(int j=0; j < tree_list.size(); j++){
+        if(routes.count(tree_list[j].getId())){
+            tree_list[j].pruning(routes[tree_list[j].getId()]);
+            tree_list[j].printTree(tree_list[j].getRoot());
+        }
+    }
 }
 
 
@@ -303,24 +318,22 @@ int test_tree(){
     test_tree.printTree(root_ptr);
 
     //create a route:1-2-1
-    std::map<int, std::vector<int>> route;
     std::vector<int> route_list;
     route_list.push_back(1);
     route_list.push_back(2);
     route_list.push_back(1);
-    route[1]= route_list;
 
-    test_tree.pruning(route);
+    test_tree.pruning(route_list);
     test_tree.printTree(root_ptr);
 }
 
 int test_gating()
 {
     std::vector<cv::Rect_<float>> det_result;
-    cv::Rect_<float> box1 = Rect(100,110,120,130);
-    cv::Rect_<float> box2 = Rect(100,110,140,150);
-    cv::Rect_<float> box3 = Rect(100,110,160,170);
-    cv::Rect_<float> box4 = Rect(100,110,180,190);
+    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);
+    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);
+    cv::Rect_<float> box3 = cv::Rect(100,110,160,170);
+    cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
     det_result.push_back(box1);
     det_result.push_back(box2);
@@ -331,7 +344,7 @@ int test_gating()
     treeNode root = {{100,90,80,70},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
-    Tree test_tree(root_ptr,1,3);
+    Tree test(root_ptr,1,3);
 
     treeNode node_a = {{100,90,85,75},6,2,3,root_ptr};
     treeNode node_b = {{100,90,85,70},6,2,2,root_ptr};
@@ -356,7 +369,21 @@ int test_gating()
     node_list.push_back(node_a_ptr);
     node_list.push_back(node_b_ptr);
     
-    test_tree.addNode(dict);
+    dict[0] = node_list;
+    test.addNode(dict);
+    
+    node_list.clear();
+    node_list.push_back(node_c_ptr);
+    node_list.push_back(node_d_ptr);
+    dict[0] = node_list;
+
+    node_list.clear();
+    node_list.push_back(node_e_ptr);
+    node_list.push_back(node_f_ptr);
+    dict[1] = node_list;
+
+    test.addNode(dict);
+    test.printTree(root_ptr);
 
     
 }

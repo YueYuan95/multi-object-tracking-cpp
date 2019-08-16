@@ -10,3 +10,4 @@ int GraphToTree(Graph, std::vector<std::vector<int>>&);
 int test_graph();
 int test_tree();
 int test_treeTograph();
+int test_gating();

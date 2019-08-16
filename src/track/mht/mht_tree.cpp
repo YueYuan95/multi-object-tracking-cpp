@@ -6,15 +6,37 @@
 #include <vector>
 #include <deque>
 
-Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
+Tree::Tree(std::shared_ptr<treeNode> root, int label_, int n)
 {
         
-    id = i;
+    //id = i;
+    label = label_;
     root_node = root;
     leaf_node.push_back(root);//
     head_node = root;
     N = n;
        
+}
+
+int Tree::addNode(int node_index, std::shared_ptr<treeNode> tree_Node){
+
+    tree_Node->parent = leaf_node[node_index];
+    tree_Node->children.clear();
+    leaf_node[node_index]->children.push_back(tree_Node);
+    
+}
+
+int Tree::changeLeaf(){
+    
+    std::vector<std::shared_ptr<treeNode>> candidate;
+    candidate.clear();
+    for(int i=0; i < leaf_node.size(); i++){
+        for(int j=0; j < leaf_node[i]->children.size();j++){
+            candidate.push_back(leaf_node[i]->children[j]);
+        }
+    }
+    leaf_node = candidate;
+            
 }
 
 int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
@@ -27,21 +49,9 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
     while(it!=dict.end())
     {
         leaf_node[it->first]->children = it->second;
-        //traverse in leaf_node
-        //for(i=0; i<leaf_node.size(); i++)
-        //{
-        //    if(leaf_node[i]->index==it->first)
-        //    {
-        //        //search_node.push_back(leaf_node[i]);
-        //        leaf_node[i]->children = it->second;
-        //        
-        //        for(j=0; j<leaf_node[i]->children.size(); j++)
-        //        {
-        //            search_node.push_back(leaf_node[i]->children[j]);
-        //            leaf_node[i]->children[j]->parent = leaf_node[i];
-        //        }
-        //    }
-        //}
+        for(int i=0;i<it->second.size();i++){
+            it->second[i]->parent = leaf_node[it->first]; 
+        }
         it++;
         // leaf_node.clear();
         // 
@@ -68,7 +78,7 @@ int Tree::addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict)
 
 }
         
-int Tree::pruning(std::map<int, std::vector<int>> route)
+int Tree::pruning(std::vector<int> route)
 {
     //root is static
     //int variable is the index of head_node
@@ -86,20 +96,35 @@ int Tree::pruning(std::map<int, std::vector<int>> route)
 
     //std::shared_ptr<treeNode> head_node_temp;
     
-    int count;
     //delete
-    std::map<int, std::vector<int>>::iterator it;
-    it = route.begin();
-    for(count=0;count<head_node->children.size();count++)
-    {
-        if(head_node->children[count]->index!=it->second[1])
-        {
-            head_node->children.erase(head_node->children.begin()+count);
-            count--;
+    //for(auto i : route){
+    //    std::cout<<i<<std::endl;
+    //}
+
+    if(route[0] != head_node->index && route[0] != 0){
+        std::cout<<"Head Index is not the frist of the path"<<std::endl;
+    }
+
+    std::vector<std::shared_ptr<treeNode>>::iterator iter;
+    for(iter = head_node->children.begin(); iter != head_node->children.end();){
+
+        if( (*iter)->index != route[1]){
+           iter= head_node->children.erase(iter);
         }
+        if(iter != head_node->children.end()) iter++;
+    }
+
+    if(head_node->children.size() == 0){
+        return 1;
+    }
+    if(head_node->children.size() == 1){
+        head_node = head_node->children[0];
+        return 1;
+    } 
+    if(head_node->children.size() > 1){
+        std::cout<<"Pruning Wrong"<<std::endl;
     }
     
-    head_node = head_node->children[0];
     std::cout<<head_node->index<<std::endl;
 
 /*
@@ -182,14 +207,17 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
     }
     std::cout<<std::endl;
 }
-
+//int Tree::getId()
+{
+    return id;
+}
 int Tree::getN(){
     return N;
 }
 
-int Tree::getId()
+int Tree::getLabel()
 {
-    return id;
+    return label;
 }
 
 std::shared_ptr<treeNode> Tree::getRoot()
