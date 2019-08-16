@@ -243,13 +243,11 @@ int test_treeTograph(){
     TreeToGraph(tree_list, graph);
     graph.printGraph();
     graph.mwis(routes);
-    for(std::map<int, std::vector<int>>::iterator iter=routes.begin();iter != routes.end(); iter++){
-       for(int j=0; j < tree_list.size(); j++){
-            if(iter->first == tree_list[j].getId()){
-                tree_list[j].pruning(iter->second);
-                tree_list[j].printTree(tree_list[j].getRoot());
-            }
-       }
+    for(int j=0; j < tree_list.size(); j++){
+        if(routes.count(tree_list[j].getId())){
+            tree_list[j].pruning(routes[tree_list[j].getId()]);
+            tree_list[j].printTree(tree_list[j].getRoot());
+        }
     }
 }
 
