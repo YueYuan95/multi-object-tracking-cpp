@@ -31,7 +31,7 @@ int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
     if(tree_node.parent == head_node){
         path.push_back(tree_node.parent->index);
         if(path.size() < N){
-            for(int i=N-path.size();i>0;i--){
+            for(int i=N-path.size()+1;i>0;i--){
                 path.push_back(0);
             }
         }
@@ -41,7 +41,7 @@ int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
    /*When this node is a root node*/
     if(tree_node.parent == NULL &&  path.size() < N){
         
-        for(int i=N-path.size(); i > 0; i--){
+        for(int i=N-path.size()+1; i > 0; i--){
             path.push_back(0);
         }
         path_list.push_back(path);
@@ -132,7 +132,7 @@ int test_treeTograph(){
     treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
-    Tree test_tree(root_ptr,1,3);
+    Tree test_tree(root_ptr,1,2);
 
     treeNode node_a = {{10,9,8,7},6,2,3,root_ptr};
     treeNode node_b = {{10,9,8,7},6,2,2,root_ptr};
@@ -178,7 +178,7 @@ int test_treeTograph(){
     treeNode root_2 = {{10,9,8,7},6,1,2,NULL};
     std::shared_ptr<treeNode> root_2_ptr(new treeNode(root_2));
 
-    Tree test_tree_2(root_2_ptr,2,3);
+    Tree test_tree_2(root_2_ptr,2,2);
 
     treeNode node_2_a = {{10,9,8,7},6,2,2,root_2_ptr};
     treeNode node_2_b = {{10,9,8,7},6,2,1,root_2_ptr};
@@ -217,7 +217,7 @@ int test_treeTograph(){
     treeNode root_3 = {{10,9,8,7},6,1,5,NULL};
     std::shared_ptr<treeNode> root_3_ptr(new treeNode(root_3));
 
-    Tree test_tree_3(root_3_ptr,3,3);
+    Tree test_tree_3(root_3_ptr,3,2);
 
     //map<int, vector<std::shared_ptr<treeNode>>>:: iterator it;
     //dict.insert(pair<int, std::vector<std::shared_ptr<treeNode>>> 1,testTree);
@@ -246,8 +246,21 @@ int test_treeTograph(){
         if(routes.count(tree_list[j].getId())){
             tree_list[j].pruning(routes[tree_list[j].getId()]);
             tree_list[j].printTree(tree_list[j].getRoot());
+        }   
+    }
+    for(int i=0; i < tree_list.size(); i++){
+        cv::Rect_<float> result_vector;
+        if(tree_list[i].sentResult(result_vector)){
+            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
         }
     }
+    for(int i=0; i < tree_list.size(); i++){
+        cv::Rect_<float> result_vector;
+        if(tree_list[i].sentResult(routes[tree_list[i].getId()],result_vector)){
+            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        }
+    }
+  
 }
 
 
