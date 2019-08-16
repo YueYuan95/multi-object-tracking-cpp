@@ -253,8 +253,8 @@ int test_gating()
 {
     std::vector<cv::Rect_<float>> det_result;
     cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//
-    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//
-    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//will not match
+    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//will not match
+    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//
     cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
     det_result.push_back(box1);

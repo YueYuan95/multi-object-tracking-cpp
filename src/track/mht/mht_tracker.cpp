@@ -11,7 +11,7 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
     float threshold = 20;//threshold of the distance,changeable
     float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     float zero = 0;
-    bool success_flag = false; 
+    bool success_flag; 
     std::vector<Tree> new_tree_list;
 
     //push the leaf_node of the trees into a vector
@@ -41,7 +41,7 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
     for(i=0; i<det_result.size(); i++)
     {
         //create a node for each det_result
-        
+        success_flag = false;
 
         //caculate the central coordinate of the det_result;
         x1 = det_result[i].x + det_result[i].width/2;
@@ -67,6 +67,7 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
             h = std::max(zero, yy2-yy1);
             IOU = w*h/(det_result[i].width*det_result[i].height+leaf_node_list[j]->box.width*leaf_node_list[j]->box.height-w*h);
             //std::cout<<"IOU:"<<IOU<<std::endl;
+            
 
             if(distance<threshold)
             {
