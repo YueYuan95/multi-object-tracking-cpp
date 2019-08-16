@@ -8,6 +8,7 @@
 #include "mht_graph.h"
 #include "mht_tracker.h"
 #include "util.h"
+#include "test.h"
 
 int main(){
 
