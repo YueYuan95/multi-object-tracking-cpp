@@ -184,7 +184,7 @@ int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
 
 int Tree::sentResult(cv::Rect_<float>& result){
     
-    if((leaf_node[0]->level - head_node->level) == N){
+    if((leaf_node[0]->level - head_node->level) == (N-1)){
         result = head_node->box;
         return 1;
     }else{
