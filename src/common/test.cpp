@@ -252,9 +252,9 @@ int test_tree(){
 int test_gating()
 {
     std::vector<cv::Rect_<float>> det_result;
-    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//160,175
+    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//
     cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//
-    cv::Rect_<float> box3 = cv::Rect(100,110,160,170);
+    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//will not match
     cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
     det_result.push_back(box1);
@@ -309,7 +309,7 @@ int test_gating()
     test.printTree(root_ptr);
 
     //tree No.2,100->110
-    treeNode root2 = {{110,90,80,70},6,1,1,NULL};
+    treeNode root2 = {{110,90,80,70},6,1,2,NULL};//1
     std::shared_ptr<treeNode> root_ptr2(new treeNode(root2));
 
     Tree test2(root_ptr2,1,3);
@@ -367,12 +367,44 @@ int test_gating()
         std::cout<<std::endl;
     }
     
-    std::cout<<""<<std::endl;
+    /*std::cout<<""<<std::endl;
     for(i=0; i<tree_list.size(); i++)
     {
         for(auto iter :tree_list[i].getLeafNode()){
             std::cout<< iter->index ;
         }
         std::cout<<std::endl;
+    }*/
+
+    /*std::vector<Tree> tree_list;
+    tree_list.push_back(test_tree);
+    tree_list.push_back(test_tree_2);
+    tree_list.push_back(test_tree_3);*/
+
+    std::map<int, std::vector<int>> routes;
+    routes.clear();
+    Graph graph;
+    TreeToGraph(tree_list, graph);
+    graph.printGraph();
+    graph.mwis(routes);
+    for(int j=0; j < tree_list.size(); j++){
+        if(routes.count(tree_list[j].getId())){
+            tree_list[j].pruning(routes[tree_list[j].getId()]);
+            tree_list[j].printTree(tree_list[j].getRoot());
+        }   
     }
+    for(int i=0; i < tree_list.size(); i++){
+        cv::Rect_<float> result_vector;
+        if(tree_list[i].sentResult(result_vector)){
+            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        }
+    }
+    for(int i=0; i < tree_list.size(); i++){
+        cv::Rect_<float> result_vector;
+        if(tree_list[i].sentResult(routes[tree_list[i].getId()],result_vector)){
+            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        }
+    }
+
+
 }
