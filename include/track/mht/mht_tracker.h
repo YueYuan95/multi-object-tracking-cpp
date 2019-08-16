@@ -24,6 +24,7 @@ class MHT_tracker{
          * 
          */
         int construct();
+        void gating(std::vector<cv::Rect_<float>> det_result, std::vector<std::shared_ptr<treeNode>> tree_list);
         /*
         * I think construct contain the gating and scoring 
         int gating();

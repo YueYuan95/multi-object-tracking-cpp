@@ -94,7 +94,7 @@ int Tree::pruning(std::map<int, std::vector<int>> route)
     {
         if(head_node->children[count]->index!=it->second[1])
         {
-            head_node->children.erase(head_node->children.begin());
+            head_node->children.erase(head_node->children.begin()+count);
             count--;
         }
     }
@@ -164,9 +164,14 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
         //print tree
         std::cout<<temp_node->index;
         
-        if(queue_tree_node.size()==0|| temp_node->parent!=queue_tree_node[0]->parent)
+        if(queue_tree_node.size()==0)
         {
             std::cout<<"]";
+        }
+
+        if(queue_tree_node.size()!=0 && temp_node->parent!=queue_tree_node[0]->parent)
+        {
+            std::cout<<"][";
         }
 
         for(i=0;i<temp_node->children.size();i++){

@@ -242,7 +242,7 @@ int test_treeTograph(){
 
 int test_tree(){
 
-     treeNode root = {{10,9,8,7},6,1,1,NULL};
+    treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
 
     Tree test_tree(root_ptr,1,3);
@@ -312,4 +312,51 @@ int test_tree(){
 
     test_tree.pruning(route);
     test_tree.printTree(root_ptr);
+}
+
+int test_gating()
+{
+    std::vector<cv::Rect_<float>> det_result;
+    cv::Rect_<float> box1 = Rect(100,110,120,130);
+    cv::Rect_<float> box2 = Rect(100,110,140,150);
+    cv::Rect_<float> box3 = Rect(100,110,160,170);
+    cv::Rect_<float> box4 = Rect(100,110,180,190);
+
+    det_result.push_back(box1);
+    det_result.push_back(box2);
+    det_result.push_back(box3);
+    det_result.push_back(box4);
+
+    std::vector<std::shared_ptr<treeNode>> tree_list;
+    treeNode root = {{100,90,80,70},6,1,1,NULL};
+    std::shared_ptr<treeNode> root_ptr(new treeNode(root));
+
+    Tree test_tree(root_ptr,1,3);
+
+    treeNode node_a = {{100,90,85,75},6,2,3,root_ptr};
+    treeNode node_b = {{100,90,85,70},6,2,2,root_ptr};
+
+    std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
+    std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
+    
+    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};
+    treeNode node_d = {{100,110,140,150},6,3,2,node_a_ptr};//
+    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//
+    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};
+    
+    std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
+    std::shared_ptr<treeNode> node_d_ptr(new treeNode(node_d));
+    std::shared_ptr<treeNode> node_e_ptr(new treeNode(node_e));
+    std::shared_ptr<treeNode> node_f_ptr(new treeNode(node_f));
+    
+
+    std::vector<std::shared_ptr<treeNode>> node_list;
+    std::map<int, std::vector<std::shared_ptr<treeNode>>> dict;
+    
+    node_list.push_back(node_a_ptr);
+    node_list.push_back(node_b_ptr);
+    
+    test_tree.addNode(dict);
+
+    
 }
