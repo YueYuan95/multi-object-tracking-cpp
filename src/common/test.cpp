@@ -367,14 +367,14 @@ int test_gating()
         std::cout<<std::endl;
     }
     
-    /*std::cout<<""<<std::endl;
+    std::cout<<""<<std::endl;
     for(i=0; i<tree_list.size(); i++)
     {
         for(auto iter :tree_list[i].getLeafNode()){
             std::cout<< iter->index ;
         }
         std::cout<<std::endl;
-    }*/
+    }
 
     /*std::vector<Tree> tree_list;
     tree_list.push_back(test_tree);

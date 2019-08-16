@@ -61,10 +61,13 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
 }
 
 int Graph::DFS(int n){
-
-    for(int i=n+1; i<=m_node_num; i++){
+   
+    //std::cout<<"Node NUM is "<< m_node_num <<std::endl;
+            
+    for(int i=n+1; i<m_node_num; i++){
     //TODO: if the sum of all left node less than current score, save time;
-       if(m_dej_mat[n][i]){
+        //std::cout<<"I is "<< i << std::endl;
+        if(m_dej_mat[n][i]){
             int j;
             for(j=0; j< m_vetex_list.size(); j++){
                 if(!m_dej_mat[i][m_vetex_list[j]]){
@@ -104,12 +107,22 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     for(int i=0;  i <  m_max_clique_list.size(); i++){
         float sum = 0.0;
         for(auto node : m_max_clique_list[i]){
+            //std::cout<<node<<" ";
             sum += m_node_list[node].score;
         }
         if(sum >= m_score){
-            m_max_clique = m_max_clique_list[i];
-            m_score = sum;
+            if(m_max_clique_list[i].size() > m_max_clique.size()){
+                m_max_clique = m_max_clique_list[i];
+                m_score = sum;
+
+            }
         }
+        //std::cout<<"---"<<sum;
+        //std::cout<<std::endl;
+        ////for(auto node : m_max_clique_list[i]){
+        //    std::cout<<node<<" ";
+        //}
+        //std::cout<<std::endl;
     }
 
     for(auto path : m_max_clique){

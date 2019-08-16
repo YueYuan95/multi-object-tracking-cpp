@@ -65,7 +65,6 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
         std::cout<<"Tree No."<<tree.getId()<<std::endl;
         //preorderTraversal(tree.getHead(),path, path_list);
         for(auto leaf : tree.getLeafNode()){
-        
             path.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_list, tree.getN());
         }
