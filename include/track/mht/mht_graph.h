@@ -19,8 +19,8 @@ class Graph{
         std::vector<std::vector<int>> m_dej_mat;
         
         std::vector<int> m_max_clique;
-        std::vector<std::vector<int>> m_stk_list;
-        int mx, ns;
+        std::vector<std::vector<int>> m_stk;
+        int max, ns;
         float m_score;
 
         std::vector<int> m_vetex_list;
@@ -29,7 +29,7 @@ class Graph{
     public:
         Graph();
         Graph(std::vector<VexNode>);
-        int DFS(int);
+        int DFS(int, int, int);
         int mwis(std::map<int,std::vector<int>>&);
         int printGraph();
 };
