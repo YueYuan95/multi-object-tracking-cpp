@@ -4,7 +4,20 @@
 #include <opencv2/core/core.hpp>
 #include <math.h>
 
-void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tree>& tree_list)
+int MHT_tracker::inference(std::vector<cv::Rect_<float>> det_result,byavs::TrackeObjectCPUs& results){
+
+    Graph graph;
+    std::map<int, std::vector<int>> path;
+    gating(det_result, tree_list);
+    TreeToGraph(tree_list, graph);
+    sovle_mwis(graph, path);
+    pruning(path);
+    sentResult(results);
+    
+}
+
+
+int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tree>& tree_list)
 {
     int i, j;
     float x1, y1, x2, y2, distance;
@@ -122,6 +135,8 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
     for(i=0; i < tree_list.size(); i++){
         tree_list[i].changeLeaf();
     }
+
+    return 1;
 }
 
 /*std::vector<std::shared_ptr<treeNode>> MHT_tracker::find_leaf_node(std::shared_ptr<treeNode> root)
@@ -136,3 +151,35 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
             }
         }
 }*/
+
+int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
+
+    graph.mwis(path);
+}
+
+int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
+    
+    for(int i=0; i < tree_list.size(); i++){
+        
+        if(path.count(tree_list[i].getId())){
+            tree_list[i].pruning(path[tree_list[i].getId()]);
+        }
+
+    }
+}
+
+int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
+
+    
+    for(int i=0; i < tree_list.size(); i++){
+        cv::Rect_<float> bbox;
+        byavs::BboxInfo box;
+        byavs::TrackeObjectCPU trk_obj_cpu;
+        tree_list[i].sentResult(bbox);
+        trk_obj_cpu.label = tree_list[i].getLabel();
+        trk_obj_cpu.id = tree_list[i].getId();
+        trk_obj_cpu.box = {(int)bbox.x, (int)bbox.y, (int)bbox.width, (int)bbox.height};
+        results.push_back(trk_obj_cpu);
+    }
+
+}

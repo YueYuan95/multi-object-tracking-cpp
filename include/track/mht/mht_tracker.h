@@ -4,15 +4,21 @@
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include "mht_tree.h"
-
+#include "mht_graph.h"
+#include "util.h"
 #include "byavs.h"
 
 class MHT_tracker{
 
-    public:
-        
+    private:
+
+        std::vector<Tree> tree_list;
         int N = 3;
 
+
+    public:
+        
+        
         bool init(const std::string& model_dir, const byavs::TrackeParas& pas, const int gpu_id);
         bool inference(const byavs::TrackeInputGPUArray& inputs, byavs::TrackeResultGPUArray& resultArray);
         bool inference(const byavs::TrackeInputCPUArray& inputs, byavs::TrackeResultCPUArray& resultArray);
@@ -21,7 +27,7 @@ class MHT_tracker{
         *   intput : TrackeInputGPU
         *   output : TrackeResultGPU
         */
-        int inference();
+        int inference(std::vector<cv::Rect_<float>>, byavs::TrackeObjectCPUs&);
 
         /*
          *  input :  detect result , vector<cv::Rect_<float>>
@@ -30,15 +36,17 @@ class MHT_tracker{
          * 
          */
         int construct();
-        void gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tree>& tree_list);
+        int gating(std::vector<cv::Rect_<float>>, std::vector<Tree>&);
         /*
         * I think construct contain the gating and scoring 
         int gating(std::vector<cv::Rect_<float> det_result, std::vector<Tree> tree_list);
         int scoring();
         */
-        int sovle_mwis();
-        int pruning();
+        int sovle_mwis(Graph, std::map<int, std::vector<int>>&);
+        int pruning(std::map<int, std::vector<int>>);
         int morls();
+
+        int sentResult(byavs::TrackeObjectCPUs&);
 };
 
 #endif

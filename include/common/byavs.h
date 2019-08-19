@@ -119,20 +119,28 @@ typedef struct {
   DetectObjects objs;
 } TrackeInputCPU;
 
-typedef struct {                                                                                                                                                                
+typedef struct {
+  int camID;
+  int channelID;                                                                                                                                                      
   int id;                                                                                                                                                                     
-  int label;                                                                                                                                                                  
+  int label;                                                                                                                                                             
   BboxInfo box;                                                                                                                                                               
-  GpuMat gpuImg;                                                                                                                                                                
-  bool return_state;                                                                                                                                                          
+  GpuMat gpuImg;                                                                                                                                                          
+  bool return_state;
+  int match_flag;   
+  float score;                                                                                                                                                            
 } TrackeObjectGPU;
 
 typedef struct {
+  int camID;
+  int channelID;
   int id;                                                                                                                                                                     
-  int label;                                                                                                                                                                  
-  BboxInfo box;                                                                                                                                                               
-  cv::Mat cpuImg;                                                                                                                                                                
+  int label;                                                                                                                                                                
+  BboxInfo box;                                                                                                                                                        
+  cv::Mat cpuImg;
   bool return_state;
+  int match_flag;   
+  float score;
 } TrackeObjectCPU;
 
 /*save for iou_tracker, strongly recommonad do NOT use this*/
@@ -181,6 +189,66 @@ public:
 private:
    void*  trackingPtr;
 };
+
+/**
+ * @brief The KeyFrame class
+ */
+
+typedef struct {
+    //The parameters of VehicleRecognizer.
+} KeyFrameParas;
+
+typedef struct {
+  int camID;
+  int channelID;                                                                                                                                                             
+  int id;                                                                                                                                                                     
+  int label;                                                                                                                                                             
+  BboxInfo box;                                                                                                                                                               
+  GpuMat gpuImg;                                                                                                                                                          
+  bool return_state;
+  int match_flag;   
+  float score;
+  std::string timestep;
+  int detect_id;                                                                                                                                                       
+} KeyObjectGPU;
+
+typedef struct {
+  int camID;
+  int channelID;
+  int id;                                                                                                                                                                     
+  int label;                                                                                                                                                                
+  BboxInfo box;                                                                                                                                                        
+  cv::Mat cpuImg;
+  bool return_state;
+  int match_flag;   
+  float score;
+  std::string timestep;
+  int detect_id;
+} KeyObjectCPU;
+
+typedef std::vector<KeyObjectGPU> KeyObjectGPUs;
+typedef std::vector<KeyObjectCPU> KeyObjectCPUs;
+
+typedef std::vector<KeyObjectGPUs> KeyInputGPUArray;
+typedef std::vector<KeyObjectCPUs> KeyInputCPUArray;
+
+class KeyFrame{
+
+    public:
+
+        bool init(const std::string& model_dir, const KeyFrameParas& pas, const int gpu_id);
+
+        //PedestrianFeature inference
+        bool inference(const KeyInputGPUArray& inputs, KeyObjectGPUs& resultArray);
+        bool inference(const KeyInputCPUArray& inputs, KeyObjectCPUs& resultArray);
+
+        //PedestrianFeature release
+        void release();
+        
+    private:
+        void * keyframePtr;
+};
+
 
 
 /**
