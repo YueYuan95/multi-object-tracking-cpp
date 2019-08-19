@@ -270,7 +270,11 @@ int test_gating()
     Detector detector;
     detector.read_txt();
     detector.inference(frame, det_result);
-   
+
+    std::vector<cv::Rect_<float>> temp_det_result;
+    for(int i=0; i < 7; i++){
+        temp_det_result.push_back(det_result[i]);
+    }
     /*std::cout<<frame<<" ";
     int i;
     for(i=0;i<det_result.size();i++)
@@ -375,7 +379,7 @@ int test_gating()
     tree_list.push_back(test2);
 
     MHT_tracker test_tracker;
-    test_tracker.gating(det_result, tree_list);
+    test_tracker.gating(temp_det_result,tree_list);
 
     int i;
     std::cout<<"After Gating :"<<std::endl;

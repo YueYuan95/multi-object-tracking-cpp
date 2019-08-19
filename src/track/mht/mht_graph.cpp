@@ -45,11 +45,13 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
             }
             for(int k=0; k < vex_node_list[i].path.size(); k++){
                 if(vex_node_list[i].path[k] ==  vex_node_list[j].path[k]){
-                    m_adj_mat[i][j] = 1;
-                    m_adj_mat[j][i] = 1;
-                    m_dej_mat[i][j] = 0;
-                    m_dej_mat[j][i] = 0;
-                    break;
+                   if(vex_node_list[i].path[k] !=0 && vex_node_list[j].path[k] != 0){
+                         m_adj_mat[i][j] = 1;
+                         m_adj_mat[j][i] = 1;
+                         m_dej_mat[i][j] = 0;
+                         m_dej_mat[j][i] = 0;
+                         break;
+                   }
                 }
 
             } 
