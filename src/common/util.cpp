@@ -88,45 +88,99 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 int visualize(bool visual, byavs::TrackeObjectCPUs results)
 {
     
-    //byavs::TrackeObjectCPUs results;
-    MHT_tracker tracker;
-    tracker.sentResult(results);
-    int frame_count;
+    std::string imgPath;
+    std::string detFileName;
+    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/";
+    //detFileName = "/nfs-data/tracking/MOT16/train/MOT16-04/det/det.txt";
+
+    int frame_count = 1;
+    std::string curr_img;
+    cv::Mat imgBGR;
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    //files = File(imgPath);
+    std::sort(files.begin(), files.end());
 
     while (!results.empty())
     {
 
-        dect_rects = results.front();
-        curr_img = ;//files[frame_count-1];
+        curr_img = files[frame_count-1];//files[frame_count-1];
         imgBGR = cv::imread(curr_img);
-
-        VectorToDetectObject(dect_rects,detection);
-        tracker.inference(imgBGR, detection, keyObjects);
-        TrackeObjectToVector(keyObjects, tracker_result);
 
         if(visual)
         {
-            Mat imgShow = imgBGR;
+            cv::Mat imgShow = imgBGR;
                         // for(int i=0; i < dect_rects.size(); i++){
                         //      rectangle(imgBGR,dect_rects[i],Scalar(255,0,0),3,1,0);
                         // }
-            for(int j=0; j < result.size(); j++)
+            for(int j=0; j < results.size(); j++)
             {
-                std::string id = result[j].identity_code;
-                std::Point left_top = result[j].c1;
-                std::Point right_bottom = result[j].c2;
-                Scalar color = result[j].color;
-                cv::putText(imgShow, id, left_top, FONT_HERSHEY_SIMPLEX, 1 ,color,3,8);
-                cv::rectangle(imgShow, left_top, right_bottom, color, 3, 1, 0);
+                int id0 = results[j].id;
+                std::string id;
+                std::stringstream ss;
+                ss << id0;
+                ss >> id;
+
+                cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
+                cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
+                //cv::Scalar color = result[j].color;//??
+                cv::putText(imgShow, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
+                cv::rectangle(imgShow, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
             }
                         // resize(imgShow,imgShow,Size(imgShow.cols/2,imgShow.rows/2),0,00,INTER_LINEAR);
                         // imshow(seq,imgShow);
-            imwrite("result/"+to_string(frame_count)+".jpg", imgShow);
+            imwrite("result/"+std::to_string(frame_count)+".jpg", imgShow);
                 //      waitKey(1);
         }
-
         frame_count++;
-        results.pop();
+        //results.pop();
+        results.erase(results.begin());
     }
 }
 
+void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)
+{
+    DIR *dir;
+    struct dirent *entry;
+    struct stat statbuf;
+    struct tm      *tm;
+    time_t rawtime;
+    if (!(dir = opendir(name)))
+    {
+        std::cout<<"Couldn't open the file or dir"<<name<<"\n";
+        return;
+    }
+    if (!(entry = readdir(dir)))
+    {
+        std::cout<<"Couldn't read the file or dir"<<name<<"\n";
+        return;
+    }
+        do
+    {
+        std::string slash="";
+        if(!lastSlash)
+          slash = "/";
+
+        std::string parent(name);
+        std::string file(entry->d_name);
+        std::string final = parent + slash + file;
+        if(stat(final.c_str(), &statbuf)==-1)
+        {
+            std::cout<<"Couldn't get the stat info of file or dir: "<<final<<"\n";
+            return;
+        }
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) //its a directory
+        {
+                        //skip the . and .. directory
+            //if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            //    continue;
+                        //listDir(final.c_str(), fileNames, false);
+                        continue;
+                }
+                else // it is a file
+                {
+                        fileNames.push_back(final);
+                }
+        }while (entry = readdir(dir));
+        closedir(dir);
+}

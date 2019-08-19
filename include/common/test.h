@@ -8,6 +8,7 @@
 #include "mht_graph.h"
 #include "detector.h"
 #include "util.h"
+#include "byavs.h"
 
 int test_flow();
 int test_graph();
@@ -16,6 +17,7 @@ int test_treeTograph();
 int test_gating();
 int test_read_txt();
 int test_detector_inference();
-//int test_all();
+//int test_visualize();
+int test_all();
 
 #endif

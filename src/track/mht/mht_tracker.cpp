@@ -183,3 +183,8 @@ int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
     }
 
 }
+
+std::vector<Tree> MHT_tracker::get_tree_list()
+{
+    return tree_list;
+}

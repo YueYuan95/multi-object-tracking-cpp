@@ -47,6 +47,9 @@ class MHT_tracker{
         int morls();
 
         int sentResult(byavs::TrackeObjectCPUs&);
+
+        //get function
+        std::vector<Tree> get_tree_list();
 };
 
 #endif
