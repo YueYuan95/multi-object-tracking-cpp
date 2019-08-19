@@ -408,3 +408,46 @@ int test_gating()
 
 
 }
+
+int test_read_txt()
+{
+    Detector detector;
+    detector.read_txt();
+    int i;
+    std::map<int, std::vector<cv::Rect_<float>>>::iterator it;
+    for (it=detector.frame_det_map.begin(); it!=detector.frame_det_map.end();it++)
+    {
+        auto value1 = it->first;
+        auto value2 = it->second;
+        std::cout<<value1<<" ";
+        for(i=0; i<value2.size(); i++)
+        {
+            std::cout<<value2[i];
+        }
+        std::cout<<std::endl;
+    }
+    
+
+}
+
+int test_detector_inference()
+{
+    int frame = 1050;
+    std::vector<cv::Rect_<float>> destination;//random
+    //destination.push_back(cv::Rect(1,2,3,4));
+    //destination.clear();
+
+    Detector detector;
+    detector.read_txt();
+    detector.inference(frame, destination);
+    
+    //std::cout<<destination.size()<<std::endl;
+    std::cout<<frame<<" ";
+    int i;
+    for(i=0;i<destination.size();i++)
+    {
+        std::cout<<destination[i];
+    }
+    std::cout<<std::endl;
+
+}
