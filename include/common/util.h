@@ -19,5 +19,5 @@
 
 int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
-int visualize(bool visual, byavs::TrackeObjectCPUs results);
+int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);

@@ -85,57 +85,22 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
     graph = Graph(graph_node_list);
 }
 
-int visualize(bool visual, byavs::TrackeObjectCPUs results)
+int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
 {
     
-    std::string imgPath;
-    std::string detFileName;
-    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/";
-    //detFileName = "/nfs-data/tracking/MOT16/train/MOT16-04/det/det.txt";
+    for(int j=0; j < results.size(); j++){
+        std::string id = std::to_string(results[j].id);
 
-    int frame_count = 1;
-    std::string curr_img;
-    cv::Mat imgBGR;
-    std::vector<std::string> files;
-    listDir(imgPath.c_str(), files, true);
-    //files = File(imgPath);
-    std::sort(files.begin(), files.end());
-
-    while (!results.empty())
-    {
-
-        curr_img = files[frame_count-1];//files[frame_count-1];
-        imgBGR = cv::imread(curr_img);
-
-        if(visual)
-        {
-            cv::Mat imgShow = imgBGR;
-                        // for(int i=0; i < dect_rects.size(); i++){
-                        //      rectangle(imgBGR,dect_rects[i],Scalar(255,0,0),3,1,0);
-                        // }
-            for(int j=0; j < results.size(); j++)
-            {
-                int id0 = results[j].id;
-                std::string id;
-                std::stringstream ss;
-                ss << id0;
-                ss >> id;
-
-                cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
-                cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
-                //cv::Scalar color = result[j].color;//??
-                cv::putText(imgShow, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
-                cv::rectangle(imgShow, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
-            }
-                        // resize(imgShow,imgShow,Size(imgShow.cols/2,imgShow.rows/2),0,00,INTER_LINEAR);
-                        // imshow(seq,imgShow);
-            imwrite("result/"+std::to_string(frame_count)+".jpg", imgShow);
-                //      waitKey(1);
-        }
-        frame_count++;
-        //results.pop();
-        results.erase(results.begin());
+        cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
+        cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
+        //cv::Scalar color = result[j].color;//??
+        cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
+        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
     }
+    cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
+    //cv::imshow("test",img);
+    cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    //cv::waitKey(1);
 }
 
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)
