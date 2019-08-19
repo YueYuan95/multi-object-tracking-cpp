@@ -36,7 +36,11 @@ class MHT_tracker{
          * 
          */
         int construct();
-        int gating(std::vector<cv::Rect_<float>>, std::vector<Tree>&);
+        int gating(std::vector<cv::Rect_<float>>);
+
+        int backTraversal(treeNode, std::shared_ptr<treeNode>, std::vector<int>&,
+                std::vector<std::vector<int>>&, int);
+        int TreeToGraph(Graph&);
         /*
         * I think construct contain the gating and scoring 
         int gating(std::vector<cv::Rect_<float> det_result, std::vector<Tree> tree_list);

@@ -10,8 +10,7 @@
 int test_graph(){
     std::vector<VexNode> vex_node_list;
     VexNode temp_node = {1.0, 1, {1,3,4}};
-    vex_node_list.push_back(temp_node);
-    
+    vex_node_list.push_back(temp_node); 
     temp_node = {1.0, 1, {1,3,2}};
     vex_node_list.push_back(temp_node);
     
@@ -125,12 +124,27 @@ int test_treeTograph(){
     dict[1] = node_list;
 
     test_tree_2.addNode(dict);
-
+    
+    dict.clear();
     /*Fake Tree No.3*/
     treeNode root_3 = {{10,9,8,7},6,1,5,NULL};
     std::shared_ptr<treeNode> root_3_ptr(new treeNode(root_3));
 
     Tree test_tree_3(root_3_ptr,3,2);
+    
+    treeNode node_3_a = {{10,9,8,7},6,2,2,root_3_ptr};
+    treeNode node_3_b = {{10,9,8,7},6,2,1,root_3_ptr};
+
+    std::shared_ptr<treeNode> node_3_a_ptr(new treeNode(node_3_a));
+    std::shared_ptr<treeNode> node_3_b_ptr(new treeNode(node_3_b));
+    
+    node_list.clear();
+    node_list.push_back(node_3_a_ptr);
+    node_list.push_back(node_3_b_ptr);
+    
+    dict[0] = node_list;
+    test_tree_3.addNode(dict);
+    
 
     //map<int, vector<std::shared_ptr<treeNode>>>:: iterator it;
     //dict.insert(pair<int, std::vector<std::shared_ptr<treeNode>>> 1,testTree);
@@ -380,7 +394,7 @@ int test_gating()
     tree_list.push_back(test2);
 
     MHT_tracker test_tracker;
-    test_tracker.gating(det_result,tree_list);
+    //test_tracker.gating(det_result,tree_list);
 
     int i;
     std::cout<<"After Gating :"<<std::endl;
@@ -488,21 +502,29 @@ int test_all()
     Detector detector;
     detector.read_txt();
 
-    byavs::TrackeObjectCPUs tracking
-    // {
-    //     test_tracker.get_tree_list()[i].printTree(test_tracker.get_tree_list()[i].getRoot());
-    //     std::cout<<std::endl;
-    // }
-    
-    // std::cout<<""<<std::endl;
-    // for(i=0; i<test_tracker.get_tree_list().size(); i++)
-    // {
-    //     for(auto iter :test_tracker.get_tree_list()[i].getLeafNode()){
-    //         std::cout<< iter->index ;
-    //     }
-    //     std::cout<<std::endl;
-    //}
-    //-----------------------------------------------------
-    //visualize the results
+    MHT_tracker tracker;
+
+    byavs::TrackeObjectCPUs tracking;
+    tracking.clear();
+
+    for(int frame=1; frame <= detector.frame_det_map.size(); frame++){
+            std::cout<<"========================";
+            std::cout<<"Frame"<<frame;
+            std::cout<<"========================"<<std::endl;
+            std::vector<cv::Rect_<float>> detect_result;
+            detect_result.clear();
+            detector.inference(frame,detect_result);  
+            //std::vector<cv::Rect_<float>> temp_result;
+            //for(int i = 0; i < 7 ; i++){
+            //    temp_result.push_back(detect_result[i]);            
+            //}
+            //detect_result = temp_result;
+            tracker.inference(detect_result, tracking);
+            for(auto tree : tracker.get_tree_list()){
+                tree.printTree(tree.getRoot());
+                std::cout<<std::endl;
+            }
+            tracking.clear();
+    }
     
 }

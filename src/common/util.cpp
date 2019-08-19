@@ -25,12 +25,13 @@ int preorderTraversal(treeNode tree_node, std::vector<int>& path,
 
 int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
          std::vector<int>& path, std::vector<std::vector<int>>& path_list, int N){
+
     path.push_back(tree_node.index);
     
     /*When the depth of the tree is not big than N*/
     if(tree_node.parent == head_node){
         path.push_back(tree_node.parent->index);
-        if(path.size() < N){
+        if(path.size() <= N){
             for(int i=N-path.size()+1;i>0;i--){
                 path.push_back(0);
             }
@@ -39,7 +40,7 @@ int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
         return 1;
     }
    /*When this node is a root node*/
-    if(tree_node.parent == NULL &&  path.size() < N){
+    if(tree_node.parent == NULL &&  path.size() <= N){
         
         for(int i=N-path.size()+1; i > 0; i--){
             path.push_back(0);

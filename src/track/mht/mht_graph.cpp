@@ -113,7 +113,7 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
         ns = 0;
         for(int j=i+1; j < n; j++){
             if(m_dej_mat[i][j]){
-                m_stk[i][ns++] = j;
+                m_stk[1][ns++] = j;
             }
         }
         m_vetex_list.push_back(i);
