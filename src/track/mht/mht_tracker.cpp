@@ -29,7 +29,7 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
                 treeNode zero_node;//,creat a zero_node which has no box
                 std::shared_ptr<treeNode> zero_node_ptr(new treeNode(zero_node));
                 zero_node_ptr->index = 0;
-                zero_node_ptr->score = -1;
+                zero_node_ptr->score = 0.0;
                 zero_node_ptr->level = tree_list[i].getLeafNode()[j]->level+1;
                 zero_node_ptr->parent = tree_list[i].getLeafNode()[j];
                 tree_list[i].getLeafNode()[j]->children.push_back(zero_node_ptr);
@@ -109,10 +109,9 @@ void MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<T
             if(leaf_node_list[i]->children.size() == 0)
             {
                 
-                treeNode zero_node;//,creat a zero_node which has no box
-                std::shared_ptr<treeNode> zero_node_ptr(new treeNode(zero_node));
+                std::shared_ptr<treeNode> zero_node_ptr(new treeNode);
                 zero_node_ptr->index = 0;
-                zero_node_ptr->score = -1;
+                zero_node_ptr->score = 0;
                 zero_node_ptr->level = leaf_node_list[i]->level+1;
                 zero_node_ptr->parent = leaf_node_list[i];
                 leaf_node_list[i]->children.push_back(zero_node_ptr);

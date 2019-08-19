@@ -30,7 +30,9 @@ int Tree::addNode(int node_index, std::shared_ptr<treeNode> tree_Node){
 }
 
 int Tree::changeLeaf(){
-    
+   
+    if(leaf_node.size() == 0) return 1;
+    if(leaf_node.size() == 1 && leaf_node[0] == head_node) return 1;
     std::vector<std::shared_ptr<treeNode>> candidate;
     candidate.clear();
     for(int i=0; i < leaf_node.size(); i++){
