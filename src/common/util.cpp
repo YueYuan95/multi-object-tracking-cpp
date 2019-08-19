@@ -85,5 +85,8 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
     graph = Graph(graph_node_list);
 }
 
-
+int visualize()
+{
+    
+}
 
