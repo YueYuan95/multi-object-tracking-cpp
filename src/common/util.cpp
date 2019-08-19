@@ -85,8 +85,48 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
     graph = Graph(graph_node_list);
 }
 
-int visualize()
+int visualize(bool visual, byavs::TrackeObjectCPUs results)
 {
     
+    //byavs::TrackeObjectCPUs results;
+    MHT_tracker tracker;
+    tracker.sentResult(results);
+    int frame_count;
+
+    while (!results.empty())
+    {
+
+        dect_rects = results.front();
+        curr_img = ;//files[frame_count-1];
+        imgBGR = cv::imread(curr_img);
+
+        VectorToDetectObject(dect_rects,detection);
+        tracker.inference(imgBGR, detection, keyObjects);
+        TrackeObjectToVector(keyObjects, tracker_result);
+
+        if(visual)
+        {
+            Mat imgShow = imgBGR;
+                        // for(int i=0; i < dect_rects.size(); i++){
+                        //      rectangle(imgBGR,dect_rects[i],Scalar(255,0,0),3,1,0);
+                        // }
+            for(int j=0; j < result.size(); j++)
+            {
+                std::string id = result[j].identity_code;
+                std::Point left_top = result[j].c1;
+                std::Point right_bottom = result[j].c2;
+                Scalar color = result[j].color;
+                cv::putText(imgShow, id, left_top, FONT_HERSHEY_SIMPLEX, 1 ,color,3,8);
+                cv::rectangle(imgShow, left_top, right_bottom, color, 3, 1, 0);
+            }
+                        // resize(imgShow,imgShow,Size(imgShow.cols/2,imgShow.rows/2),0,00,INTER_LINEAR);
+                        // imshow(seq,imgShow);
+            imwrite("result/"+to_string(frame_count)+".jpg", imgShow);
+                //      waitKey(1);
+        }
+
+        frame_count++;
+        results.pop();
+    }
 }
 
