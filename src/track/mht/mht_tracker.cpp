@@ -69,7 +69,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tr
             y2 = leaf_node_list[j]->box.y + leaf_node_list[j]->box.height/2;
             distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
             //std::cout<<"x2:"<<x2<<"y2:"<<y2<<std::endl;
-            std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
+            //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
 
             //caculate the score, which is IOU here
             xx1 = std::max(det_result[i].x, leaf_node_list[j]->box.x);
@@ -95,6 +95,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tr
                 det_node_ptr->parent = leaf_node_list[j];
                 leaf_node_list[j]->children.push_back(det_node_ptr);
                 success_flag = true;
+                std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
             }
         }
         //for those boxes which do not match any existing trees:create a new tree for them
@@ -102,7 +103,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, std::vector<Tr
         {
             std::shared_ptr<treeNode> det_node_ptr(new treeNode);
             det_node_ptr->box = det_result[i];
-            std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
+            //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
             det_node_ptr->index = i+1;
             det_node_ptr->level = 1;//initialize the level of each tree/node 1
             Tree gate(det_node_ptr,3,N);//label=3,N=3

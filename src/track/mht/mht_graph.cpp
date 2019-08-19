@@ -94,7 +94,7 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     m_max_clique.clear();
     routes.clear();
     int n = m_node_list.size();
-
+    std::cout<<"NUM:"<<n<<std::endl;
     std::vector<std::vector<int>> save_clique; 
     for(int i=n-1; i>=0; i--){
         m_vetex_list.clear();
@@ -107,9 +107,10 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     for(int i=0;  i <  m_max_clique_list.size(); i++){
         float sum = 0.0;
         for(auto node : m_max_clique_list[i]){
-            //std::cout<<node<<" ";
+            std::cout<<node<<" ";
             sum += m_node_list[node].score;
         }
+        std::cout<<std::endl;
         if(sum >= m_score){
             if(m_max_clique_list[i].size() > m_max_clique.size()){
                 m_max_clique = m_max_clique_list[i];
