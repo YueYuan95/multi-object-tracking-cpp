@@ -220,7 +220,7 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
             current_level = temp_node->level;
         }
         //print tree
-        std::cout<<temp_node->index;
+        std::cout<<temp_node->index<<" ";
         
         if(queue_tree_node.size()==0)
         {

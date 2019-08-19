@@ -251,7 +251,8 @@ int test_tree(){
 
 int test_gating()
 {
-    std::vector<cv::Rect_<float>> det_result;
+    //fake det_result:
+    /*std::vector<cv::Rect_<float>> det_result;
     cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//
     cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//will not match
     cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//
@@ -260,8 +261,25 @@ int test_gating()
     det_result.push_back(box1);
     det_result.push_back(box2);
     det_result.push_back(box3);
-    det_result.push_back(box4);
+    det_result.push_back(box4);*/
 
+    //true det_result
+    std::vector<cv::Rect_<float>> det_result;
+    int frame = 1050;
+    //std::vector<cv::Rect_<float>> destination;//random
+    Detector detector;
+    detector.read_txt();
+    detector.inference(frame, det_result);
+   
+    /*std::cout<<frame<<" ";
+    int i;
+    for(i=0;i<det_result.size();i++)
+    {
+        std::cout<<det_result[i];
+    }
+    std::cout<<std::endl;*/////////////
+
+    //create trees
     std::vector<Tree> tree_list;
     //tree No.1
     treeNode root = {{100,90,80,70},6,1,1,NULL};
@@ -275,10 +293,10 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
     std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
     
-    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};//22.3607
-    treeNode node_d = {{100,110,140,150},6,3,2,node_a_ptr};//14
-    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//28
-    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};//30
+    treeNode node_c = {{283.84, 125.45, 55.569, 168.71},6,3,4,node_a_ptr};//100,90,100,130
+    treeNode node_d = {{369, 513, 79, 239},6,3,2,node_a_ptr};//100,110,140,150
+    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//
+    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};//
     
     std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
     std::shared_ptr<treeNode> node_d_ptr(new treeNode(node_d));
@@ -320,10 +338,10 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr2(new treeNode(node_a2));
     std::shared_ptr<treeNode> node_b_ptr2(new treeNode(node_b2));
     
-    treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};
-    treeNode node_d2 = {{110,110,140,150},6,3,2,node_a_ptr2};//
-    treeNode node_e2 = {{110,110,160,170},6,3,1,node_b_ptr2};//
-    treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};
+    treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};//
+    treeNode node_d2 = {{858.74, 234.93, 63.98, 193.94},6,3,2,node_a_ptr2};//110,100,140,150
+    treeNode node_e2 = {{292.02, 340.52, 59.629, 180.89},6,3,1,node_b_ptr2};//110,110,160,170
+    treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};//
     
     std::shared_ptr<treeNode> node_c_ptr2(new treeNode(node_c2));
     std::shared_ptr<treeNode> node_d_ptr2(new treeNode(node_d2));
@@ -393,13 +411,13 @@ int test_gating()
             tree_list[j].printTree(tree_list[j].getRoot());
         }   
     }
-    for(int i=0; i < tree_list.size(); i++){
+    for(i=0; i < tree_list.size(); i++){
         cv::Rect_<float> result_vector;
         if(tree_list[i].sentResult(result_vector)){
             std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
         }
     }
-    for(int i=0; i < tree_list.size(); i++){
+    for(i=0; i < tree_list.size(); i++){
         cv::Rect_<float> result_vector;
         if(tree_list[i].sentResult(routes[tree_list[i].getId()],result_vector)){
             std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
@@ -451,3 +469,41 @@ int test_detector_inference()
     std::cout<<std::endl;
 
 }
+
+/*int test_all()
+{
+    std::cout<<"txt:"<<std::endl;
+    Detector detector;
+    detector.read_txt();
+    int i;
+    std::map<int, std::vector<cv::Rect_<float>>>::iterator it;
+    for (it=detector.frame_det_map.begin(); it!=detector.frame_det_map.end();it++)
+    {
+        auto value1 = it->first;
+        auto value2 = it->second;
+        std::cout<<value1<<" ";
+        for(i=0; i<value2.size(); i++)
+        {
+            std::cout<<value2[i];
+        }
+        std::cout<<std::endl;
+    }
+
+    std::cout<<"read the 1050th frame:"<<std::endl;
+    int frame = 1050;
+    std::vector<cv::Rect_<float>> destination;
+    detector.inference(frame, destination);
+    std::cout<<frame<<" ";
+    int i;
+    for(i=0;i<destination.size();i++)
+    {
+        std::cout<<destination[i];
+    }
+    std::cout<<std::endl;
+
+    std::cout<<"match:"<<std::endl;
+    MHT_tracker tracker;
+    //establish trees
+
+    tracker.gating(destination, std::vector<Tree>& tree_list)
+}*/

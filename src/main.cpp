@@ -19,9 +19,9 @@ int main(){
   
   //test_treeTograph();
 
-  //test_gating();
+  test_gating();
 
   //test_detector_to_do();
 
-  test_detector_inference();
+  //test_detector_inference();
 }

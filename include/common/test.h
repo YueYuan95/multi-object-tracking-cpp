@@ -16,5 +16,6 @@ int test_treeTograph();
 int test_gating();
 int test_read_txt();
 int test_detector_inference();
+//int test_all();
 
 #endif
