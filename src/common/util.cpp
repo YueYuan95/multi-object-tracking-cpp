@@ -87,20 +87,28 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
 int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
 {
-    
-    for(int j=0; j < results.size(); j++){
-        std::string id = std::to_string(results[j].id);
-
-        cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
-        cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
-        //cv::Scalar color = result[j].color;//??
-        cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
-        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
+    if(frame<3)
+    {
+        return 0;
     }
-    cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
-    //cv::imshow("test",img);
-    cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    //cv::waitKey(1);
+    else
+    {
+        for(int j=0; j < results.size(); j++)
+        {
+
+            std::string id = std::to_string(results[j].id);
+
+            cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
+            cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
+            cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
+            cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
+        }
+        cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
+        //cv::imshow("test",img);
+        cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+        //cv::waitKey(1);
+    }
+    
 }
 
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)

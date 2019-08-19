@@ -485,10 +485,72 @@ int test_detector_inference()
 
 int test_all()
 {   
+    
     Detector detector;
+    MHT_tracker tracker;
     detector.read_txt();
 
-    byavs::TrackeObjectCPUs tracking
+    std::vector<cv::Rect_<float>> det_result;
+    /*detector.inference(2, det_result);
+    for(int i=0;i<det_result.size();i++)
+    {
+        std::cout<<det_result[i];
+    }
+    std::cout<<std::endl;*/
+
+    byavs::TrackeObjectCPUs tracking_results;
+
+    std::string imgPath;
+    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/";
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    sort(files.begin(), files.end());
+
+    std::string curr_img;
+    cv::Mat img;
+
+    for(int frame =1 ;frame<files.size(); frame++)
+    {
+        curr_img = files[frame-1];
+        img = cv::imread(curr_img);
+        
+        detector.inference(frame, det_result);
+
+        std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
+        for(int j=0;j<det_result.size();j++)
+        {
+            std::cout<<det_result[j];
+        }
+        std::cout<<std::endl;
+
+        tracker.inference(det_result, tracking_results);
+
+        std::cout<<"after gating:"<<std::endl;
+        for(int i=0;i<tracker.get_tree_list().size();i++)
+        {
+           Tree tree(tracker.get_tree_list()[i].getRoot(), tracker.get_tree_list()[i].getLabel(), tracker.get_tree_list()[i].getN());
+           tree.printTree(tracker.get_tree_list()[i].getRoot());
+           std::cout<<std::endl;
+        }
+
+        std::cout<<"current leaf_node:"<<std::endl;
+        for(int i=0; i<tracker.get_tree_list().size(); i++)
+        {
+            for(auto iter :tracker.get_tree_list()[i].getLeafNode())
+            {
+            std::cout<< iter->index ;
+            }
+        std::cout<<std::endl;
+        }
+
+        visualize(frame, img, tracking_results);
+        det_result.clear();
+
+    }
+    
+    
+
+
     // {
     //     test_tracker.get_tree_list()[i].printTree(test_tracker.get_tree_list()[i].getRoot());
     //     std::cout<<std::endl;
