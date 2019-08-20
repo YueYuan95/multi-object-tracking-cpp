@@ -41,6 +41,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             {
                 tree_list.erase(tree_list.begin()+i);
                 i--;
+                break;
             }
             else //add a zero_node to the leaf_node's zero_node
             {
