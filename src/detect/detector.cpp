@@ -34,7 +34,7 @@ int Detector::read_txt(){//string seq
     //char ch;
     int frame;
     float tp_tl, tp_tr, w, h;
-    //float score;
+    float score;
     cv::Rect_<float> box;
     //std::map<int, std::vector<cv::Rect_<float>> frame_det_map;//a dictionary containing the boxes of each frame
 
@@ -51,8 +51,11 @@ int Detector::read_txt(){//string seq
         w = std::atof(split[4].c_str());
         h = std::atof(split[5].c_str());
         box = cv::Rect_<float>(cv::Point_<float>(tp_tl, tp_tr), cv::Point_<float>(tp_tl+w, tp_tr +h));
-        //score = std::atof(split[6].c_str());
-        Detector::frame_det_map[frame].push_back(box);
+        score = std::atof(split[6].c_str());
+        if(score > 1.0 ){
+            Detector::frame_det_map[frame].push_back(box);
+        }
+        
                 /*cout<<"Frame:"<<tb.frame << "," << tp_tl << "," << tp_tr << "," << tp_bb
 l << "," << h << "," << tb.score << endl;*/
         //detBox.push_back(box);//push a box

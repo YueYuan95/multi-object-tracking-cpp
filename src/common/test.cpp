@@ -10,8 +10,7 @@
 int test_graph(){
     std::vector<VexNode> vex_node_list;
     VexNode temp_node = {1.0, 1, {1,3,4}};
-    vex_node_list.push_back(temp_node);
-    
+    vex_node_list.push_back(temp_node); 
     temp_node = {1.0, 1, {1,3,2}};
     vex_node_list.push_back(temp_node);
     
@@ -125,12 +124,27 @@ int test_treeTograph(){
     dict[1] = node_list;
 
     test_tree_2.addNode(dict);
-
+    
+    dict.clear();
     /*Fake Tree No.3*/
     treeNode root_3 = {{10,9,8,7},6,1,5,NULL};
     std::shared_ptr<treeNode> root_3_ptr(new treeNode(root_3));
 
     Tree test_tree_3(root_3_ptr,3,2);
+    
+    treeNode node_3_a = {{10,9,8,7},6,2,2,root_3_ptr};
+    treeNode node_3_b = {{10,9,8,7},6,2,1,root_3_ptr};
+
+    std::shared_ptr<treeNode> node_3_a_ptr(new treeNode(node_3_a));
+    std::shared_ptr<treeNode> node_3_b_ptr(new treeNode(node_3_b));
+    
+    node_list.clear();
+    node_list.push_back(node_3_a_ptr);
+    node_list.push_back(node_3_b_ptr);
+    
+    dict[0] = node_list;
+    test_tree_3.addNode(dict);
+    
 
     //map<int, vector<std::shared_ptr<treeNode>>>:: iterator it;
     //dict.insert(pair<int, std::vector<std::shared_ptr<treeNode>>> 1,testTree);
@@ -252,24 +266,24 @@ int test_tree(){
 int test_gating()
 {
     //fake det_result:
-    /*std::vector<cv::Rect_<float>> det_result;
+    std::vector<cv::Rect_<float>> det_result;
     cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//
-    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//will not match
-    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//
+    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//will match
+    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//will not match
     cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
     det_result.push_back(box1);
     det_result.push_back(box2);
     det_result.push_back(box3);
-    det_result.push_back(box4);*/
+    det_result.push_back(box4);
 
     //true det_result
-    std::vector<cv::Rect_<float>> det_result;
+    /*std::vector<cv::Rect_<float>> det_result;
     int frame = 1050;
     //std::vector<cv::Rect_<float>> destination;//random
     Detector detector;
     detector.read_txt();
-    detector.inference(frame, det_result);
+    detector.inference(frame, det_result);*/
 
     //std::vector<cv::Rect_<float>> temp_det_result;
     //for(int i=0; i < 30; i++){
@@ -298,10 +312,10 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
     std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
     
-    treeNode node_c = {{283.84, 125.45, 55.569, 168.71},6,3,4,node_a_ptr};//100,90,100,130
-    treeNode node_d = {{369, 513, 79, 239},6,3,2,node_a_ptr};//100,110,140,150
-    treeNode node_e = {{100,110,160,170},6,3,1,node_b_ptr};//
-    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};//
+    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};//100,90,100,130//283.84, 125.45, 55.569, 168.71
+    treeNode node_d = {{100,110,120,130},6,3,2,node_a_ptr};//100,110,140,150//369, 513, 79, 239
+    treeNode node_e = {{100,110,120,130},6,3,2,node_b_ptr};//2//100,110,160,170
+    treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};
     
     std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
     std::shared_ptr<treeNode> node_d_ptr(new treeNode(node_d));
@@ -344,8 +358,8 @@ int test_gating()
     std::shared_ptr<treeNode> node_b_ptr2(new treeNode(node_b2));
     
     treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};//
-    treeNode node_d2 = {{858.74, 234.93, 63.98, 193.94},6,3,2,node_a_ptr2};//110,100,140,150
-    treeNode node_e2 = {{292.02, 340.52, 59.629, 180.89},6,3,1,node_b_ptr2};//110,110,160,170
+    treeNode node_d2 = {{100,110,140,150},6,3,2,node_a_ptr2};//110,100,140,150//858.74, 234.93, 63.98, 193.94
+    treeNode node_e2 = {{100,110,140,150},6,3,2,node_b_ptr2};//1//110,110,160,170//292.02, 340.52, 59.629, 180.89
     treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};//
     
     std::shared_ptr<treeNode> node_c_ptr2(new treeNode(node_c2));
@@ -380,7 +394,7 @@ int test_gating()
     tree_list.push_back(test2);
 
     MHT_tracker test_tracker;
-    test_tracker.gating(det_result,tree_list);
+    //test_tracker.gating(det_result,tree_list);
 
     int i;
     std::cout<<"After Gating :"<<std::endl;
@@ -509,11 +523,8 @@ int test_all()
     std::string curr_img;
     cv::Mat img;
 
-    for(int frame =1 ;frame<files.size(); frame++)
+    for(int frame =1 ;frame<6; frame++)//files.size()
     {
-        curr_img = files[frame-1];
-        img = cv::imread(curr_img);
-        
         detector.inference(frame, det_result);
 
         std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
@@ -543,8 +554,22 @@ int test_all()
         std::cout<<std::endl;
         }
 
-        visualize(frame, img, tracking_results);
+        if(frame >= 3)
+        {
+            //std::cout<<" "<<tracking_results.size()<<std::endl;
+            curr_img = files[frame-2-1];
+            img = cv::imread(curr_img);
+            visualize(frame-3, img, tracking_results);
+        }
+     
+        // curr_img = files[frame-1];
+        // //curr_img = files[frame];
+        // img = cv::imread(curr_img);
+        // visualize(frame, img, tracking_results);
+    
+       
         det_result.clear();
+        tracking_results.clear();
 
     }
     

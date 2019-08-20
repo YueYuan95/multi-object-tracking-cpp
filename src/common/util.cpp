@@ -25,12 +25,13 @@ int preorderTraversal(treeNode tree_node, std::vector<int>& path,
 
 int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
          std::vector<int>& path, std::vector<std::vector<int>>& path_list, int N){
+
     path.push_back(tree_node.index);
     
     /*When the depth of the tree is not big than N*/
     if(tree_node.parent == head_node){
         path.push_back(tree_node.parent->index);
-        if(path.size() < N){
+        if(path.size() <= N){
             for(int i=N-path.size()+1;i>0;i--){
                 path.push_back(0);
             }
@@ -39,7 +40,7 @@ int backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node,
         return 1;
     }
    /*When this node is a root node*/
-    if(tree_node.parent == NULL &&  path.size() < N){
+    if(tree_node.parent == NULL &&  path.size() <= N){
         
         for(int i=N-path.size()+1; i > 0; i--){
             path.push_back(0);
@@ -87,28 +88,22 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph){
 
 int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
 {
-    if(frame<3)
-    {
-        return 0;
-    }
-    else
-    {
-        for(int j=0; j < results.size(); j++)
-        {
 
-            std::string id = std::to_string(results[j].id);
+    for(int j=0; j < results.size(); j++)
+    {
 
-            cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
-            cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
-            cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
-            cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
-        }
-        cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
-        //cv::imshow("test",img);
-        cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-        //cv::waitKey(1);
+        std::string id = std::to_string(results[j].id);
+
+        cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
+        cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
+        cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
+        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
     }
-    
+    cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
+    //cv::imshow("test",img);
+    cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    //cv::waitKey(1);
+
 }
 
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)
