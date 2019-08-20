@@ -523,7 +523,7 @@ int test_all()
     std::string curr_img;
     cv::Mat img;
 
-    for(int frame =1 ;frame<6; frame++)//files.size()
+    for(int frame =1 ;frame<files.size(); frame++)//files.size()
     {
         detector.inference(frame, det_result);
 

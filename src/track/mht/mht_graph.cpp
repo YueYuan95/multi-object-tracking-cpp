@@ -66,11 +66,11 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
     m_score = 0.0;
 }
 
-int Graph::DFS(int n, int ns, int dep){
+int Graph::DFS(int n, int ns, int dep, float score){
    
     if(ns == 0){
-        if(dep >= max){
-            max = dep;
+        if(score >= max){
+            max = score;
             m_max_clique.clear();
             for(int i=0; i < m_vetex_list.size(); i++){
                m_max_clique.push_back(m_vetex_list[i]); 
@@ -93,7 +93,8 @@ int Graph::DFS(int n, int ns, int dep){
         }
              
         m_vetex_list.push_back(k);
-        DFS(n, cnt, dep+1);
+        score = score + m_node_list[k].score;
+        DFS(n, cnt, dep+1, score);
         //TODO: if score big than max_score, push back and reset score;
         m_vetex_list.pop_back();
     }
@@ -117,7 +118,8 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
             }
         }
         m_vetex_list.push_back(i);
-        DFS(n, ns, 1);
+        float score = m_node_list[i].score;
+        DFS(n, ns, 1, score);
         m_vetex_list.pop_back();
     }
 

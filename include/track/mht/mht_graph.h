@@ -29,7 +29,7 @@ class Graph{
     public:
         Graph();
         Graph(std::vector<VexNode>);
-        int DFS(int, int, int);
+        int DFS(int, int, int, float);
         int mwis(std::map<int,std::vector<int>>&);
         int printGraph();
 };
