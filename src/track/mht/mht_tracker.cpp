@@ -164,10 +164,13 @@ int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
 
 int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
     
-    for(int i=0; i < tree_list.size(); i++){
+    for(int i=0; i < tree_list.size();){
         
         if(path.count(tree_list[i].getId())){
             tree_list[i].pruning(path[tree_list[i].getId()]);
+            i++;
+        }else{
+            tree_list.erase(tree_list.begin()+i);
         }
 
     }

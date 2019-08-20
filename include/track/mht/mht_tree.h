@@ -48,6 +48,8 @@ class Tree{
         int changeLeaf();
         int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
         int pruning(std::vector<int> route);
+        int generateLeafNode();
+        int preTravel(std::shared_ptr<treeNode>);
 
         int sentResult(std::vector<int>, cv::Rect_<float>&);
         int sentResult(cv::Rect_<float>&);

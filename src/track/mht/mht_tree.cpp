@@ -126,12 +126,12 @@ int Tree::pruning(std::vector<int> route)
     }
     if(head_node->children.size() == 1){
         head_node = head_node->children[0];
+        generateLeafNode();
         return 1;
     } 
     if(head_node->children.size() > 1){
         std::cout<<"Pruning Wrong"<<std::endl;
     }
-    
     std::cout<<head_node->index<<std::endl;
 
 /*
@@ -166,6 +166,28 @@ int Tree::pruning(std::vector<int> route)
         }
     }*/
 
+}
+
+int Tree::preTravel(std::shared_ptr<treeNode> node){
+    
+    if(node->children.size() == 0){
+        leaf_node.push_back(node);
+        return 1;
+    }
+    for(int i=0; i < node->children.size(); i++){
+        preTravel(node->children[i]);
+    }
+}
+
+
+int Tree::generateLeafNode(){
+    leaf_node.clear();
+    if(head_node->children.size() == 0){
+        leaf_node.push_back(head_node);
+    }
+    for(int i=0;i < head_node->children.size();i++){
+       preTravel(head_node->children[i]); 
+    }
 }
 
 int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
