@@ -13,7 +13,7 @@ class MHT_tracker{
     private:
 
         std::vector<Tree> tree_list;
-        int N = 3;
+        int N = 10;
 
 
     public:

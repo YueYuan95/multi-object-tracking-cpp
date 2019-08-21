@@ -33,6 +33,18 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     {
         for(j=0; j<tree_list[i].getLeafNode().size(); j++)
         {
+            if((tree_list[i].getLeafNode()[j]->index==0) && (tree_list[i].getHead()->index==0))//if one of the leaf_node's index=0 and its head_node's index=0,delete the tree;
+            {
+                tree_list.erase(tree_list.begin()+i);
+                i--;
+                break;
+            }
+            else
+            {
+                leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);//
+            }
+
+            /* previous algorithm 0820
             if(tree_list[i].getLeafNode()[j]->index!=0)
             {
                 leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);//
@@ -48,11 +60,13 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
                 treeNode zero_node;//,creat a zero_node which has no box
                 std::shared_ptr<treeNode> zero_node_ptr(new treeNode(zero_node));
                 zero_node_ptr->index = 0;
-                zero_node_ptr->score = 0.0;
+                //zero_node_ptr->score = 0.0;
+                zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
+                zero_node_ptr->box = tree_list[i].getLeafNode()[j]->box;
                 zero_node_ptr->level = tree_list[i].getLeafNode()[j]->level+1;
                 zero_node_ptr->parent = tree_list[i].getLeafNode()[j];
                 tree_list[i].getLeafNode()[j]->children.push_back(zero_node_ptr);
-            }  
+            }  */
         }
     }
     
@@ -122,16 +136,17 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     {
         tree_list.push_back(new_tree_list[i]);
     }
-
+    
     //for those leaf_nodes which are not matched box:add zero_node to them
     for(i=0; i<leaf_node_list.size(); i++)
     {
             if(leaf_node_list[i]->children.size() == 0)
             {
-                
                 std::shared_ptr<treeNode> zero_node_ptr(new treeNode);
                 zero_node_ptr->index = 0;
                 zero_node_ptr->score = 0;
+                //zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
+                zero_node_ptr->box = leaf_node_list[i]->box;
                 zero_node_ptr->level = leaf_node_list[i]->level+1;
                 zero_node_ptr->parent = leaf_node_list[i];
                 leaf_node_list[i]->children.push_back(zero_node_ptr);

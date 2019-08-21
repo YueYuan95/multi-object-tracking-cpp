@@ -499,7 +499,7 @@ int test_detector_inference()
 
 int test_all()
 {   
-    
+    int N=10;
     Detector detector;
     MHT_tracker tracker;
     detector.read_txt();
@@ -544,22 +544,23 @@ int test_all()
            std::cout<<std::endl;
         }
 
-        std::cout<<"current leaf_node:"<<std::endl;
+        std::cout<<"current leaf_node and its box:"<<std::endl;
         for(int i=0; i<tracker.get_tree_list().size(); i++)
         {
             for(auto iter :tracker.get_tree_list()[i].getLeafNode())
             {
-            std::cout<< iter->index ;
+                std::cout<< iter->index ;
+                std::cout<< " "<< iter->box;
             }
         std::cout<<std::endl;
         }
 
-        if(frame >= 3)
+        if(frame >= N)
         {
             //std::cout<<" "<<tracking_results.size()<<std::endl;
-            curr_img = files[frame-2-1];
+            curr_img = files[frame-N];
             img = cv::imread(curr_img);
-            visualize(frame-3, img, tracking_results);
+            visualize(frame-N, img, tracking_results);
         }
      
         // curr_img = files[frame-1];
