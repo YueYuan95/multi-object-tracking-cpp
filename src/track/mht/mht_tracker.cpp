@@ -21,7 +21,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
 {
     int i, j;
     float x1, y1, x2, y2, distance;
-    float threshold = 80;//threshold of the distance,changeable
+    float threshold = 40;//threshold of the distance,changeable
     float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     float zero = 0;
     bool success_flag; 
@@ -115,7 +115,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
                 det_node_ptr->parent = leaf_node_list[j];
                 leaf_node_list[j]->children.push_back(det_node_ptr);
                 success_flag = true;
-                std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
+                //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
             }
         }
         //for those boxes which do not match any existing trees:create a new tree for them
@@ -125,6 +125,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             det_node_ptr->box = det_result[i];
             //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
             det_node_ptr->index = i+1;
+            det_node_ptr->score = 0.01;
             det_node_ptr->level = 1;//initialize the level of each tree/node 1
             Tree gate(det_node_ptr,3,N);//label=3,N=3
             new_tree_list.push_back(gate);
@@ -214,19 +215,23 @@ std::vector<Tree> MHT_tracker::get_tree_list()
 }
 
 int MHT_tracker::backTraversal(treeNode tree_node, std::shared_ptr<treeNode> head_node, 
-                std::vector<int>& path, std::vector<std::vector<int>>& path_list, int N){
+                std::vector<int>& path, std::vector<float>& path_score, std::vector<std::vector<int>>& path_list, 
+                std::vector<std::vector<float>>& path_score_list,int N){
 
     path.push_back(tree_node.index);
-    
+    path_score.push_back(tree_node.score); 
     /*When the depth of the tree is not big than N*/
     if(tree_node.parent == head_node){
         path.push_back(tree_node.parent->index);
+        path_score.push_back(tree_node.parent->score);
         if(path.size() <= N){
             for(int i=N-path.size()+1;i>0;i--){
                 path.push_back(0);
+                path_score.push_back(0.0);
             }
         }
         path_list.push_back(path);
+        path_score_list.push_back(path_score);
         return 1;
     }
    /*When this node is a root node*/
@@ -234,21 +239,25 @@ int MHT_tracker::backTraversal(treeNode tree_node, std::shared_ptr<treeNode> hea
         
         for(int i=N-path.size()+1; i > 0; i--){
             path.push_back(0);
+            path_score.push_back(0.0);
         }
         path_list.push_back(path);
+        path_score_list.push_back(path_score);
         return 1;
 
     }
     if(tree_node.parent != NULL){
 
-        backTraversal(*(tree_node.parent), head_node, path, path_list, N);
+        backTraversal(*(tree_node.parent), head_node, path, path_score, path_list, path_score_list, N);
     }
 }
 
 int MHT_tracker::TreeToGraph(Graph& graph){
 
-    std::vector<int> path; 
+    std::vector<int> path;
+    std::vector<float> path_score;
     std::vector<std::vector<int>> path_list;
+    std::vector<std::vector<float>> path_score_list;
     std::vector<VexNode> graph_node_list;
     
     for(auto tree : tree_list){
@@ -257,20 +266,25 @@ int MHT_tracker::TreeToGraph(Graph& graph){
         //preorderTraversal(tree.getHead(),path, path_list);
         for(auto leaf : tree.getLeafNode()){
             path.clear();
-            backTraversal(*(leaf), tree.getHead(), path, path_list, tree.getN());
+            path_score.clear();
+            backTraversal(*(leaf), tree.getHead(), path, path_score, path_list, path_score_list,tree.getN());
         }
-        for(auto path : path_list){
+        for(int i=0; i < path_list.size(); i++){
             VexNode graph_node;
             graph_node.path.clear();
-            for(int i = path.size()-1; i >=0; i--){
-                std::cout<<path[i]<<" ";
+            graph_node.score = 0;
+            for(int j = path_list[i].size()-1; j >=0; j--){
+                std::cout<<path_list[i][j]<<" ("<<path_score_list[i][j]<<") "<<" ";
                 graph_node.id = tree.getId();
-                graph_node.path.push_back(path[i]);
+                graph_node.score += path_score_list[i][j];
+                graph_node.path.push_back(path_list[i][j]);
             }
+            std::cout<<graph_node.score;
             std::cout<<std::endl;
             graph_node_list.push_back(graph_node);
          }
          path_list.clear();
+         path_score_list.clear();
     }
     
     graph = Graph(graph_node_list);
