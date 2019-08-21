@@ -1,7 +1,5 @@
 #include "test.h"
-
-/*
- *===================================
+/* *===================================
  * Test Unit 
  *
  *===================================
@@ -14,7 +12,7 @@ int test_graph(){
     temp_node = {1.0, 1, {1,3,2}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, 1, {1,2,1}};
+    temp_node = {22.0, 1, {1,2,1}};
     vex_node_list.push_back(temp_node);
     
     temp_node = {1.0, 1, {1,2,3}};
@@ -23,7 +21,7 @@ int test_graph(){
     temp_node = {1.0, 2, {2,2,1}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, 2, {2,2,3}};
+    temp_node = {4.0, 2, {2,2,3}};
     vex_node_list.push_back(temp_node);
     
     temp_node = {1.0, 2, {2,1,0}};
@@ -528,31 +526,30 @@ int test_all()
         detector.inference(frame, det_result);
 
         std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
-        for(int j=0;j<det_result.size();j++)
-        {
-            std::cout<<det_result[j];
-        }
-        std::cout<<std::endl;
+        //for(int j=0;j<det_result.size();j++)
+        //{
+        //    std::cout<<det_result[j];
+        //}
+        //std::cout<<std::endl;
 
         tracker.inference(det_result, tracking_results);
 
-        std::cout<<"after gating:"<<std::endl;
-        for(int i=0;i<tracker.get_tree_list().size();i++)
-        {
-           Tree tree(tracker.get_tree_list()[i].getRoot(), tracker.get_tree_list()[i].getLabel(), tracker.get_tree_list()[i].getN());
-           tree.printTree(tracker.get_tree_list()[i].getRoot());
-           std::cout<<std::endl;
-        }
+        //std::cout<<"after gating:"<<std::endl;
+        //for(int i=0;i<tracker.get_tree_list().size();i++)
+        //{
+        //   tracker.get_tree_list()[i].printTree(tracker.get_tree_list()[i].getRoot());
+        //   std::cout<<std::endl;
+        //}
 
-        std::cout<<"current leaf_node:"<<std::endl;
-        for(int i=0; i<tracker.get_tree_list().size(); i++)
-        {
-            for(auto iter :tracker.get_tree_list()[i].getLeafNode())
-            {
-            std::cout<< iter->index ;
-            }
-        std::cout<<std::endl;
-        }
+        //std::cout<<"current leaf_node:"<<std::endl;
+        //for(int i=0; i<tracker.get_tree_list().size(); i++)
+        //{
+        //    for(auto iter :tracker.get_tree_list()[i].getLeafNode())
+        //    {
+        //    std::cout<< iter->index ;
+        //    }
+        //std::cout<<std::endl;
+        //}
 
         if(frame >= 3)
         {

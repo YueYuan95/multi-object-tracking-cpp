@@ -52,7 +52,7 @@ int Detector::read_txt(){//string seq
         h = std::atof(split[5].c_str());
         box = cv::Rect_<float>(cv::Point_<float>(tp_tl, tp_tr), cv::Point_<float>(tp_tl+w, tp_tr +h));
         score = std::atof(split[6].c_str());
-        if(score > 1.0 ){
+        if(score > 0.2 ){
             Detector::frame_det_map[frame].push_back(box);
         }
         

@@ -22,8 +22,10 @@ class Graph{
         std::vector<std::vector<int>> m_stk;
         int max, ns;
         float m_score;
-
+        
+        std::vector<int> m_dep;
         std::vector<int> m_vetex_list;
+        std::vector<float> m_score_list;
         std::vector<std::vector<int>> m_max_clique_list;
 
     public:
