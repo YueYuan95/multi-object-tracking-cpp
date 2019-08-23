@@ -2,19 +2,22 @@
 #define _MHT_TRACKER_H_
 
 #include <iostream>
+#include <math.h>
 #include <opencv2/core/core.hpp>
 #include "mht_tree.h"
 #include "mht_graph.h"
 #include "util.h"
 #include "byavs.h"
+#include "kalman_tracker.h"
 
 class MHT_tracker{
 
     private:
 
         std::vector<Tree> tree_list;
-        int N = 10;
-
+        int N = 10; 
+        int miss_time_thrd = 15;
+        int hit_time_thrd =  N-(N/2);
 
     public:
         

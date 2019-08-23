@@ -152,3 +152,20 @@ void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSla
         }while (entry = readdir(dir));
         closedir(dir);
 }
+
+bool VexSort(VexNode a, VexNode b){
+
+    return (a.score > b.score);
+}
+
+double get_iou(cv::Rect_<float> detection, cv::Rect_<float> tracker){
+  
+   float in = (tracker & detection).area();
+   float un = tracker.area() + detection.area() - in;
+  
+   if(un < 0.001){
+        return 0.0;
+   }
+  
+   return (double)(in/un);
+}

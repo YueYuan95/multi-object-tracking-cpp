@@ -1,3 +1,6 @@
+#ifndef __UTIL_H_
+#define __UTIL_H_
+
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -21,3 +24,6 @@ int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
 int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);
+bool VexSort(VexNode, VexNode);
+double get_iou(cv::Rect_<float>, cv::Rect_<float>);
+#endif
