@@ -269,20 +269,20 @@ int MHT_tracker::TreeToGraph(Graph& graph){
             path_score.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_score, path_list, path_score_list,tree.getN());
         }
-        for(int i=0; i < path_list.size(); i++){
-            VexNode graph_node;
-            graph_node.path.clear();
-            graph_node.score = 0;
-            for(int j = path_list[i].size()-1; j >=0; j--){
-                std::cout<<path_list[i][j]<<" ("<<path_score_list[i][j]<<") "<<" ";
-                graph_node.id = tree.getId();
-                graph_node.score += path_score_list[i][j];
-                graph_node.path.push_back(path_list[i][j]);
-            }
-            std::cout<<graph_node.score;
-            std::cout<<std::endl;
-            graph_node_list.push_back(graph_node);
-         }
+        // for(int i=0; i < path_list.size(); i++){
+        //     VexNode graph_node;
+        //     graph_node.path.clear();
+        //     graph_node.score = 0;
+        //     for(int j = path_list[i].size()-1; j >=0; j--){
+        //         std::cout<<path_list[i][j]<<" ("<<path_score_list[i][j]<<") "<<" ";
+        //         graph_node.id = tree.getId();
+        //         graph_node.score += path_score_list[i][j];
+        //         graph_node.path.push_back(path_list[i][j]);
+        //     }
+        //     std::cout<<graph_node.score;
+        //     std::cout<<std::endl;
+        //     graph_node_list.push_back(graph_node);
+        //  }
          path_list.clear();
          path_score_list.clear();
     }

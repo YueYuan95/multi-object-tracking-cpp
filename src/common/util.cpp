@@ -152,3 +152,8 @@ void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSla
         }while (entry = readdir(dir));
         closedir(dir);
 }
+
+bool VexSort(VexNode a, VexNode b){
+
+    return (a.score > b.score);
+}
