@@ -38,6 +38,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     bool success_flag; 
     std::vector<Tree> new_tree_list;
 
+
     //push the leaf_node of the trees into a vector
     std::vector<std::shared_ptr<treeNode>> leaf_node_list;
     for(i=0; i<tree_list.size(); i++)
@@ -82,7 +83,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         }
     }
     
-    //match the box to leaf_nodes in the leaf_node_list, the leaf_node_list has no zero_nodes
+     //match the box to leaf_nodes in the leaf_node_list, the leaf_node_list has no zero_nodes
     for(i=0; i<det_result.size(); i++)
     {
         //create a node for each det_result
@@ -97,28 +98,34 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         {
             //caculate the distance,could be a function 
             //here we caculate the Euclidean distance
-            KalmanTracker temp_kalman = leaf_node_list[j]->kalman_tracker;
-            temp_kalman.predict();
-            cv::Rect_<float> predict_box = temp_kalman.getBbox();
-            
-            x2 = predict_box.x + predict_box.width/2;
-            y2 = predict_box.y + predict_box.height/2;
+            x2 = leaf_node_list[j]->box.x + leaf_node_list[j]->box.width/2;
+            y2 = leaf_node_list[j]->box.y + leaf_node_list[j]->box.height/2;
             distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
+            //std::cout<<"x2:"<<x2<<"y2:"<<y2<<std::endl;
+            //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
 
-            iou = get_iou(det_result[i], predict_box); 
+            //caculate the score, which is IOU here
+            xx1 = std::max(det_result[i].x, leaf_node_list[j]->box.x);
+            yy1 = std::max(det_result[i].y, leaf_node_list[j]->box.y);
+            xx2 = std::min(det_result[i].x + det_result[i].width,leaf_node_list[j]->box.x + leaf_node_list[j]->box.width);
+            yy2 = std::min(det_result[i].y+det_result[i].height,leaf_node_list[j]->box.y + leaf_node_list[j]->box.height);
+            w = std::max(zero, xx2-xx1);
+            h = std::max(zero, yy2-yy1);
+            IOU = w*h/(det_result[i].width*det_result[i].height+leaf_node_list[j]->box.width*leaf_node_list[j]->box.height-w*h);
+            //std::cout<<"IOU:"<<IOU<<std::endl;
+            
 
             if(IOU>0.5 || distance < threshold)
             {
                 //addNode??
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
+                det_node_ptr->box = det_result[i];
+                //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
                 det_node_ptr->index = i+1;
-                det_node_ptr->score = iou;
+                //det_node_ptr->level = 1;//initialize the level of each tree/node 1
+                det_node_ptr->score = IOU;
                 det_node_ptr->level = leaf_node_list[j]->level+1;
                 det_node_ptr->parent = leaf_node_list[j];
-                det_node_ptr->kalman_tracker = leaf_node_list[j]->kalman_tracker;
-                det_node_ptr->kalman_tracker.update(det_result[i]);
-                det_node_ptr->box = det_node_ptr->kalman_tracker.getBbox();
-
                 leaf_node_list[j]->children.push_back(det_node_ptr);
                 success_flag = true;
                 //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
@@ -129,11 +136,11 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         {
             std::shared_ptr<treeNode> det_node_ptr(new treeNode);
             det_node_ptr->box = det_result[i];
+            //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
             det_node_ptr->index = i+1;
             det_node_ptr->score = 0.01;
-            det_node_ptr->level = 1;        //initialize the level of each tree/node 1
-            det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
-            Tree gate(det_node_ptr,3,N);    //label=3,N=3
+            det_node_ptr->level = 1;//initialize the level of each tree/node 1
+            Tree gate(det_node_ptr,3,N);//label=3,N=3
             new_tree_list.push_back(gate);
         }
         
@@ -150,11 +157,10 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             if(leaf_node_list[i]->children.size() == 0)
             {
                 std::shared_ptr<treeNode> zero_node_ptr(new treeNode);
-                zero_node_ptr->kalman_tracker = leaf_node_list[i]->kalman_tracker; 
                 zero_node_ptr->index = 0;
                 zero_node_ptr->score = 0;
-                zero_node_ptr->kalman_tracker.predict();
-                zero_node_ptr->box = zero_node_ptr->kalman_tracker.getBbox();
+                //zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
+                zero_node_ptr->box = leaf_node_list[i]->box;
                 zero_node_ptr->level = leaf_node_list[i]->level+1;
                 zero_node_ptr->parent = leaf_node_list[i];
                 leaf_node_list[i]->children.push_back(zero_node_ptr);
@@ -170,6 +176,95 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     }
 
     return 1;
+
+    // //match the box to leaf_nodes in the leaf_node_list, the leaf_node_list has no zero_nodes
+    // for(i=0; i<det_result.size(); i++)
+    // {
+    //     //create a node for each det_result
+    //     success_flag = false;
+
+    //     //caculate the central coordinate of the det_result;
+    //     x1 = det_result[i].x + det_result[i].width/2;
+    //     y1 = det_result[i].y + det_result[i].height/2;
+    //     //std::cout<<"x1:"<<x1<<"y1:"<<y1<<std::endl;
+
+    //     for(j=0; j<leaf_node_list.size(); j++)
+    //     {
+    //         //caculate the distance,could be a function 
+    //         //here we caculate the Euclidean distance
+    //         KalmanTracker temp_kalman = leaf_node_list[j]->kalman_tracker;
+    //         temp_kalman.predict();
+    //         cv::Rect_<float> predict_box = temp_kalman.getBbox();
+            
+    //         x2 = predict_box.x + predict_box.width/2;
+    //         y2 = predict_box.y + predict_box.height/2;
+    //         distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
+
+    //         iou = get_iou(det_result[i], predict_box); 
+
+    //         if(IOU>0.5 || distance < threshold)
+    //         {
+    //             //addNode??
+    //             std::shared_ptr<treeNode> det_node_ptr(new treeNode);
+    //             det_node_ptr->index = i+1;
+    //             det_node_ptr->score = iou;
+    //             det_node_ptr->level = leaf_node_list[j]->level+1;
+    //             det_node_ptr->parent = leaf_node_list[j];
+    //             det_node_ptr->kalman_tracker = leaf_node_list[j]->kalman_tracker;
+    //             det_node_ptr->kalman_tracker.update(det_result[i]);
+    //             det_node_ptr->box = det_node_ptr->kalman_tracker.getBbox();
+
+    //             leaf_node_list[j]->children.push_back(det_node_ptr);
+    //             success_flag = true;
+    //             //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
+    //         }
+    //     }
+    //     //for those boxes which do not match any existing trees:create a new tree for them
+    //     if(success_flag == false)
+    //     {
+    //         std::shared_ptr<treeNode> det_node_ptr(new treeNode);
+    //         det_node_ptr->box = det_result[i];
+    //         det_node_ptr->index = i+1;
+    //         det_node_ptr->score = 0.01;
+    //         det_node_ptr->level = 1;        //initialize the level of each tree/node 1
+    //         det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
+    //         Tree gate(det_node_ptr,3,N);    //label=3,N=3
+    //         new_tree_list.push_back(gate);
+    //     }
+        
+    // }
+    
+    // for(i=0; i<new_tree_list.size(); i++)
+    // {
+    //     tree_list.push_back(new_tree_list[i]);
+    // }
+    
+    // //for those leaf_nodes which are not matched box:add zero_node to them
+    // for(i=0; i<leaf_node_list.size(); i++)
+    // {
+    //         if(leaf_node_list[i]->children.size() == 0)
+    //         {
+    //             std::shared_ptr<treeNode> zero_node_ptr(new treeNode);
+    //             zero_node_ptr->kalman_tracker = leaf_node_list[i]->kalman_tracker; 
+    //             zero_node_ptr->index = 0;
+    //             zero_node_ptr->score = 0;
+    //             zero_node_ptr->kalman_tracker.predict();
+    //             zero_node_ptr->box = zero_node_ptr->kalman_tracker.getBbox();
+    //             zero_node_ptr->level = leaf_node_list[i]->level+1;
+    //             zero_node_ptr->parent = leaf_node_list[i];
+    //             leaf_node_list[i]->children.push_back(zero_node_ptr);
+    //         }
+    // }
+
+    // for(i=0; i < tree_list.size(); i++){
+    //     tree_list[i].changeLeaf();
+    //     ///tree_list[i].printTree(tree_list[i].getRoot());
+    //     ///std::cout<<std::endl;////
+    //     //std::cout<<"previous miss_times:"<<tree_list[i].miss_times<<" previous hit_times:"<<tree_list[i].hit_times<<std::endl;
+    //     //std::cout<<"Tree "<<tree_list[i].getId()<<" leaf_node quantity:"<<tree_list[i].getLeafNode().size()<<std::endl;
+    // }
+
+    // return 1;
 }
 
 int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){

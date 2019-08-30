@@ -36,11 +36,7 @@ class Tree{
         /*public number*/
         int miss_times;
         int hit_times;
-
-        /*public number*/
-        int miss_times;///
-        int hit_times;///
-
+        
         /*set function*/
         int setHead();
         
