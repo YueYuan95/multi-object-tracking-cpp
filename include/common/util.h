@@ -20,5 +20,7 @@
 int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
 int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);
+int visualize(int, cv::Mat,std::vector<cv::Rect_<float>> det_result);
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);
 bool VexSort(VexNode, VexNode);
+bool VexSortUp(VexNode, VexNode);

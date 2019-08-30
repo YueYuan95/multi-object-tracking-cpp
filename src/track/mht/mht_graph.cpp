@@ -54,11 +54,13 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
             for(int k=0; k < vex_node_list[i].path.size(); k++){
                 if(vex_node_list[i].path[k] ==  vex_node_list[j].path[k]){
                    if(vex_node_list[i].path[k] !=0 && vex_node_list[j].path[k] != 0){
-                         m_adj_mat[i][j] = 1;
-                         m_adj_mat[j][i] = 1;
-                         m_dej_mat[i][j] = 0;
-                         m_dej_mat[j][i] = 0;
-                         break;
+                       if(vex_node_list[i].path[k] !=-1 && vex_node_list[j].path[k] != -1){
+                            m_adj_mat[i][j] = 1;
+                            m_adj_mat[j][i] = 1;
+                            m_dej_mat[i][j] = 0;
+                            m_dej_mat[j][i] = 0;
+                            break;
+                       }
                    }
                 }
 
@@ -73,7 +75,7 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
 int Graph::DFS(int n, int ns, int dep, float score){
    
     if(ns == 0){
-        if(score > max && m_vetex_list.size() >= m_max_clique.size()){
+        if(score > max){
             max = score;
             m_max_clique.clear();
             //std::cout<<"Max clique is : ";
@@ -96,7 +98,7 @@ int Graph::DFS(int n, int ns, int dep, float score){
         //    temp_score += m_node_list[m_stk[dep][j]].score;
         //}
         //if(score+ temp_score < max) return 0;
-        if(score+ m_score_list[k] < max) return 0;
+        if(score + m_score_list[k] < max) return 0;
         //std::cout<<"Neb"<< k << ": ";
         //if(dep + n - k <= ) return 0;
         for(int j=i+1; j< ns; j++){

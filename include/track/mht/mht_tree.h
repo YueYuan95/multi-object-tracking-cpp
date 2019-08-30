@@ -33,6 +33,10 @@ class Tree{
 
         Tree(std::shared_ptr<treeNode> root, int label, int N);
 
+        /*public number*/
+        int miss_times;///
+        int hit_times;///
+
         /*set function*/
         int setHead();
         
@@ -54,6 +58,9 @@ class Tree{
         int sentResult(std::vector<int>, cv::Rect_<float>&);
         int sentResult(cv::Rect_<float>&);
         void printTree(std::shared_ptr<treeNode> root);
+
+        int createICH();//create inconfirmed head_node
+
 
 };
 

@@ -98,13 +98,38 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
         cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
         cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
         cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
+        //cv::rectangle(img, left_top, right_bottom, ss, 3, 1, 0);
     }
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
-    cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("result_add_ICH/"+std::to_string(frame)+".jpg", img);
+    
     //cv::waitKey(1);
 
 }
+
+int visualize(int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_result)
+{
+
+    for(int j=0; j < detect_result.size(); j++)
+    {
+
+        std::string id = std::to_string(j+1);
+
+        cv::putText(img, id, cv::Point(detect_result[j].x + detect_result[j].width, detect_result[j].y), CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(0,255,0),3,8);
+        cv::rectangle(img, detect_result[j], cv::Scalar(0,255,0), 3, 1, 0);
+        //cv::rectangle(img, left_top, right_bottom, ss, 3, 1, 0);
+    }
+    cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
+    //cv::imshow("test",img);
+    //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("result_detection/"+std::to_string(frame)+".jpg", img);
+    
+    //cv::waitKey(1);
+
+}
+
 
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)
 {
@@ -156,4 +181,9 @@ void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSla
 bool VexSort(VexNode a, VexNode b){
 
     return (a.score > b.score);
+}
+
+bool VexSortUp(VexNode a, VexNode b){
+
+    return (a.score < b.score);
 }

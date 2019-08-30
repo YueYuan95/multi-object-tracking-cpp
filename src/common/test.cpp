@@ -497,7 +497,7 @@ int test_detector_inference()
 
 int test_all()
 {   
-    int N=10;
+    int N=5;
     Detector detector;
     MHT_tracker tracker;
     detector.read_txt();
@@ -550,13 +550,16 @@ int test_all()
         //    }
         //std::cout<<std::endl;
         //}
+        std::string det_img_path = files[frame];
+        cv::Mat detimg = cv::imread(det_img_path);
+        visualize(frame, detimg, det_result);
 
         if(frame >= N)
         {
             //std::cout<<" "<<tracking_results.size()<<std::endl;
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
-            visualize(frame-N, img, tracking_results);
+            visualize(frame-N+1, img, tracking_results);
         }
      
         // curr_img = files[frame-1];

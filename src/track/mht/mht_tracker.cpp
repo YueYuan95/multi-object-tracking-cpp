@@ -8,11 +8,26 @@ int MHT_tracker::inference(std::vector<cv::Rect_<float>> det_result,byavs::Track
 
     Graph graph;
     std::map<int, std::vector<int>> path;
+
+    std::cout<<"gating..."<<std::endl;
     gating(det_result);
+
+    std::cout<<"TreeToGraph..."<<std::endl;
     TreeToGraph(graph);
+
+    std::cout<<"sovle_mwis..."<<std::endl;
     sovle_mwis(graph, path);
-    pruning(path);
+
+    std::cout<<"sentResult..."<<std::endl;
     sentResult(results);
+
+    std::cout<<"pruning..."<<std::endl;
+    pruning(path);
+    // for(int i=0;i<tree_list.size();i++)
+    // {
+    //     std::cout<<"tree No."<<tree_list[i].getId()<<" hit_times:"<<tree_list[i].hit_times<<" miss_times:"<<tree_list[i].miss_times<<std::endl;
+    // }///
+
     
 }
 
@@ -33,7 +48,8 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     {
         for(j=0; j<tree_list[i].getLeafNode().size(); j++)
         {
-            if((tree_list[i].getLeafNode()[j]->index==0) && (tree_list[i].getHead()->index==0))//if one of the leaf_node's index=0 and its head_node's index=0,delete the tree;
+            leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);///
+            /*if((tree_list[i].getLeafNode()[j]->index==0) && (tree_list[i].getHead()->index==0))//if one of the leaf_node's index=0 and its head_node's index=0,delete the tree;
             {
                 tree_list.erase(tree_list.begin()+i);
                 i--;
@@ -42,7 +58,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             else
             {
                 leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);//
-            }
+            }*/
 
             /* previous algorithm 0820
             if(tree_list[i].getLeafNode()[j]->index!=0)
@@ -102,7 +118,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             //std::cout<<"IOU:"<<IOU<<std::endl;
             
 
-            if(distance<threshold)
+            if(IOU>0.5 || distance < threshold)
             {
                 //addNode??
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
@@ -156,6 +172,10 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
 
     for(i=0; i < tree_list.size(); i++){
         tree_list[i].changeLeaf();
+        ///tree_list[i].printTree(tree_list[i].getRoot());
+        ///std::cout<<std::endl;////
+        //std::cout<<"previous miss_times:"<<tree_list[i].miss_times<<" previous hit_times:"<<tree_list[i].hit_times<<std::endl;
+        //std::cout<<"Tree "<<tree_list[i].getId()<<" leaf_node quantity:"<<tree_list[i].getLeafNode().size()<<std::endl;
     }
 
     return 1;
@@ -179,7 +199,7 @@ int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
     graph.mwis(path);
 }
 
-int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
+/*int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
     
     for(int i=0; i < tree_list.size();){
         
@@ -191,9 +211,27 @@ int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
         }
 
     }
+}*/
+
+int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
+    
+    for(int i=0; i < tree_list.size();i++){
+        
+        if(path.count(tree_list[i].getId())){
+            tree_list[i].pruning(path[tree_list[i].getId()]);
+            tree_list[i].miss_times = 0;
+            ///tree_list[i].hit_times += 1;
+        }else{
+            //std::cout<<"ICH tree "<<tree_list[i].getId()<<": "<<std::endl;
+            tree_list[i].createICH();
+            tree_list[i].miss_times += 1;
+            ///tree_list[i].hit_times = 0;
+        }
+
+    }
 }
 
-int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
+/*int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
 
     
     for(int i=0; i < tree_list.size(); i++){
@@ -207,7 +245,38 @@ int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
         results.push_back(trk_obj_cpu);
     }
 
+}*/
+
+int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
+
+    
+    for(int i=0; i < tree_list.size();){
+        if(tree_list[i].miss_times < miss_time_thrd){
+            /*if(tree_list[i].hit_times > hit_time_thrd){*/
+                cv::Rect_<float> bbox;
+                byavs::BboxInfo box;
+                byavs::TrackeObjectCPU trk_obj_cpu;
+                //std::cout<<"Tree "<<tree_list[i].getId()<<": ";
+                tree_list[i].sentResult(bbox);
+
+                trk_obj_cpu.label = tree_list[i].getLabel();
+                trk_obj_cpu.id = tree_list[i].getId();
+                trk_obj_cpu.box = {(int)bbox.x, (int)bbox.y, (int)bbox.width, (int)bbox.height};
+                results.push_back(trk_obj_cpu);
+                // std::cout<<"The result of Object ID "<<trk_obj_cpu.id <<" is sent" << " ";
+                // std::cout<<"head_node->level:"<<tree_list[i].getHead()->level<<" leaf_node->level:"<<tree_list[i].getLeafNode()[0]->level<<" ";///
+                // std::cout<<"Box is "<<bbox<< std::endl;
+                // std::cout<<std::endl;
+            ///}
+            i++; 
+        }else{
+            tree_list.erase(tree_list.begin()+i);
+        }
+        
+    }
+
 }
+
 
 std::vector<Tree> MHT_tracker::get_tree_list()
 {
@@ -224,8 +293,8 @@ int MHT_tracker::backTraversal(treeNode tree_node, std::shared_ptr<treeNode> hea
     if(tree_node.parent == head_node){
         path.push_back(tree_node.parent->index);
         path_score.push_back(tree_node.parent->score);
-        if(path.size() <= N){
-            for(int i=N-path.size()+1;i>0;i--){
+        if(path.size() < N){
+            for(int i=N-path.size();i>0;i--){
                 path.push_back(0);
                 path_score.push_back(0.0);
             }
@@ -235,9 +304,9 @@ int MHT_tracker::backTraversal(treeNode tree_node, std::shared_ptr<treeNode> hea
         return 1;
     }
    /*When this node is a root node*/
-    if(tree_node.parent == NULL &&  path.size() <= N){
+    if(tree_node.parent == NULL &&  path.size() < N){
         
-        for(int i=N-path.size()+1; i > 0; i--){
+        for(int i=N-path.size(); i > 0; i--){
             path.push_back(0);
             path_score.push_back(0.0);
         }
@@ -262,13 +331,14 @@ int MHT_tracker::TreeToGraph(Graph& graph){
     
     for(auto tree : tree_list){
         
-        std::cout<<"Tree No."<<tree.getId()<<std::endl;
+        
         //preorderTraversal(tree.getHead(),path, path_list);
         for(auto leaf : tree.getLeafNode()){
             path.clear();
             path_score.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_score, path_list, path_score_list,tree.getN());
         }
+        ///std::cout<<"Tree No."<<tree.getId()<<" Path.size :"<<path_list.size()<<std::endl;
         if(path_list.size() > 100){
             std::vector<VexNode> temp_node_list;
             for(int i=0; i < path_list.size(); i++){
@@ -276,13 +346,10 @@ int MHT_tracker::TreeToGraph(Graph& graph){
                 graph_node.path.clear();
                 graph_node.score = 0;
                 for(int j = path_list[i].size()-1; j >=0; j--){
-                    std::cout<<path_list[i][j]<<" ("<<path_score_list[i][j]<<") "<<" ";
                     graph_node.id = tree.getId();
                     graph_node.score += path_score_list[i][j];
                     graph_node.path.push_back(path_list[i][j]);
                 }
-                std::cout<<graph_node.score;
-                std::cout<<std::endl;
                 temp_node_list.push_back(graph_node);
             }
             std::sort(temp_node_list.begin(), temp_node_list.end(), VexSort);
@@ -295,13 +362,10 @@ int MHT_tracker::TreeToGraph(Graph& graph){
                  graph_node.path.clear();
                  graph_node.score = 0;
                  for(int j = path_list[i].size()-1; j >=0; j--){
-                     std::cout<<path_list[i][j]<<" ("<<path_score_list[i][j]<<") "<<" ";
                      graph_node.id = tree.getId();
                      graph_node.score += path_score_list[i][j];
                      graph_node.path.push_back(path_list[i][j]);
                  }
-                 std::cout<<graph_node.score;
-                 std::cout<<std::endl;
                  graph_node_list.push_back(graph_node);
              }
         }
@@ -323,7 +387,19 @@ int MHT_tracker::TreeToGraph(Graph& graph){
          path_score_list.clear();
     }
     
+    //std::sort(graph_node_list.begin(), graph_node_list.end(), VexSortUp);
+
     graph = Graph(graph_node_list);
+
+    for(int i=0; i<graph_node_list.size(); i++)
+    {
+        std::cout<<"index:"<<i << " Tree Id:"<<graph_node_list[i].id<<" ";
+        for(int j = 0; j < graph_node_list[i].path.size(); j++){
+            std::cout<<graph_node_list[i].path[j]<<" ";
+        }
+        std::cout<<graph_node_list[i].score;
+        std::cout<<std::endl;
+    }
 }
 
 

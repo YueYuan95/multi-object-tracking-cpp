@@ -18,7 +18,9 @@ Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
     leaf_node.push_back(root);//
     head_node = root;
     N = n;
-       
+    miss_times = 0;///
+    hit_times = 0;///
+
 }
 
 int Tree::addNode(int node_index, std::shared_ptr<treeNode> tree_Node){
@@ -105,13 +107,29 @@ int Tree::pruning(std::vector<int> route)
     //for(auto i : route){
     //    std::cout<<i<<std::endl;
     //}
-
-    if(route[0] != head_node->index && route[0] != 0){
-        std::cout<<"Head Index is not the frist of the path"<<std::endl;
+    if(id == 15){
+        for(auto i : route){
+            std::cout<<i<<" "<<std::endl;
+        }
     }
-    if(route[0] == 0){
+
+    // if(route[0] != head_node->index && route[0] != 0){
+    //     std::cout<<"Head Index is not the frist of the path"<<std::endl;
+    // }
+    // if(route[0] == 0){
+    //     return 1;
+    // }
+
+    // if(route[0] != head_node->index){
+    //     std::cout<<"Head Index is not the frist of the path"<<std::endl;
+    // }
+
+    if((leaf_node[0]->level - head_node->level) < (N-1)){       
+        //result = head_node->box;
+        //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
         return 1;
     }
+
     std::vector<std::shared_ptr<treeNode>>::iterator iter;
     for(iter = head_node->children.begin(); iter != head_node->children.end();){
 
@@ -208,12 +226,18 @@ int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
 
 int Tree::sentResult(cv::Rect_<float>& result){
     
-    if((leaf_node[0]->level - head_node->level) == (N-1)){
+    
+    if( leaf_node[0]->level >= N){///((leaf_node[0]->level - head_node->level) == (N-2))//(head_node->index!=-1)
+
         result = head_node->box;
+        //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
         return 1;
+        
     }else{
+        //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
         return 0;
     }
+    
 }
 
 void Tree::printTree(std::shared_ptr<treeNode> root)
@@ -262,6 +286,42 @@ void Tree::printTree(std::shared_ptr<treeNode> root)
     }
     std::cout<<std::endl;
 }
+
+int Tree::createICH(){
+
+    if (leaf_node[0]->level - head_node->level == (N-1))//exclude the first N frames
+    {
+        int i, j;
+        std::shared_ptr<treeNode> ICH_ptr(new treeNode);
+        
+        for(i=0; i<head_node->children.size(); i++)
+        {
+            for(j=0; j<head_node->children[i]->children.size(); j++)
+            {
+                ICH_ptr->children.push_back(head_node->children[i]->children[j]);
+            }
+        }
+        ICH_ptr->parent = head_node;
+        ICH_ptr->level = head_node->level+1;
+        ICH_ptr->score = 0.01;
+        ICH_ptr->index = -1;
+        ICH_ptr->box = head_node->box;
+        head_node = ICH_ptr;
+
+        for(i=0; i<ICH_ptr->children.size(); i++)
+        {
+            ICH_ptr->children[i]->parent = ICH_ptr;
+        }
+
+        std::cout<<"head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
+    }
+    else
+    {
+        return 1;
+    }
+
+}
+
 int Tree::getId()
 {
     return id;
