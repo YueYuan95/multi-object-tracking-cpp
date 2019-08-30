@@ -1,3 +1,6 @@
+#ifndef __UTIL_H_
+#define __UTIL_H_
+
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -24,3 +27,5 @@ int visualize(int, cv::Mat,std::vector<cv::Rect_<float>> det_result);
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);
 bool VexSort(VexNode, VexNode);
 bool VexSortUp(VexNode, VexNode);
+
+#endif

@@ -15,7 +15,7 @@ Tree::Tree(std::shared_ptr<treeNode> root, int i, int n)
     tree_id++;
     label = i;
     root_node = root;
-    leaf_node.push_back(root);//
+    leaf_node.push_back(root);
     head_node = root;
     N = n;
     miss_times = 0;///
@@ -150,8 +150,10 @@ int Tree::pruning(std::vector<int> route)
     if(head_node->children.size() > 1){
         std::cout<<"Pruning Wrong"<<std::endl;
     }
-    std::cout<<head_node->index<<std::endl;
-
+    //std::cout<<head_node->index<<std::endl;
+    //m_kalman_tracker.update(head_node.box);
+    //head_node.box = m_kalman_tracker.getBbox();
+    
 /*
 
     if(head_node->children.size()>1)

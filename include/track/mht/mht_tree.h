@@ -6,9 +6,10 @@
 #include <memory>
 #include <map>
 #include <deque>
+#include "kalman_tracker.h"
 
 typedef struct treeNode{
-    cv::Rect_<float> box;/*for drawing boxs*/
+    cv::Rect_<float> box;
     float score;
     int level;
     int index;
@@ -16,9 +17,9 @@ typedef struct treeNode{
     different node gating this same box or node to be chirld,
     this same box should be different chirlden nodes in different parents node
     */
-    std::shared_ptr<treeNode> parent;/*shared_ptr is an AI point*/
+    std::shared_ptr<treeNode> parent;
     std::vector<std::shared_ptr<treeNode>> children;
-
+    KalmanTracker kalman_tracker;
 } treeNode;
 
 class Tree{
@@ -28,10 +29,13 @@ class Tree{
         std::shared_ptr<treeNode> root_node;
         std::shared_ptr<treeNode> head_node;
         std::vector<std::shared_ptr<treeNode>> leaf_node;
-
     public:
 
         Tree(std::shared_ptr<treeNode> root, int label, int N);
+        
+        /*public number*/
+        int miss_times;
+        int hit_times;
 
         /*public number*/
         int miss_times;///

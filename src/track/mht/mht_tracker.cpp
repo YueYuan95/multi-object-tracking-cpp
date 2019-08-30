@@ -1,8 +1,4 @@
 #include "mht_tracker.h"
-#include "mht_tree.h"
-#include <iostream>
-#include <opencv2/core/core.hpp>
-#include <math.h>
 
 int MHT_tracker::inference(std::vector<cv::Rect_<float>> det_result,byavs::TrackeObjectCPUs& results){
 
@@ -37,7 +33,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     int i, j;
     float x1, y1, x2, y2, distance;
     float threshold = 40;//threshold of the distance,changeable
-    float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
+    double iou; 
     float zero = 0;
     bool success_flag; 
     std::vector<Tree> new_tree_list;
@@ -101,34 +97,28 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         {
             //caculate the distance,could be a function 
             //here we caculate the Euclidean distance
-            x2 = leaf_node_list[j]->box.x + leaf_node_list[j]->box.width/2;
-            y2 = leaf_node_list[j]->box.y + leaf_node_list[j]->box.height/2;
-            distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
-            //std::cout<<"x2:"<<x2<<"y2:"<<y2<<std::endl;
-            //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
-
-            //caculate the score, which is IOU here
-            xx1 = std::max(det_result[i].x, leaf_node_list[j]->box.x);
-            yy1 = std::max(det_result[i].y, leaf_node_list[j]->box.y);
-            xx2 = std::min(det_result[i].x + det_result[i].width,leaf_node_list[j]->box.x + leaf_node_list[j]->box.width);
-            yy2 = std::min(det_result[i].y+det_result[i].height,leaf_node_list[j]->box.y + leaf_node_list[j]->box.height);
-            w = std::max(zero, xx2-xx1);
-            h = std::max(zero, yy2-yy1);
-            IOU = w*h/(det_result[i].width*det_result[i].height+leaf_node_list[j]->box.width*leaf_node_list[j]->box.height-w*h);
-            //std::cout<<"IOU:"<<IOU<<std::endl;
+            KalmanTracker temp_kalman = leaf_node_list[j]->kalman_tracker;
+            temp_kalman.predict();
+            cv::Rect_<float> predict_box = temp_kalman.getBbox();
             
+            x2 = predict_box.x + predict_box.width/2;
+            y2 = predict_box.y + predict_box.height/2;
+            distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
+
+            iou = get_iou(det_result[i], predict_box); 
 
             if(IOU>0.5 || distance < threshold)
             {
                 //addNode??
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
-                det_node_ptr->box = det_result[i];
-                //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
                 det_node_ptr->index = i+1;
-                //det_node_ptr->level = 1;//initialize the level of each tree/node 1
-                det_node_ptr->score = IOU;
+                det_node_ptr->score = iou;
                 det_node_ptr->level = leaf_node_list[j]->level+1;
                 det_node_ptr->parent = leaf_node_list[j];
+                det_node_ptr->kalman_tracker = leaf_node_list[j]->kalman_tracker;
+                det_node_ptr->kalman_tracker.update(det_result[i]);
+                det_node_ptr->box = det_node_ptr->kalman_tracker.getBbox();
+
                 leaf_node_list[j]->children.push_back(det_node_ptr);
                 success_flag = true;
                 //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
@@ -139,11 +129,11 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         {
             std::shared_ptr<treeNode> det_node_ptr(new treeNode);
             det_node_ptr->box = det_result[i];
-            //std::cout<<"det_result[i]:"<<det_result[i]<<std::endl;
             det_node_ptr->index = i+1;
             det_node_ptr->score = 0.01;
-            det_node_ptr->level = 1;//initialize the level of each tree/node 1
-            Tree gate(det_node_ptr,3,N);//label=3,N=3
+            det_node_ptr->level = 1;        //initialize the level of each tree/node 1
+            det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
+            Tree gate(det_node_ptr,3,N);    //label=3,N=3
             new_tree_list.push_back(gate);
         }
         
@@ -160,10 +150,11 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             if(leaf_node_list[i]->children.size() == 0)
             {
                 std::shared_ptr<treeNode> zero_node_ptr(new treeNode);
+                zero_node_ptr->kalman_tracker = leaf_node_list[i]->kalman_tracker; 
                 zero_node_ptr->index = 0;
                 zero_node_ptr->score = 0;
-                //zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
-                zero_node_ptr->box = leaf_node_list[i]->box;
+                zero_node_ptr->kalman_tracker.predict();
+                zero_node_ptr->box = zero_node_ptr->kalman_tracker.getBbox();
                 zero_node_ptr->level = leaf_node_list[i]->level+1;
                 zero_node_ptr->parent = leaf_node_list[i];
                 leaf_node_list[i]->children.push_back(zero_node_ptr);
@@ -181,19 +172,6 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     return 1;
 }
 
-/*std::vector<std::shared_ptr<treeNode>> MHT_tracker::find_leaf_node(std::shared_ptr<treeNode> root)
-{
-    int i;
-    while(root->children.size())
-        {
-            for(i=0; i<root->children.size(); i++)
-            {
-                temp = root->children[i];
-                find_leaf_node(root)
-            }
-        }
-}*/
-
 int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
 
     graph.mwis(path);
@@ -201,13 +179,15 @@ int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
 
 /*int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
     
-    for(int i=0; i < tree_list.size();){
+    for(int i=0; i < tree_list.size();i++){
         
         if(path.count(tree_list[i].getId())){
             tree_list[i].pruning(path[tree_list[i].getId()]);
-            i++;
+            tree_list[i].miss_times = 0;
+            tree_list[i].hit_times += 1;
         }else{
-            tree_list.erase(tree_list.begin()+i);
+            tree_list[i].miss_times += 1;
+            tree_list[i].hit_times = 0;
         }
 
     }
@@ -234,15 +214,23 @@ int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
 /*int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
 
     
-    for(int i=0; i < tree_list.size(); i++){
-        cv::Rect_<float> bbox;
-        byavs::BboxInfo box;
-        byavs::TrackeObjectCPU trk_obj_cpu;
-        tree_list[i].sentResult(bbox);
-        trk_obj_cpu.label = tree_list[i].getLabel();
-        trk_obj_cpu.id = tree_list[i].getId();
-        trk_obj_cpu.box = {(int)bbox.x, (int)bbox.y, (int)bbox.width, (int)bbox.height};
-        results.push_back(trk_obj_cpu);
+    for(int i=0; i < tree_list.size();){
+        if(tree_list[i].miss_times < miss_time_thrd){
+            if(tree_list[i].hit_times > hit_time_thrd){
+                cv::Rect_<float> bbox;
+                byavs::BboxInfo box;
+                byavs::TrackeObjectCPU trk_obj_cpu;
+                tree_list[i].sentResult(bbox);
+                trk_obj_cpu.label = tree_list[i].getLabel();
+                trk_obj_cpu.id = tree_list[i].getId();
+                trk_obj_cpu.box = {(int)bbox.x, (int)bbox.y, (int)bbox.width, (int)bbox.height};
+                results.push_back(trk_obj_cpu);
+            }
+            i++; 
+        }else{
+            tree_list.erase(tree_list.begin()+i);
+        }
+        
     }
 
 }*/

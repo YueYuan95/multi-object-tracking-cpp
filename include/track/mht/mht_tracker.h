@@ -2,11 +2,13 @@
 #define _MHT_TRACKER_H_
 
 #include <iostream>
+#include <math.h>
 #include <opencv2/core/core.hpp>
 #include "mht_tree.h"
 #include "mht_graph.h"
 #include "util.h"
 #include "byavs.h"
+#include "kalman_tracker.h"
 
 class MHT_tracker{
 
