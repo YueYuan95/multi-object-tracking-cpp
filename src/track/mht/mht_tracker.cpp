@@ -33,6 +33,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     int i, j;
     float x1, y1, x2, y2, distance;
     float threshold = 40;//threshold of the distance,changeable
+    float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     double iou; 
     float zero = 0;
     bool success_flag; 
