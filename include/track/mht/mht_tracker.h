@@ -16,7 +16,7 @@ class MHT_tracker{
 
         std::vector<Tree> tree_list;
         int N = 5;
-        int miss_time_thrd = 15;////
+        int miss_time_thrd = N+10;////
         int hit_time_thrd =  N-(N/2);////
 
 

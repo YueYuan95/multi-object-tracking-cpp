@@ -32,7 +32,8 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
 {
     int i, j;
     float x1, y1, x2, y2, distance;
-    float threshold = 40;//threshold of the distance,changeable
+    float threshold = 20;//threshold of the distance,changeable
+    float iou_thre = 0.6; //threshold of IOU score
     float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     double iou; 
     float zero = 0;
@@ -114,9 +115,13 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
             h = std::max(zero, yy2-yy1);
             IOU = w*h/(det_result[i].width*det_result[i].height+leaf_node_list[j]->box.width*leaf_node_list[j]->box.height-w*h);
             //std::cout<<"IOU:"<<IOU<<std::endl;
-            
+            if(i==42)
+            {
+                std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
+            }
+            //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
 
-            if(IOU>0.5 || distance < threshold)
+            if(IOU > iou_thre || distance < threshold)
             {
                 //addNode??
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
@@ -129,7 +134,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
                 det_node_ptr->parent = leaf_node_list[j];
                 leaf_node_list[j]->children.push_back(det_node_ptr);
                 success_flag = true;
-                //std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<std::endl;
+                
             }
         }
         //for those boxes which do not match any existing trees:create a new tree for them
@@ -173,7 +178,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         ///tree_list[i].printTree(tree_list[i].getRoot());
         ///std::cout<<std::endl;////
         //std::cout<<"previous miss_times:"<<tree_list[i].miss_times<<" previous hit_times:"<<tree_list[i].hit_times<<std::endl;
-        //std::cout<<"Tree "<<tree_list[i].getId()<<" leaf_node quantity:"<<tree_list[i].getLeafNode().size()<<std::endl;
+        std::cout<<"Tree "<<tree_list[i].getId()<<" leaf_node quantity:"<<tree_list[i].getLeafNode().size()<<std::endl;
     }
 
     return 1;
@@ -291,11 +296,33 @@ int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
 
 int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
     
+    
     for(int i=0; i < tree_list.size();i++){
         
         if(path.count(tree_list[i].getId())){
+
             tree_list[i].pruning(path[tree_list[i].getId()]);
-            tree_list[i].miss_times = 0;
+
+            int count_path_zero=0;
+            for(int j=0; j <path[tree_list[i].getId()].size(); j++)
+            {
+                if(path[tree_list[i].getId()][j]==0)
+                {
+                    count_path_zero++;
+                }
+            }
+            
+            if(count_path_zero==N)
+            {
+                tree_list[i].miss_times=tree_list[i].miss_times+1;
+            }
+            else
+            {
+                //tree_list[i].pruning(path[tree_list[i].getId()]);
+                tree_list[i].miss_times = 0;
+            }
+            //tree_list[i].pruning(path[tree_list[i].getId()]);
+            //tree_list[i].miss_times = 0;
             ///tree_list[i].hit_times += 1;
         }else{
             //std::cout<<"ICH tree "<<tree_list[i].getId()<<": "<<std::endl;
