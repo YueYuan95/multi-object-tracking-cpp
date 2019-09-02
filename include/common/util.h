@@ -27,5 +27,6 @@ int visualize(int, cv::Mat,std::vector<cv::Rect_<float>> det_result);
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);
 bool VexSort(VexNode, VexNode);
 bool VexSortUp(VexNode, VexNode);
+double get_iou(cv::Rect_<float> , cv::Rect_<float>);
 
 #endif

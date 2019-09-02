@@ -552,7 +552,7 @@ int test_all()
         //}
         std::string det_img_path = files[frame];
         cv::Mat detimg = cv::imread(det_img_path);
-        visualize(frame, detimg, det_result);
+        //visualize(frame, detimg, det_result);
 
         if(frame >= N)
         {

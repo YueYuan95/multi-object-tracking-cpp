@@ -107,11 +107,12 @@ int Tree::pruning(std::vector<int> route)
     //for(auto i : route){
     //    std::cout<<i<<std::endl;
     //}
-    if(id == 15){
+
+    /*if(id == 15){
         for(auto i : route){
             std::cout<<i<<" "<<std::endl;
         }
-    }
+    }*/
 
     // if(route[0] != head_node->index && route[0] != 0){
     //     std::cout<<"Head Index is not the frist of the path"<<std::endl;
@@ -148,7 +149,7 @@ int Tree::pruning(std::vector<int> route)
         return 1;
     } 
     if(head_node->children.size() > 1){
-        std::cout<<"Pruning Wrong"<<std::endl;
+        std::cout<<"Pruning Wrong:"<<" head_node index:"<<head_node->index<<" head_node children size:"<<head_node->children.size()<<std::endl;
     }
     //std::cout<<head_node->index<<std::endl;
     //m_kalman_tracker.update(head_node.box);
@@ -303,6 +304,7 @@ int Tree::createICH(){
                 ICH_ptr->children.push_back(head_node->children[i]->children[j]);
             }
         }
+        //std::cout<<"ICH_ptr->children.size:"<<ICH_ptr->children.size();
         ICH_ptr->parent = head_node;
         ICH_ptr->level = head_node->level+1;
         ICH_ptr->score = 0.01;
@@ -315,7 +317,7 @@ int Tree::createICH(){
             ICH_ptr->children[i]->parent = ICH_ptr;
         }
 
-        std::cout<<"head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
+        //std::cout<<" head_node children size:"<<head_node->children.size()<<" head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
     }
     else
     {

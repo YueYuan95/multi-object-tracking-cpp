@@ -52,7 +52,7 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
                 continue;
             }
             for(int k=0; k < vex_node_list[i].path.size(); k++){
-                if(vex_node_list[i].path[k] ==  vex_node_list[j].path[k]){
+                if(vex_node_list[i].path[k] ==  vex_node_list[j].path[k]){//有边连接这两个节点
                    if(vex_node_list[i].path[k] !=0 && vex_node_list[j].path[k] != 0){
                        if(vex_node_list[i].path[k] !=-1 && vex_node_list[j].path[k] != -1){
                             m_adj_mat[i][j] = 1;
@@ -91,7 +91,7 @@ int Graph::DFS(int n, int ns, int dep, float score){
 
     for(int i=0; i<ns; i++){
     //TODO: if the sum of all left node less than current score, save time;
-        int k = m_stk[dep][i];
+        int k = m_stk[dep][i];//dej右上矩阵为1的列位置
         int cnt = 0;
         //float temp_score = 0.0;
         //for(int j=i+1; j<ns; j++){
@@ -102,9 +102,9 @@ int Graph::DFS(int n, int ns, int dep, float score){
         //std::cout<<"Neb"<< k << ": ";
         //if(dep + n - k <= ) return 0;
         for(int j=i+1; j< ns; j++){
-            int p = m_stk[dep][j];
-            if(m_dej_mat[k][p]){
-                m_stk[dep+1][cnt++] = p;                
+            int p = m_stk[dep][j];//dej右上矩阵为1的列位置
+            if(m_dej_mat[k][p]){//对角位置也是1
+                m_stk[dep+1][cnt++] = p; //m_stk[2]保存的是dej右上角下一个（i+1）的列位置，即图中下一个节点的位置               
             }
             //std::cout<<p<<" ";
         }
@@ -112,7 +112,7 @@ int Graph::DFS(int n, int ns, int dep, float score){
         m_vetex_list.push_back(k);
         DFS(n, cnt, dep+1, score+m_node_list[k].score);
         //TODO: if score big than max_score, push back and reset score;
-        m_vetex_list.pop_back();
+        m_vetex_list.pop_back();//？？？
     }
     return 1;
                 
@@ -123,7 +123,7 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     m_max_clique.clear();
     routes.clear();
     int n = m_node_list.size();
-    std::cout<<"NUM:"<<n<<std::endl;
+    std::cout<<"NUM:"<<n<<std::endl;//how many trace
     std::vector<std::vector<int>> save_clique; 
     
     for(int i=n-1; i>=0; i--){
@@ -131,14 +131,14 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
         //std::cout<<"Vetex : "<<i<<std::endl;
         //std::cout<<"First Neb : ";
         for(int j=i+1; j < n; j++){
-            if(m_dej_mat[i][j]){
+            if(m_dej_mat[i][j]){//是独立节点的话
         //        std::cout<< j;
-                m_stk[1][ns++] = j;
+                m_stk[1][ns++] = j;//列数
             }
         }
         //std::cout<<std::endl;
         m_vetex_list.push_back(i);
-        DFS(n, ns, 1, m_node_list[i].score);
+        DFS(n, ns, 1, m_node_list[i].score);//ns:the number of "1" in m+dej_mat
         m_vetex_list.pop_back();
         m_score_list[i] = max;
         //std::cout<<std::endl;

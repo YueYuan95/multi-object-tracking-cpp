@@ -103,7 +103,7 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("result_add_ICH/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("result_add_Kalman/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
