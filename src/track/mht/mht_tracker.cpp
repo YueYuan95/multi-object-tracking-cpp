@@ -40,7 +40,6 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
     bool success_flag; 
     std::vector<Tree> new_tree_list;
 
-
     //push the leaf_node of the trees into a vector
     std::vector<std::shared_ptr<treeNode>> leaf_node_list;
     for(i=0; i<tree_list.size(); i++)
@@ -48,44 +47,17 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result)
         for(j=0; j<tree_list[i].getLeafNode().size(); j++)
         {
             leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);///
-            /*if((tree_list[i].getLeafNode()[j]->index==0) && (tree_list[i].getHead()->index==0))//if one of the leaf_node's index=0 and its head_node's index=0,delete the tree;
-            {
-                tree_list.erase(tree_list.begin()+i);
-                i--;
-                break;
-            }
-            else
-            {
-                leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);//
-            }*/
-
-            /* previous algorithm 0820
-            if(tree_list[i].getLeafNode()[j]->index!=0)
-            {
-                leaf_node_list.push_back(tree_list[i].getLeafNode()[j]);//
-            }
-            else if((tree_list[i].getLeafNode()[j]->index==0) && (tree_list[i].getHead()->index==0))//if one of the leaf_node's index=0 and its head_node's index=0,delete the tree;
-            {
-                tree_list.erase(tree_list.begin()+i);
-                i--;
-                break;
-            }
-            else //add a zero_node to the leaf_node's zero_node
-            {
-                treeNode zero_node;//,creat a zero_node which has no box
-                std::shared_ptr<treeNode> zero_node_ptr(new treeNode(zero_node));
-                zero_node_ptr->index = 0;
-                //zero_node_ptr->score = 0.0;
-                zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
-                zero_node_ptr->box = tree_list[i].getLeafNode()[j]->box;
-                zero_node_ptr->level = tree_list[i].getLeafNode()[j]->level+1;
-                zero_node_ptr->parent = tree_list[i].getLeafNode()[j];
-                tree_list[i].getLeafNode()[j]->children.push_back(zero_node_ptr);
-            }  */
         }
     }
-    
-     //match the box to leaf_nodes in the leaf_node_list, the leaf_node_list has no zero_nodes
+
+    if(leaf_node_list.size()>0){
+        HungarianAlgorithm HungAlgo;
+        std::vector<std::vector<double>> cost_matrix = computeDistance(leaf_node_list, det_result);
+        std::vector<int> assign;
+        assign.clear();
+        HungAlgo.Solve(cost_matrix, assign);
+    }
+        //match the box to leaf_nodes in the leaf_node_list, the leaf_node_list has no zero_nodes
     for(i=0; i<det_result.size(); i++)
     {
         //create a node for each det_result
@@ -513,4 +485,27 @@ int MHT_tracker::TreeToGraph(Graph& graph){
     }
 }
 
+std::vector<std::vector<double>> MHT_tracker::computeDistance(std::vector<std::shared_ptr<treeNode>> leaf_node_list, std::vector<cv::Rect_<float>> det_result){
+            
+    int trk_num = leaf_node_list.size();
+    int det_num = det_result.size();
 
+    std::vector<std::vector<double>> cost_matrix;
+    cost_matrix.clear();
+    cost_matrix.resize(trk_num, std::vector<double>(det_num, 1));
+
+    for(int i=0; i < trk_num; i++){
+        for(int j=0; j < det_num; j++){
+            double iou = get_iou(leaf_node_list[i]->box, det_result[j]);
+            if(iou > 0.4){
+                cost_matrix[i][j] = 1-iou;
+            }else{
+                cost_matrix[i][j] = 1;
+            }
+        }
+    }
+
+    return cost_matrix;
+
+}
+ 

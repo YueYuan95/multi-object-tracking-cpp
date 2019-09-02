@@ -9,7 +9,7 @@
 #include "util.h"
 #include "byavs.h"
 #include "kalman_tracker.h"
-
+#include "hungarian.h"
 class MHT_tracker{
 
     private:
@@ -54,7 +54,7 @@ class MHT_tracker{
         int morls();
 
         int sentResult(byavs::TrackeObjectCPUs&);
-
+        std::vector<std::vector<double>> computeDistance(std::vector<std::shared_ptr<treeNode>>, std::vector<cv::Rect_<float>>); 
         //get function
         std::vector<Tree> get_tree_list();
 };
