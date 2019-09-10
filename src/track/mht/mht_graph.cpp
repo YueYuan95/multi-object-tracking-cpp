@@ -75,12 +75,12 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
 int Graph::DFS(int n, int ns, int dep, float score){
    
     if(ns == 0){
-        if(score > max){
+        if(score > max && m_vetex_list.size() > m_max_clique.size()){
             max = score;
             m_max_clique.clear();
             //std::cout<<"Max clique is : ";
             for(int i=0; i < m_vetex_list.size(); i++){
-               //std::cout<<m_vetex_list[i]<<" ";
+            //   std::cout<<m_vetex_list[i]<<" ";
                m_max_clique.push_back(m_vetex_list[i]); 
             }
             //std::cout<<std::endl;
@@ -93,22 +93,27 @@ int Graph::DFS(int n, int ns, int dep, float score){
     //TODO: if the sum of all left node less than current score, save time;
         int k = m_stk[dep][i];
         int cnt = 0;
-        //float temp_score = 0.0;
-        //for(int j=i+1; j<ns; j++){
-        //    temp_score += m_node_list[m_stk[dep][j]].score;
-        //}
-        //if(score+ temp_score < max) return 0;
+        float temp_score = 0.0;
+        for(int j=i+1; j<ns; j++){
+            temp_score += m_node_list[m_stk[dep][j]].score;
+        }
+        float vetex_score = 0.0;
+        for(auto vetex : m_vetex_list){
+            vetex_score += m_node_list[vetex].score;
+        } 
+        if(vetex_score + temp_score < max) return 0;
+        std::cout<<"Neb"<< k << ": ";
         if(score + m_score_list[k] < max) return 0;
-        //std::cout<<"Neb"<< k << ": ";
         //if(dep + n - k <= ) return 0;
         for(int j=i+1; j< ns; j++){
             int p = m_stk[dep][j];
             if(m_dej_mat[k][p]){
                 m_stk[dep+1][cnt++] = p;                
             }
-            //std::cout<<p<<" ";
+            std::cout<<p<<" ";
         }
-        //std::cout<<std::endl;     
+        if(m_vetex_list.size() + ns < m_max_clique.size()) return 0;
+        std::cout<<std::endl;     
         m_vetex_list.push_back(k);
         DFS(n, cnt, dep+1, score+m_node_list[k].score);
         //TODO: if score big than max_score, push back and reset score;
@@ -126,22 +131,26 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     std::cout<<"NUM:"<<n<<std::endl;
     std::vector<std::vector<int>> save_clique; 
     
+    double start, end, duration;
     for(int i=n-1; i>=0; i--){
+        start = clock();
         ns = 0;
-        //std::cout<<"Vetex : "<<i<<std::endl;
-        //std::cout<<"First Neb : ";
+        std::cout<<"Vetex : "<<i<<std::endl;
+        std::cout<<"First Neb : ";
         for(int j=i+1; j < n; j++){
             if(m_dej_mat[i][j]){
-        //        std::cout<< j;
+                std::cout<< j<< " ";
                 m_stk[1][ns++] = j;
             }
         }
-        //std::cout<<std::endl;
+        std::cout<<std::endl;
         m_vetex_list.push_back(i);
         DFS(n, ns, 1, m_node_list[i].score);
         m_vetex_list.pop_back();
         m_score_list[i] = max;
-        //std::cout<<std::endl;
+        end = clock();
+        duration = (double)(end - start) / CLOCKS_PER_SEC;
+        std::cout<<"Time cost : "<<duration<<" s "<<std::endl;
     }
 
        

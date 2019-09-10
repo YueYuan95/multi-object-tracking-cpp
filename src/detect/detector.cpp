@@ -14,9 +14,9 @@ int Detector::read_txt(){//string seq
     std::string imgPath;
     std::string detFileName;
     //imgPath = "/nfs-data/tracking/MOT16/train/"+seq+"/img1/";
-    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/"; 
+    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-13/img1/"; 
     //detFileName = "/nfs-data/tracking/MOT16/train/"+seq+"/det/det.txt";
-    detFileName = "/nfs-data/tracking/MOT16/train/MOT16-04/det/det.txt";
+    detFileName = "/nfs-data/tracking/MOT16/train/MOT16-13/det/det.txt";
 
     // read detection file and put the box into a dictionary
     std::ifstream detectionFile;//read file from th detectionFile;

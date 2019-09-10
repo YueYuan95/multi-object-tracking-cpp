@@ -513,7 +513,7 @@ int test_all()
     byavs::TrackeObjectCPUs tracking_results;
 
     std::string imgPath;
-    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/";
+    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-13/img1/";
     std::vector<std::string> files;
     listDir(imgPath.c_str(), files, true);
     sort(files.begin(), files.end());
