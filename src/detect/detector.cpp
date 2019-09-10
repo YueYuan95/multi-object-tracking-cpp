@@ -1,7 +1,7 @@
 #include "detector.h"
 
 
-int Detector::read_txt(){//string seq
+int Detector::read_txt(std::string det_file){//string seq
 
     //Tracker
     /*Tracking tracker;
@@ -11,12 +11,11 @@ int Detector::read_txt(){//string seq
 //      MultipleTracker  tracker;
 
         //Detection File
-    std::string imgPath;
+
     std::string detFileName;
     //imgPath = "/nfs-data/tracking/MOT16/train/"+seq+"/img1/";
-    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-04/img1/"; 
     //detFileName = "/nfs-data/tracking/MOT16/train/"+seq+"/det/det.txt";
-    detFileName = "/nfs-data/tracking/MOT16/train/MOT16-04/det/det.txt";
+    detFileName = det_file;
 
     // read detection file and put the box into a dictionary
     std::ifstream detectionFile;//read file from th detectionFile;
@@ -54,6 +53,7 @@ int Detector::read_txt(){//string seq
         score = std::atof(split[6].c_str());
         if(score > 0.2 ){
             Detector::frame_det_map[frame].push_back(box);
+            Detector::frame_det_score[frame].push_back(score);
         }
         
                 /*cout<<"Frame:"<<tb.frame << "," << tp_tl << "," << tp_tr << "," << tp_bb
@@ -80,14 +80,26 @@ void Detector::split_string(const std::string& s, std::vector<std::string>& v, c
         v.push_back(s.substr(pos1));
 }
 
-int Detector::inference(int frame, std::vector<cv::Rect_<float>>& destination)
+int Detector::inference(int frame, std::vector<cv::Rect_<float>>& destination, std::vector<float>& destination_score)
 {
     int i;
-    for(i=0; i<frame_det_map[frame].size(); i++)
+    cv::Rect_<float> zero_box = cv::Rect(0,0,0,0);
+    if(frame<=frame_det_map.size())
     {
-        destination.push_back(frame_det_map[frame][i]);  
-        //std::cout<<destination[i];
-    }
+     
+        for(i=0; i<frame_det_map[frame].size(); i++)
+        {
+            destination.push_back(frame_det_map[frame][i]);  //box
+            destination_score.push_back(frame_det_score[frame][i]);//score
+            //std::cout<<destination[i];
+        }
     //std::cout<<std::endl;
     //std::cout<<frame_det_map[1050][0];
+    }
+    // else
+    // {
+    //     destination.push_back(zero_box);  //box
+    //     destination_score.push_back(0);//score
+    // }
+    
 }

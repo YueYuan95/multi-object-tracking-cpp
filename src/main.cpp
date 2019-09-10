@@ -25,5 +25,11 @@ int main(){
 
   //test_detector_inference();
 
-  test_all();
+  //test_NMS();
+  
+  //test_writeResult();
+
+  //test_all();
+
+  test_mwis();
 }

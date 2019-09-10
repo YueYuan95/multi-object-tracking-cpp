@@ -131,14 +131,28 @@ int Tree::pruning(std::vector<int> route)
         return 1;
     }
 
-    std::vector<std::shared_ptr<treeNode>>::iterator iter;
-    for(iter = head_node->children.begin(); iter != head_node->children.end();){
+    std::cout<<id<<" before pruning CTree,head_node children size:"<<head_node->children.size()<<std::endl;///
+    for(int i=0;i<head_node->children.size();i++)
+    {
+        if(head_node->children[i]->index !=route[1])
+        {
+            head_node->children.erase(head_node->children.begin()+i);
+            i--;
+        }
+        
+    }
+    /*std::vector<std::shared_ptr<treeNode>>::iterator iter;
+    
+      for(iter = head_node->children.begin(); iter != head_node->children.end()+1;){
 
         if( (*iter)->index != route[1]){
            iter= head_node->children.erase(iter);
+           if(id==31){
+               std::cout<<(*iter)->index<<std::endl;///
+           }
         }
         if(iter != head_node->children.end()) iter++;
-    }
+    }*/
 
     if(head_node->children.size() == 0){
         return 1;
@@ -218,8 +232,10 @@ int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
     }
     if(route[1] == head_node->index){
         result = head_node->box;
+        
         return 1;
-    }else{
+    }
+    else{
 
         return 0;
     }
@@ -234,12 +250,16 @@ int Tree::sentResult(cv::Rect_<float>& result){
 
         result = head_node->box;
         //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
+        //std::cout<<" head_node->box:"<<result<<std::endl;///
         return 1;
         
-    }else{
+    }
+    else{
         //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
+        //result = { };
         return 0;
     }
+    //return 1;
     
 }
 
@@ -312,11 +332,33 @@ int Tree::createICH(){
         ICH_ptr->box = head_node->box;
         head_node = ICH_ptr;
 
+        /*delete the same child of ICH node
+          establish the parent-child relationship*/
         for(i=0; i<ICH_ptr->children.size(); i++)
         {
-            ICH_ptr->children[i]->parent = ICH_ptr;
+            if(i==0)
+            {
+                ICH_ptr->children[i]->parent = ICH_ptr;
+            }
+            else
+            {
+                for(j=0; j<i; j++)
+                {
+                    if(ICH_ptr->children[i]->index==ICH_ptr->children[j]->index)
+                    {
+                        ICH_ptr->children.erase(ICH_ptr->children.begin()+i);
+                        i--;
+                    }
+                    else
+                    {
+                        ICH_ptr->children[i]->parent = ICH_ptr;
+                    }
+                }
+            }
+            
         }
 
+        
         //std::cout<<" head_node children size:"<<head_node->children.size()<<" head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
     }
     else
