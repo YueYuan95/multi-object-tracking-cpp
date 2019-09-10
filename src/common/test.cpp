@@ -7,33 +7,100 @@
 
 int test_graph(){
     std::vector<VexNode> vex_node_list;
-    VexNode temp_node = {1.0, 1, {1,3,4}};
-    vex_node_list.push_back(temp_node); 
-    temp_node = {1.0, 1, {1,3,2}};
+    VexNode temp_node;
+
+    temp_node = {0.0, 0, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 1, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 2, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 3, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {2.18402e-09, 4, {2,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.1, 5, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 6, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 7, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 6, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 7, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 8, {-1,0,2,0,0,4,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 9, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 10, {0,0,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {22.0, 1, {1,2,1}};
+    temp_node = {0.0, 12, {0,0,0,0,0,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.0, 13, {0,0,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
     
-    temp_node = {1.0, 1, {1,2,3}};
+    temp_node = {0.01, 14, {1,0,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
-    
-    temp_node = {1.0, 2, {2,2,1}};
+
+    temp_node = {0.01, 15, {3,0,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
-    
-    temp_node = {4.0, 2, {2,2,3}};
+
+    temp_node = {0.01, 16, {4,3,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
-    
-    temp_node = {1.0, 2, {2,1,0}};
+
+    temp_node = {0.01, 17, {0,1,1,1,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
-    
-    temp_node = {1.0, 3, {0,0,5}};
+
+    temp_node = {0.01, 18, {0,2,0,0,0,0,0,0,0,0}};
     vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 19, {0,0,0,0,1,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 20, {0,0,0,0,2,3,3,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 21, {0,0,0,0,3,0,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 22, {0,0,0,0,0,1,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 23, {0,0,0,0,0,2,0,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 24, {0,0,0,0,0,0,1,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 25, {0,0,0,0,0,0,2,0,0,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 26, {0,0,0,0,0,0,0,1,1,0}};
+    vex_node_list.push_back(temp_node);
+
+    temp_node = {0.01, 27, {0,0,0,0,0,0,0,0,0,1}};
+    vex_node_list.push_back(temp_node);
+
     
     Graph A(vex_node_list);
     A.printGraph();
     std::map<int, std::vector<int>> routes;
-    A.mwis(routes);
+    A.mwis_greed(routes);
 }
 
 int test_treeTograph(){
@@ -449,8 +516,16 @@ int test_gating()
 
 int test_read_txt()
 {
+    
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-07";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
     Detector detector;
-    detector.read_txt();
+    detector.read_txt(detPath);
+
     int i;
     std::map<int, std::vector<cv::Rect_<float>>>::iterator it;
     for (it=detector.frame_det_map.begin(); it!=detector.frame_det_map.end();it++)
@@ -472,12 +547,20 @@ int test_detector_inference()
 {
     int frame = 1050;
     std::vector<cv::Rect_<float>> destination;//random
+    std::vector<float> destination_score;//random
     //destination.push_back(cv::Rect(1,2,3,4));
     //destination.clear();
 
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-07";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
     Detector detector;
-    detector.read_txt();
-    detector.inference(frame, destination);
+    detector.read_txt(detPath);
+
+    detector.inference(frame, destination, destination_score);
     
     //std::cout<<destination.size()<<std::endl;
     std::cout<<frame<<" ";
@@ -485,24 +568,79 @@ int test_detector_inference()
     for(i=0;i<destination.size();i++)
     {
         std::cout<<destination[i];
+        std::cout<<" score "<<destination_score[i];
     }
     std::cout<<std::endl;
 
 }
 
-/*int test_visualize()
+int test_NMS()
 {
+    int N=5;
 
-}*/
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-07";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
+    Detector detector;
+    detector.read_txt(detPath);
+
+    MHT_tracker tracker;
+
+
+    std::vector<cv::Rect_<float>> det_result;
+    std::vector<float> det_result_score;
+    std::vector<cv::Rect_<float>> det_result_selected;
+
+    byavs::TrackeObjectCPUs tracking_results;
+
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    sort(files.begin(), files.end());
+
+    std::string curr_img;
+    cv::Mat img;
+
+    for(int frame =1 ;frame<30; frame++)//files.size()
+    {
+        detector.inference(frame, det_result, det_result_score);
+        std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
+        // for(int i=1;i<det_result.size(); i++)
+        // {
+        //     std::cout<<" det "<<i<<" ";
+        // }
+        
+        det_result_selected = tracker.NMS( det_result, det_result_score);
+        for(int j=0;j<det_result_selected.size(); j++)
+        {
+            std::cout<<" det_selected "<<j+1<<" box:"<<det_result_selected[j]<<std::endl;
+        }
+        std::cout<<std::endl;
+        det_result.clear();
+        det_result_score.clear();
+    }
+
+}
 
 int test_all()
 {   
-    int N=5;
+    int N=10;
+    int count_n = 0;
+    int filelength;
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-13";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
     Detector detector;
     MHT_tracker tracker;
-    detector.read_txt();
+    detector.read_txt(detPath);
 
     std::vector<cv::Rect_<float>> det_result;
+    std::vector<float> det_result_score;
     /*detector.inference(2, det_result);
     for(int i=0;i<det_result.size();i++)
     {
@@ -511,19 +649,20 @@ int test_all()
     std::cout<<std::endl;*/
 
     byavs::TrackeObjectCPUs tracking_results;
+    byavs::TrackeObjectCPUs predicting_results;
 
-    std::string imgPath;
-    imgPath = "/nfs-data/tracking/MOT16/train/MOT16-13/img1/";
+
     std::vector<std::string> files;
     listDir(imgPath.c_str(), files, true);
     sort(files.begin(), files.end());
 
     std::string curr_img;
     cv::Mat img;
-
-    for(int frame =1 ;frame<files.size(); frame++)//files.size()
+    int filesize = files.size();
+    std::cout<<"total frame:"<<filesize<<std::endl;
+    for(int frame =1 ;frame<filesize+N; frame++)//files.size()
     {
-        detector.inference(frame, det_result);
+        detector.inference(frame, det_result, det_result_score);
 
         std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
         //for(int j=0;j<det_result.size();j++)
@@ -532,14 +671,14 @@ int test_all()
         //}
         //std::cout<<std::endl;
 
-        tracker.inference(det_result, tracking_results);
-
+        tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
+        std::cout<<"after inference, tracking_results size:"<<tracking_results.size()<<std::endl;
         //std::cout<<"after gating:"<<std::endl;
-        //for(int i=0;i<tracker.get_tree_list().size();i++)
+        //or(int i=0;i<tracker.get_tree_list().size();i++)
         //{
         //   tracker.get_tree_list()[i].printTree(tracker.get_tree_list()[i].getRoot());
         //   std::cout<<std::endl;
-        //}
+        //
 
         //std::cout<<"current leaf_node:"<<std::endl;
         //for(int i=0; i<tracker.get_tree_list().size(); i++)
@@ -550,32 +689,46 @@ int test_all()
         //    }
         //std::cout<<std::endl;
         //}
-        std::string det_img_path = files[frame];
-        cv::Mat detimg = cv::imread(det_img_path);
-        visualize(frame, detimg, det_result);
 
+        /*save det_result after NMS*/
+        if(det_result.size()!=0)
+        {
+            det_result = tracker.NMS( det_result, det_result_score);
+        }
+        
+        // std::string det_img_path = files[frame];
+        // cv::Mat detimg = cv::imread(det_img_path);
+        // visualize(frame, detimg, det_result);
+        //visualize(frame, detimg, predicting_results, 'K');
+
+        /*save tracking results after all*/
         if(frame >= N)
         {
             //std::cout<<" "<<tracking_results.size()<<std::endl;
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
-            visualize(frame-N+1, img, tracking_results);
+            //visualize(frame-N+1, img, tracking_results);
+            writeResult(frame-N+1,tracking_results);
         }
-     
+        
         // curr_img = files[frame-1];
         // //curr_img = files[frame];
         // img = cv::imread(curr_img);
         // visualize(frame, img, tracking_results);
     
+        // if((frame ==filesize-1) && (count_n<N))
+        // {
+        //     filesize++;
+        //     count_n++;
+        //     std::cout<<filesize<<std::endl;
+        // }
        
         det_result.clear();
         tracking_results.clear();
+        
 
     }
     
-    
-
-
     // {
     //     test_tracker.get_tree_list()[i].printTree(test_tracker.get_tree_list()[i].getRoot());
     //     std::cout<<std::endl;
@@ -591,5 +744,74 @@ int test_all()
     //}
     //-----------------------------------------------------
     //visualize the results
+
+    
+}
+
+int test_writeResult()
+{
+    byavs::TrackeObjectCPUs tracking_results;
+    byavs::TrackeObjectCPU track;
+    byavs::BboxInfo box0;
+    box0.topLeftX = 1;
+    box0.topLeftY = 2;
+    box0.width = 3;
+    box0.height = 4;
+    track.box = box0;
+    track.id = 1;
+    tracking_results.push_back(track);
+    //std::cout<<track.id;
+    writeResult(1,tracking_results);
+}
+
+
+int test_mwis(){
+
+    int N=10;
+    int count_n = 0;
+    int filelength;
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-13";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
+    Detector detector;
+    MHT_tracker tracker;
+    detector.read_txt(detPath);
+
+    std::vector<cv::Rect_<float>> det_result;
+    std::vector<float> det_result_score;
+    /*detector.inference(2, det_result);
+    for(int i=0;i<det_result.size();i++)
+    {
+        std::cout<<det_result[i];
+    }
+    std::cout<<std::endl;*/
+
+    byavs::TrackeObjectCPUs tracking_results;
+    byavs::TrackeObjectCPUs predicting_results;
+
+
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    sort(files.begin(), files.end());
+
+    std::string curr_img;
+    cv::Mat img;
+    int filesize = files.size();
+    std::cout<<"total frame:"<<filesize<<std::endl;
+    for(int frame=518 ;frame<filesize+N; frame++)//files.size()
+    {
+        detector.inference(frame, det_result, det_result_score);
+
+        std::cout<<"frame:"<<frame<<std::endl;
+
+        tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
+       
+        det_result.clear();
+        tracking_results.clear();
+
+    }
     
 }

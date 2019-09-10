@@ -22,13 +22,15 @@ HungarianAlgorithm::~HungarianAlgorithm(){}
 //********************************************************//
 double HungarianAlgorithm::Solve(std::vector<std::vector<double>>& DistMatrix, std::vector<int>& Assignment)
 {
+	
 	unsigned int nRows = DistMatrix.size();
+	//std::cout<<DistMatrix[0][0]<<std::endl; 
 	unsigned int nCols = DistMatrix[0].size();
-
+    
 	double *distMatrixIn = new double[nRows * nCols];
 	int *assignment = new int[nRows];
 	double cost = 0.0;
-
+    
 	// Fill in the distMatrixIn. Mind the index is "i + nRows * j".
 	// Here the cost matrix of size MxN is defined as a double precision array of N*M elements. 
 	// In the solving functions matrices are seen to be saved MATLAB-internally in row-order.
@@ -39,14 +41,16 @@ double HungarianAlgorithm::Solve(std::vector<std::vector<double>>& DistMatrix, s
 	
 	// call solving function
 	assignmentoptimal(assignment, &cost, distMatrixIn, nRows, nCols);
-
+    
 	Assignment.clear();
 	for (unsigned int r = 0; r < nRows; r++)
 		Assignment.push_back(assignment[r]);
-
+    
+       
 	delete[] distMatrixIn;
 	delete[] assignment;
 	return cost;
+	
 }
 
 

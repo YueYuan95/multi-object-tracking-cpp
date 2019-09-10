@@ -103,7 +103,7 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("result_add_ICH/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("tracking_result_mending/MOT16-13/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
@@ -117,19 +117,41 @@ int visualize(int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_resul
 
         std::string id = std::to_string(j+1);
 
-        cv::putText(img, id, cv::Point(detect_result[j].x + detect_result[j].width, detect_result[j].y), CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(0,255,0),3,8);
+        cv::putText(img, id, cv::Point(detect_result[j].x + detect_result[j].width, detect_result[j].y), CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(0,0,255),3,8);
         cv::rectangle(img, detect_result[j], cv::Scalar(0,255,0), 3, 1, 0);
         //cv::rectangle(img, left_top, right_bottom, ss, 3, 1, 0);
     }
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("result_detection/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("det_result_MOT16-13/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
 }
 
+int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results, char filter)
+{
+
+    for(int j=0; j < results.size(); j++)
+    {
+
+        std::string id = std::to_string(results[j].id);
+
+        cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
+        cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
+        cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,100,0),3,8);
+        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,100,0), 3, 1, 0);
+        //cv::rectangle(img, left_top, right_bottom, ss, 3, 1, 0);
+    }
+    cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
+    //cv::imshow("test",img);
+    //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("Kalman_predict/"+std::to_string(frame)+".jpg", img);
+    
+    //cv::waitKey(1);
+
+}
 
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash)
 {
@@ -198,4 +220,50 @@ double get_iou(cv::Rect_<float> detection, cv::Rect_<float> tracker){
    }
   
    return (double)(in/un);
+}
+
+double get_ov_n1(cv::Rect_<float> rec1, cv::Rect_<float> rec2)
+{
+    float in = (rec1 & rec2).area();
+    float un = rec1.area();
+    return (double)(in/un);
+}
+
+double get_ov_n2(cv::Rect_<float> rec1, cv::Rect_<float> rec2)
+{
+    float in = (rec1 & rec2).area();
+    float un = rec2.area();
+    return (double)(in/un);
+}
+
+int writeResult(int frame, byavs::TrackeObjectCPUs tracking_results)
+{
+    // std::string resultFileName;
+    // resultFileName = "/home/lihy/multiple-object-tracking-cpp/build/MOT16-04.txt ";
+    std::ofstream outfile("tracking_result_mending/MOT16/MOT16-13.txt", std::ios::app);
+    //outfile.open(resultFileName);
+
+    if (!outfile.is_open())
+    {
+        std::cerr << "Error: can not find file " <<std::endl;
+    }
+    //outfile.open("data.txt");
+    if(outfile.is_open())
+    {
+        if(frame==1)
+        {
+            std::cout<<tracking_results.size()<<std::endl;
+        }
+        for(int i=0; i<tracking_results.size(); i++)
+        {
+            
+            outfile << frame<<", "<<tracking_results[i].id<<", "
+                <<tracking_results[i].box.topLeftX<<", "<<tracking_results[i].box.topLeftY<<", "<<tracking_results[i].box.width<<", "<<tracking_results[i].box.height<<", "
+                <<"-1, "<<"-1, "<<"-1, "<<"-1, "<<"\n";
+            
+        }
+        outfile.close();
+    }
+    
+    return 0;
 }

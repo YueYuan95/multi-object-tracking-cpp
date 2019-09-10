@@ -107,11 +107,12 @@ int Tree::pruning(std::vector<int> route)
     //for(auto i : route){
     //    std::cout<<i<<std::endl;
     //}
-    if(id == 15){
+
+    /*if(id == 15){
         for(auto i : route){
             std::cout<<i<<" "<<std::endl;
         }
-    }
+    }*/
 
     // if(route[0] != head_node->index && route[0] != 0){
     //     std::cout<<"Head Index is not the frist of the path"<<std::endl;
@@ -130,14 +131,28 @@ int Tree::pruning(std::vector<int> route)
         return 1;
     }
 
-    std::vector<std::shared_ptr<treeNode>>::iterator iter;
-    for(iter = head_node->children.begin(); iter != head_node->children.end();){
+    std::cout<<id<<" before pruning CTree,head_node children size:"<<head_node->children.size()<<std::endl;///
+    for(int i=0;i<head_node->children.size();i++)
+    {
+        if(head_node->children[i]->index !=route[1])
+        {
+            head_node->children.erase(head_node->children.begin()+i);
+            i--;
+        }
+        
+    }
+    /*std::vector<std::shared_ptr<treeNode>>::iterator iter;
+    
+      for(iter = head_node->children.begin(); iter != head_node->children.end()+1;){
 
         if( (*iter)->index != route[1]){
            iter= head_node->children.erase(iter);
+           if(id==31){
+               std::cout<<(*iter)->index<<std::endl;///
+           }
         }
         if(iter != head_node->children.end()) iter++;
-    }
+    }*/
 
     if(head_node->children.size() == 0){
         return 1;
@@ -148,7 +163,7 @@ int Tree::pruning(std::vector<int> route)
         return 1;
     } 
     if(head_node->children.size() > 1){
-        std::cout<<"Pruning Wrong"<<std::endl;
+        std::cout<<"Pruning Wrong:"<<" head_node index:"<<head_node->index<<" head_node children size:"<<head_node->children.size()<<std::endl;
     }
     //std::cout<<head_node->index<<std::endl;
     //m_kalman_tracker.update(head_node.box);
@@ -217,8 +232,10 @@ int Tree::sentResult(std::vector<int> route, cv::Rect_<float>& result){
     }
     if(route[1] == head_node->index){
         result = head_node->box;
+        
         return 1;
-    }else{
+    }
+    else{
 
         return 0;
     }
@@ -233,12 +250,16 @@ int Tree::sentResult(cv::Rect_<float>& result){
 
         result = head_node->box;
         //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
+        //std::cout<<" head_node->box:"<<result<<std::endl;///
         return 1;
         
-    }else{
+    }
+    else{
         //std::cout<<"head_node->level:"<<head_node->level<<" leaf_node[0]->level:"<<leaf_node[0]->level<<" head_node->box:"<<result<<std::endl;///
+        //result = { };
         return 0;
     }
+    //return 1;
     
 }
 
@@ -303,6 +324,7 @@ int Tree::createICH(){
                 ICH_ptr->children.push_back(head_node->children[i]->children[j]);
             }
         }
+        //std::cout<<"ICH_ptr->children.size:"<<ICH_ptr->children.size();
         ICH_ptr->parent = head_node;
         ICH_ptr->level = head_node->level+1;
         ICH_ptr->score = 0.01;
@@ -310,12 +332,34 @@ int Tree::createICH(){
         ICH_ptr->box = head_node->box;
         head_node = ICH_ptr;
 
+        /*delete the same child of ICH node
+          establish the parent-child relationship*/
         for(i=0; i<ICH_ptr->children.size(); i++)
         {
-            ICH_ptr->children[i]->parent = ICH_ptr;
+            if(i==0)
+            {
+                ICH_ptr->children[i]->parent = ICH_ptr;
+            }
+            else
+            {
+                for(j=0; j<i; j++)
+                {
+                    if(ICH_ptr->children[i]->index==ICH_ptr->children[j]->index)
+                    {
+                        ICH_ptr->children.erase(ICH_ptr->children.begin()+i);
+                        i--;
+                    }
+                    else
+                    {
+                        ICH_ptr->children[i]->parent = ICH_ptr;
+                    }
+                }
+            }
+            
         }
 
-        std::cout<<"head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
+        
+        //std::cout<<" head_node children size:"<<head_node->children.size()<<" head_node->level:"<<head_node->level<<" leaf_node->level:"<<leaf_node[0]->level<<" head_node->box:"<<head_node->box<<std::endl;
     }
     else
     {
