@@ -29,7 +29,7 @@ int main(){
   
   //test_writeResult();
 
-  //test_all();
+  test_all();
 
-  test_mwis();
+  //test_mwis();
 }

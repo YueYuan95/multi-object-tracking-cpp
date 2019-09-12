@@ -103,7 +103,7 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("tracking_result_mending/MOT16-13/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
@@ -124,7 +124,7 @@ int visualize(int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_resul
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("det_result_MOT16-13/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("det_result/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 

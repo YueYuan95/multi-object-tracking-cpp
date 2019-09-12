@@ -696,9 +696,9 @@ int test_all()
             det_result = tracker.NMS( det_result, det_result_score);
         }
         
-        // std::string det_img_path = files[frame];
-        // cv::Mat detimg = cv::imread(det_img_path);
-        // visualize(frame, detimg, det_result);
+        std::string det_img_path = files[frame];
+        cv::Mat detimg = cv::imread(det_img_path);
+        visualize(frame, detimg, det_result);
         //visualize(frame, detimg, predicting_results, 'K');
 
         /*save tracking results after all*/
@@ -707,8 +707,8 @@ int test_all()
             //std::cout<<" "<<tracking_results.size()<<std::endl;
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
-            //visualize(frame-N+1, img, tracking_results);
-            writeResult(frame-N+1,tracking_results);
+            visualize(frame-N+1, img, tracking_results);
+            //writeResult(frame-N+1,tracking_results);
         }
         
         // curr_img = files[frame-1];
@@ -771,7 +771,7 @@ int test_mwis(){
     int count_n = 0;
     int filelength;
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-13";
+    std::string seq = "MOT16-04";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
@@ -791,7 +791,6 @@ int test_mwis(){
 
     byavs::TrackeObjectCPUs tracking_results;
     byavs::TrackeObjectCPUs predicting_results;
-
 
     std::vector<std::string> files;
     listDir(imgPath.c_str(), files, true);
