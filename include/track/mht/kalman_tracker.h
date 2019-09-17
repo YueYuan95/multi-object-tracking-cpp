@@ -41,6 +41,7 @@ class KalmanTracker{
         int getState();
         int getTime();
         std::vector<cv::Rect_<float>> getHistory();
+        cv::KalmanFilter getKalmanFilter();
 
         /*Set private number*/
         int setState(int);

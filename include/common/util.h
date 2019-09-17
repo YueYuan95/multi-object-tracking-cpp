@@ -20,7 +20,11 @@
 #include "mht_tracker.h"
 #include "byavs.h"
 
-
+//std::map<int,std::vector<int>> rec_color_map;
+// std::map<int, cv::Scalar> rec_color_map ;
+// int color_map_size = 2000;
+    
+// int get_rec_color();
 int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
 int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);

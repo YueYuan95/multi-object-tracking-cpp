@@ -50,15 +50,15 @@ KalmanTracker::KalmanTracker(cv::Rect_<float> init_box, int label){
 }
 
 int KalmanTracker::predict(){
-
+    
     cv::Mat predicted_mat = m_kalman_filter.predict();
-
+    //std::cout<<"success"<<std::endl;
     m_age += 1;
     m_time_since_update += 1;
-
+   
     cv::Rect_<float> predict_box = getRectBox(predicted_mat.at<float>(0,0), predicted_mat.at<float>(1,0),
                                              predicted_mat.at<float>(2,0), predicted_mat.at<float>(3,0));
-
+    
     //Is this mean predicted history not corrected history?
     //Which history can inital a sot tracker?
     m_history.push_back(predict_box);
@@ -171,4 +171,9 @@ int KalmanTracker::getTime(){
 std::vector<cv::Rect_<float>> KalmanTracker::getHistory(){
 
     return m_history;
+}
+
+cv::KalmanFilter KalmanTracker::getKalmanFilter()
+{
+    return m_kalman_filter;
 }

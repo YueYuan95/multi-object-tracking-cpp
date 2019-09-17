@@ -78,12 +78,12 @@ int Graph::DFS(int n, int ns, int dep, float score){
         if(score > max && m_vetex_list.size()>m_max_clique.size()){
             max = score;
             m_max_clique.clear();
-            std::cout<<"Max clique is : ";
+            //std::cout<<"Max clique is : ";
             for(int i=0; i < m_vetex_list.size(); i++){
-               std::cout<<m_vetex_list[i]<<" ";
+               //std::cout<<m_vetex_list[i]<<" ";
                m_max_clique.push_back(m_vetex_list[i]); 
             }
-            std::cout<<std::endl;
+            //std::cout<<std::endl;
 
         }
         return 1;
@@ -128,21 +128,21 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes){
     
     for(int i=n-1; i >= 0; i--){
         ns = 0;
-        std::cout<<"Vetex : "<<i<<std::endl;
-        std::cout<<"First Neb : ";
+        //std::cout<<"Vetex : "<<i<<std::endl;
+        //std::cout<<"First Neb : ";
         for(int j=i+1; j < n; j++){
             if(m_dej_mat[i][j]){//是独立节点的话
-                std::cout<< j << " ";
+                //std::cout<< j << " ";
                 m_stk[1][ns++] = j;//列数
             }
         }
         //if(ns < m_max_clique.size()) continue;
-        std::cout<<std::endl;
+        //std::cout<<std::endl;
         m_vetex_list.push_back(i);
         DFS(n, ns, 1, m_node_list[i].score);//ns:the number of "1" in m+dej_mat
         m_vetex_list.pop_back();
         m_score_list[i] = max;
-        std::cout<<std::endl;
+        //std::cout<<std::endl;
     }
 
        

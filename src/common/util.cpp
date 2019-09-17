@@ -7,6 +7,43 @@
  *
  *===================================
 */
+// int get_rec_color()
+// {
+// //     int i=1;
+// //     // for (std::map<int, std::vector<int>>::iterator it = rec_color_map.begin(); it != rec_color_map.end();it++)
+// //     // {
+// //     //     //it->first = i;
+// //     //     it->second.push_back(rand()%255) ;
+// //     //     it->second.push_back(rand()%255) ;
+// //     //     it->second.push_back(rand()%255) ;
+// //     // }
+// //     for (std::map<int, cv::Scalar>::iterator it = rec_color_map.begin(); it != rec_color_map.end();it++)
+// //     {
+// //         //it->first = i;
+// //         it->second = cv::Scalar(rand()%255, rand()%255, rand()%255);
+// //     }
+//     int i;
+//     for (i=1; i<color_map_size; i++)
+//     {
+//         //it->first = i;
+//         //it->second = cv::Scalar(rand()%255, rand()%255, rand()%255);
+//         std::pair<int ,cv::Scalar> value(i,cv::Scalar(rand()%255, rand()%255, rand()%255));
+//         rec_color_map.insert(value);//插入新元素
+//     }
+//     return 1;
+
+//  }
+
+    // for (std::map<int, cv::Scalar>::iterator it = rec_color_map.begin(); it != rec_color_map.end();it++)
+    // {
+    //     //it->first = i;
+    //     it->second = cv::Scalar(rand()%255, rand()%255, rand()%255);
+    // }
+    
+
+
+//std::map<int,cv::Scalar> rec_color;
+
 
 int preorderTraversal(treeNode tree_node, std::vector<int>& path, 
                 std::vector<std::vector<int>>& path_list){
@@ -92,18 +129,21 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
     for(int j=0; j < results.size(); j++)
     {
 
-        std::string id = std::to_string(results[j].id);
+        int id = results[j].id;
 
         cv::Point left_top = cv::Point(results[j].box.topLeftX, results[j].box.topLeftY);////////////
         cv::Point right_bottom = cv::Point(results[j].box.topLeftX+results[j].box.width, results[j].box.topLeftY+results[j].box.height);
-        cv::putText(img, id, left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
+       
+        cv::putText(img, std::to_string(id), left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
         cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
+        //cv::putText(img, std::to_string(id), left_top, CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(rec_color_map[id][0],rec_color_map[id][1],rec_color_map[id][2]),3,8);
+        //cv::rectangle(img, left_top, right_bottom, cv::Scalar(rec_color_map[id][0],rec_color_map[id][1],rec_color_map[id][2]), 3, 1, 0);
         //cv::rectangle(img, left_top, right_bottom, ss, 3, 1, 0);
     }
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("tracking_result_mending/MOT16-13/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("tracking_result_0917/MOT16-04/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
@@ -124,7 +164,7 @@ int visualize(int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_resul
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("det_result_MOT16-13/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("det_result_MOT16-11"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
@@ -240,7 +280,7 @@ int writeResult(int frame, byavs::TrackeObjectCPUs tracking_results)
 {
     // std::string resultFileName;
     // resultFileName = "/home/lihy/multiple-object-tracking-cpp/build/MOT16-04.txt ";
-    std::ofstream outfile("tracking_result_mending/MOT16/MOT16-13.txt", std::ios::app);
+    std::ofstream outfile("tracking_result_0912/MOT16-11/MOT16-11.txt", std::ios::app);
     //outfile.open(resultFileName);
 
     if (!outfile.is_open())

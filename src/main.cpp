@@ -29,7 +29,13 @@ int main(){
   
   //test_writeResult();
 
-  //test_all();
+  test_all();
 
-  test_mwis();
+  //test_mwis();
+  //get_rec_color();
+  // for (std::map<int, cv::Scalar>::iterator it = rec_color_map.begin(); it != rec_color_map.end();it++)
+  // {
+  //   //std::cout<<it->first<<" "<<it->second[0]<<" "<<it->second[1]<<" "<<it->second[1]<<std::endl;
+  //   std::cout<<it->first<<" "<<it->second<<std::endl;
+  // }
 }
