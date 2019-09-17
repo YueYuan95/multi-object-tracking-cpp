@@ -630,7 +630,7 @@ int test_all()
    
     int filelength;
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-04";
+    std::string seq = "MOT16-13";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
@@ -710,7 +710,7 @@ int test_all()
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
             visualize(frame-N+1, img, tracking_results);
-            //writeResult(frame-N+1,tracking_results);
+            writeResult(frame-N+1,tracking_results);
         }
         
         // curr_img = files[frame-1];

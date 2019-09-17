@@ -143,7 +143,7 @@ int visualize(int frame, cv::Mat img, byavs::TrackeObjectCPUs results)
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     //cv::imshow("test",img);
     //cv::imwrite("result/"+std::to_string(frame)+".jpg", img);
-    cv::imwrite("tracking_result_0917/MOT16-04/"+std::to_string(frame)+".jpg", img);
+    cv::imwrite("tracking_result_0917/MOT16-13/"+std::to_string(frame)+".jpg", img);
     
     //cv::waitKey(1);
 
@@ -280,7 +280,7 @@ int writeResult(int frame, byavs::TrackeObjectCPUs tracking_results)
 {
     // std::string resultFileName;
     // resultFileName = "/home/lihy/multiple-object-tracking-cpp/build/MOT16-04.txt ";
-    std::ofstream outfile("tracking_result_0912/MOT16-11/MOT16-11.txt", std::ios::app);
+    std::ofstream outfile("tracking_result_0917/MOT16-13/MOT16-13.txt", std::ios::app);
     //outfile.open(resultFileName);
 
     if (!outfile.is_open())

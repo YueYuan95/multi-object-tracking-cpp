@@ -330,7 +330,7 @@ int Tree::createICH(){
         ICH_ptr->score = 0.01;
         ICH_ptr->index = -1;
         ICH_ptr->box = head_node->box;
-        ICH_ptr->kalman_tracker = head_node->kalman_tracker; 
+        //ICH_ptr->kalman_tracker = head_node->kalman_tracker; 
         head_node = ICH_ptr;
 
         /*delete the same child of ICH node
