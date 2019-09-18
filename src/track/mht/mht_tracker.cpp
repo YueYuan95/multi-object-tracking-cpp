@@ -243,16 +243,17 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
                 //IOU = get_iou(det_result[i], predict_box_post);
                 
                 //std::cout<<"IOU:"<<IOU<<std::endl;
-                /*if(i==42)
-                {
-                    std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
-                }*/
+                // if(i==3)
+                // {
+                //     std::cout<<"Detect index :"<< i+1 << " Leaf Node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
+                // }
 
                 //std::cout<<"Detect index :"<< i+1 << " Leaf_node "<< j <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
  
-                //if(IOU*exp(-distance)> 0.6*exp(-2*sqrt(3)))//&& distance < threshold
-                if(IOU*exp(-distance) > iou_thre )
+                if(IOU/(1+distance)> 0.4/(1+40))//&& distance < threshold
+                //if(IOU*exp(-distance) > iou_thre )
                 {
+                    //std::cout<<i+1<<" distance: "<<distance<<" iou: "<<IOU<<" iou*d_distance: "<<IOU*exp(-distance)<<std::endl;
                     //                          std::cout<<"Detect index :"<< i+1 <<" det_result height "<<det_result[i].height<<" predict height "<<predict_box.height<<std::endl;
                     ////if(std::max(det_result[i].height/leaf_node_predict_list[j].height, leaf_node_predict_list[j].height/det_result[i].height) <= maxScaleDiff)
                     if(std::max(det_result[i].height/leaf_node_list[j]->box.height, leaf_node_list[j]->box.height/det_result[i].height) <= maxScaleDiff)
@@ -261,7 +262,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
                         //std::cout<<"Detect index :"<< i+1 << " Leaf_node Index : "<< leaf_node_list[j]->index <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
                         
                         /*inorder to visulize the predict result*/
-                        std::cout<<"distance:"<<distance<<std::endl;
+                        //std::cout<<"distance:"<<distance<<std::endl;
 
                         std::shared_ptr<treeNode> det_node_ptr(new treeNode);
                         det_node_ptr->box = det_result[i];
@@ -514,7 +515,7 @@ int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
             ///tree_list[i].hit_times = 0;
             ///std::cout<<"after createing ICH, tree "<<tree_list[i].getId()<<": head_node index "<<tree_list[i].getHead()->index<<" head_node children size "<<tree_list[i].getHead()->children.size()<<std::endl;
         }
-    //std::cout<<"tree"<<tree_list[i].getId()<<" miss time:"<<tree_list[i].miss_times<<std::endl;
+    std::cout<<"tree"<<tree_list[i].getId()<<" miss time:"<<tree_list[i].miss_times<<std::endl;
     }
 }
 

@@ -579,7 +579,7 @@ int test_NMS()
     int N=5;
 
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-07";
+    std::string seq = "MOT16-09";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
@@ -630,7 +630,7 @@ int test_all()
    
     int filelength;
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-13";
+    std::string seq = "MOT16-04";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
@@ -767,53 +767,53 @@ int test_writeResult()
 }
 
 
-int test_mwis(){
+int test_mwis()
+{
 
-    int N=10;
-    int count_n = 0;
-    int filelength;
-    std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-13";
-    root = root + seq + "/";
-    std::string imgPath = root + "img1/";
-    std::string detPath = root + "det/det.txt";
+    // int N=10;
+    // int count_n = 0;
+    // int filelength;
+    // std::string root = "/nfs-data/tracking/MOT16/train/";
+    // std::string seq = "MOT16-13";
+    // root = root + seq + "/";
+    // std::string imgPath = root + "img1/";
+    // std::string detPath = root + "det/det.txt";
 
-    Detector detector;
-    MHT_tracker tracker;
-    detector.read_txt(detPath);
+    // Detector detector;
+    // MHT_tracker tracker;
+    // detector.read_txt(detPath);
 
-    std::vector<cv::Rect_<float>> det_result;
-    std::vector<float> det_result_score;
-    /*detector.inference(2, det_result);
-    for(int i=0;i<det_result.size();i++)
-    {
-        std::cout<<det_result[i];
-    }
-    std::cout<<std::endl;*/
+    // std::vector<cv::Rect_<float>> det_result;
+    // std::vector<float> det_result_score;
+    // /*detector.inference(2, det_result);
+    // for(int i=0;i<det_result.size();i++)
+    // {
+    //     std::cout<<det_result[i];
+    // }
+    // std::cout<<std::endl;*/
 
-    byavs::TrackeObjectCPUs tracking_results;
-    byavs::TrackeObjectCPUs predicting_results;
+    // byavs::TrackeObjectCPUs tracking_results;
+    // byavs::TrackeObjectCPUs predicting_results;
 
 
-    std::vector<std::string> files;
-    listDir(imgPath.c_str(), files, true);
-    sort(files.begin(), files.end());
+    // std::vector<std::string> files;
+    // listDir(imgPath.c_str(), files, true);
+    // sort(files.begin(), files.end());
 
-    std::string curr_img;
-    cv::Mat img;
-    int filesize = files.size();
-    std::cout<<"total frame:"<<filesize<<std::endl;
-    for(int frame=518 ;frame<filesize+N; frame++)//files.size()
-    {
-        detector.inference(frame, det_result, det_result_score);
+    // std::string curr_img;
+    // cv::Mat img;
+    // int filesize = files.size();
+    // std::cout<<"total frame:"<<filesize<<std::endl;
+    // for(int frame=518 ;frame<filesize+N; frame++)//files.size()
+    // {
+    //     detector.inference(frame, det_result, det_result_score);
 
-        std::cout<<"frame:"<<frame<<std::endl;
+    //     std::cout<<"frame:"<<frame<<std::endl;
 
-        tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
+    //     tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
        
-        det_result.clear();
-        tracking_results.clear();
+    //     det_result.clear();
+    //     tracking_results.clear();
 
-    }
-    
+    // }    
 }
