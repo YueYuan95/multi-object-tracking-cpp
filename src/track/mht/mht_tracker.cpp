@@ -251,7 +251,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
                 //std::cout<<"Detect index :"<< i+1 << " Leaf_node "<< j <<"  distance:"<<distance<<" IOU:"<<IOU<<std::endl;
  
                 if(IOU/(1+distance)> 0.4/(1+40))//&& distance < threshold
-                //if(IOU*exp(-distance) > iou_thre )
+                //if(distance<2*sqrt(3) )
                 {
                     //std::cout<<i+1<<" distance: "<<distance<<" iou: "<<IOU<<" iou*d_distance: "<<IOU*exp(-distance)<<std::endl;
                     //                          std::cout<<"Detect index :"<< i+1 <<" det_result height "<<det_result[i].height<<" predict height "<<predict_box.height<<std::endl;
@@ -296,7 +296,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
                 det_node_ptr->index = i+1;
                 det_node_ptr->score = 0.01;
                 det_node_ptr->level = 1;//initialize the level of each tree/node 1
-               //det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
+                //det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
 
                 Tree gate(det_node_ptr,3,N);//label=3,N=3
                 new_tree_list.push_back(gate);
