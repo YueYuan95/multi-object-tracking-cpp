@@ -100,7 +100,7 @@ int test_graph(){
     Graph A(vex_node_list);
     A.printGraph();
     std::map<int, std::vector<int>> routes;
-    A.mwis(routes);
+    A.mwis_greed(routes);
 }
 
 int test_treeTograph(){
@@ -630,7 +630,7 @@ int test_all()
    
     int filelength;
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-04";
+    std::string seq = "MOT16-10";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
@@ -767,8 +767,20 @@ int test_writeResult()
 }
 
 
-int test_mwis()
-{
+int test_mwis(){
+
+    int N=10;
+    int count_n = 0;
+    int filelength;
+    std::string root = "/nfs-data/tracking/MOT16/train/";
+    std::string seq = "MOT16-04";
+    root = root + seq + "/";
+    std::string imgPath = root + "img1/";
+    std::string detPath = root + "det/det.txt";
+
+    Detector detector;
+    MHT_tracker tracker;
+    detector.read_txt(detPath);
 
     // int N=10;
     // int count_n = 0;
@@ -795,10 +807,9 @@ int test_mwis()
     // byavs::TrackeObjectCPUs tracking_results;
     // byavs::TrackeObjectCPUs predicting_results;
 
-
-    // std::vector<std::string> files;
-    // listDir(imgPath.c_str(), files, true);
-    // sort(files.begin(), files.end());
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    sort(files.begin(), files.end());
 
     // std::string curr_img;
     // cv::Mat img;

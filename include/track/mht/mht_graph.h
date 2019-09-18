@@ -33,6 +33,9 @@ class Graph{
         Graph(std::vector<VexNode>);
         int DFS(int, int, int, float);
         int mwis(std::map<int,std::vector<int>>&);
+
+        int deal_candiate(int, int, std::vector<int>&, std::vector<int>, std::vector<int>&);
+        int mwis_greed(std::map<int, std::vector<int>>& routes);
         int printGraph();
 };
 

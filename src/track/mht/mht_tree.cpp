@@ -327,7 +327,7 @@ int Tree::createICH(){
         //std::cout<<"ICH_ptr->children.size:"<<ICH_ptr->children.size();
         ICH_ptr->parent = head_node;
         ICH_ptr->level = head_node->level+1;
-        ICH_ptr->score = 0.01;
+        ICH_ptr->score = 0.0001;
         ICH_ptr->index = -1;
         ICH_ptr->box = head_node->box;
         //ICH_ptr->kalman_tracker = head_node->kalman_tracker; 

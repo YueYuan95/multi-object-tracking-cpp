@@ -129,7 +129,8 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
     int i, j;
     float x1, y1, x2, y2, distance ;
     float threshold = 40;//threshold of the distance,changeable
-    float iou_thre = 0.4*exp(-40); //threshold of IOU score
+    float iou_thre = 0.4; //threshold of IOU score
+    float thre = 0.4 * exp(-40);
     float maxScaleDiff = 1.4;
     float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     //double iou; 
@@ -294,7 +295,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
                 det_node_ptr->box = det_result[i];
                 det_node_ptr->index = i+1;
-                det_node_ptr->score = 0.01;
+                det_node_ptr->score = 0.0001;
                 det_node_ptr->level = 1;//initialize the level of each tree/node 1
                 //det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
 
@@ -438,7 +439,8 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result, byavs::TrackeO
 
 int MHT_tracker::sovle_mwis(Graph graph, std::map<int, std::vector<int>>& path){
 
-    graph.mwis(path);
+    graph.mwis_greed(path);
+    //graph.mwis(path);
 }
 
 /*int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
