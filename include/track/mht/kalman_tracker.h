@@ -8,49 +8,45 @@
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-class KalmanTracker{
+class KalmanTracker {
+ private:
+  static int trk_count;
 
-    private:
-        
-        static int trk_count;
+  cv::Mat m_measurement;
+  cv::KalmanFilter m_kalman_filter;
+  cv::Rect_<float> m_bbox;
+  //Descriport should be DeepSort Class not here 
+  //Descriptor m_descriptor;
+  std::vector<float> m_descriptor;
+  std::vector<cv::Rect_<float>> m_history;
 
-        cv::Mat m_measurement;
-        cv::KalmanFilter m_kalman_filter;
-        cv::Rect_<float> m_bbox;
-        /*Descriport should be DeepSort Class not here */
-        //Descriptor m_descriptor;
-        std::vector<float> m_descriptor;
-        std::vector<cv::Rect_<float>> m_history;
+  std::string m_id;
+  int m_label;
+  int m_state;
+  int m_age;
+  int m_time_since_update;
 
-        std::string m_id;
-        int m_label;
-        int m_state;
-        int m_age;
-        int m_time_since_update;
+ public:
+  KalmanTracker();
+  KalmanTracker(cv::Rect_<float>,int);
 
-    public:
+  //Get private number
+  cv::Rect_<float> getBbox();
+  std::vector<float> getDescriptor();
+  std::string getId();
+  int getLabel();
+  int getState();
+  int getTime();
+  std::vector<cv::Rect_<float>> getHistory();
+  cv::KalmanFilter getKalmanFilter();
+  
+  //Set private number*/
+  int setState(int);
+  int setDescriptor(std::vector<float>);
 
-        KalmanTracker();
-        KalmanTracker(cv::Rect_<float>,int);
-        
-        /*Get private number*/
-        cv::Rect_<float> getBbox();
-        std::vector<float> getDescriptor();
-        std::string getId();
-        int getLabel();
-        int getState();
-        int getTime();
-        std::vector<cv::Rect_<float>> getHistory();
-        cv::KalmanFilter getKalmanFilter();
-
-        /*Set private number*/
-        int setState(int);
-        int setDescriptor(std::vector<float>);
-
-        int predict();
-        int update(cv::Rect_<float>);
-        cv::Rect_<float> getRectBox(float, float, float, float);
-
+  int predict();
+  int update(cv::Rect_<float>);
+  cv::Rect_<float> getRectBox(float, float, float, float);
 };
 
 #endif

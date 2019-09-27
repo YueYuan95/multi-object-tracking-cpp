@@ -20,15 +20,11 @@
 #include "mht_tracker.h"
 #include "byavs.h"
 
-//std::map<int,std::vector<int>> rec_color_map;
-// std::map<int, cv::Scalar> rec_color_map ;
-// int color_map_size = 2000;
-    
-// int get_rec_color();
 int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);
-int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);
+int visualize(int, cv::Mat, byavs::TrackeObjectCPUs results);//in test.cpp
 int visualize(int, cv::Mat,std::vector<cv::Rect_<float>> det_result);
+int visualize (int, cv::Mat, byavs::TrackeObjectCPUs, std::string);///
 int visualize(int , cv::Mat , byavs::TrackeObjectCPUs , char );
 void listDir(const char *name, std::vector<std::string> &fileNames, bool lastSlash);
 bool VexSort(VexNode, VexNode);
@@ -36,5 +32,6 @@ bool VexSortUp(VexNode, VexNode);
 double get_iou(cv::Rect_<float> , cv::Rect_<float>);
 double get_ov_n1(cv::Rect_<float> rec1, cv::Rect_<float> rec2);
 double get_ov_n2(cv::Rect_<float> rec1, cv::Rect_<float> rec2);
-int writeResult(int, byavs::TrackeObjectCPUs);
+int writeResult(int, byavs::TrackeObjectCPUs);//in test.cpp
+int writeResult(int, byavs::TrackeObjectCPUs, std::string, std::string);
 #endif

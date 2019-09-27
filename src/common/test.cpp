@@ -5,7 +5,7 @@
  *===================================
 */
 
-int test_graph(){
+int test_graph() {
     std::vector<VexNode> vex_node_list;
     VexNode temp_node;
 
@@ -103,7 +103,7 @@ int test_graph(){
     A.mwis_greed(routes);
 }
 
-int test_treeTograph(){
+int test_treeTograph() {
 
     /*Fake Tree No.1*/
     treeNode root = {{10,9,8,7},6,1,1,NULL};
@@ -234,29 +234,30 @@ int test_treeTograph(){
     TreeToGraph(tree_list, graph);
     graph.printGraph();
     graph.mwis(routes);
-    for(int j=0; j < tree_list.size(); j++){
-        if(routes.count(tree_list[j].getId())){
+    for (int j=0; j < tree_list.size(); j++) {
+        if (routes.count(tree_list[j].getId())) {
             tree_list[j].pruning(routes[tree_list[j].getId()]);
             tree_list[j].printTree(tree_list[j].getRoot());
         }   
     }
-    for(int i=0; i < tree_list.size(); i++){
+    for (int i=0; i < tree_list.size(); i++) {
         cv::Rect_<float> result_vector;
-        if(tree_list[i].sentResult(result_vector)){
-            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        if (tree_list[i].sentResult(result_vector)) {
+            std::cout << "ID is " << tree_list[i].getId() << ", Result is "
+                        << result_vector << std::endl;
         }
     }
-    for(int i=0; i < tree_list.size(); i++){
+    for (int i=0; i < tree_list.size(); i++) {
         cv::Rect_<float> result_vector;
-        if(tree_list[i].sentResult(routes[tree_list[i].getId()],result_vector)){
-            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        if (tree_list[i].sentResult(routes[tree_list[i].getId()], result_vector)) {
+            std::cout << "ID is "<< tree_list[i].getId() << ", Result is "
+                        << result_vector << std::endl;
         }
     }
   
 }
 
-
-int test_tree(){
+int test_tree() {
 
     treeNode root = {{10,9,8,7},6,1,1,NULL};
     std::shared_ptr<treeNode> root_ptr(new treeNode(root));
@@ -303,7 +304,7 @@ int test_tree(){
 
     //dict.clear();
 
-    std::cout<<"id:"<<test_tree.getId()<<std::endl;
+    std::cout << "id:" << test_tree.getId() << std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     //std::cout<<"root_node:"<<test_tree.getRoot()<<std::endl;
     // std::cout<<"leaf_node:"<<&(test_tree.getLeafNode()[0])<<std::endl;
@@ -332,9 +333,9 @@ int test_gating()
 {
     //fake det_result:
     std::vector<cv::Rect_<float>> det_result;
-    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);//
-    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);//will match
-    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);//will not match
+    cv::Rect_<float> box1 = cv::Rect(100,110,120,130);
+    cv::Rect_<float> box2 = cv::Rect(100,110,140,150);
+    cv::Rect_<float> box3 = cv::Rect(500,510,160,170);
     cv::Rect_<float> box4 = cv::Rect(100,110,180,190);
 
     det_result.push_back(box1);
@@ -361,7 +362,7 @@ int test_gating()
     {
         std::cout<<det_result[i];
     }
-    std::cout<<std::endl;*/////////////
+    std::cout<<std::endl;*/
 
     //create trees
     std::vector<Tree> tree_list;
@@ -377,9 +378,9 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr(new treeNode(node_a));
     std::shared_ptr<treeNode> node_b_ptr(new treeNode(node_b));
     
-    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};//100,90,100,130//283.84, 125.45, 55.569, 168.71
-    treeNode node_d = {{100,110,120,130},6,3,2,node_a_ptr};//100,110,140,150//369, 513, 79, 239
-    treeNode node_e = {{100,110,120,130},6,3,2,node_b_ptr};//2//100,110,160,170
+    treeNode node_c = {{100,90,100,130},6,3,4,node_a_ptr};
+    treeNode node_d = {{100,110,120,130},6,3,2,node_a_ptr};
+    treeNode node_e = {{100,110,120,130},6,3,2,node_b_ptr};
     treeNode node_f = {{100,90,120,110},6,3,3,node_b_ptr};
     
     std::shared_ptr<treeNode> node_c_ptr(new treeNode(node_c));
@@ -422,10 +423,10 @@ int test_gating()
     std::shared_ptr<treeNode> node_a_ptr2(new treeNode(node_a2));
     std::shared_ptr<treeNode> node_b_ptr2(new treeNode(node_b2));
     
-    treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};//
-    treeNode node_d2 = {{100,110,140,150},6,3,2,node_a_ptr2};//110,100,140,150//858.74, 234.93, 63.98, 193.94
-    treeNode node_e2 = {{100,110,140,150},6,3,2,node_b_ptr2};//1//110,110,160,170//292.02, 340.52, 59.629, 180.89
-    treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};//
+    treeNode node_c2 = {{110,90,100,130},6,3,4,node_a_ptr2};
+    treeNode node_d2 = {{100,110,140,150},6,3,2,node_a_ptr2};
+    treeNode node_e2 = {{100,110,140,150},6,3,2,node_b_ptr2};
+    treeNode node_f2 = {{110,90,120,110},6,3,3,node_b_ptr2};
     
     std::shared_ptr<treeNode> node_c_ptr2(new treeNode(node_c2));
     std::shared_ptr<treeNode> node_d_ptr2(new treeNode(node_d2));
@@ -462,27 +463,20 @@ int test_gating()
     //test_tracker.gating(det_result,tree_list);
 
     int i;
-    std::cout<<"After Gating :"<<std::endl;
-    for(i=0; i<tree_list.size(); i++)
-    {
+    std::cout << "After Gating :" << std::endl;
+    for (i=0; i<tree_list.size(); i++) {
         tree_list[i].printTree(tree_list[i].getRoot());
         std::cout<<std::endl;
     }
     
-    std::cout<<""<<std::endl;
-    for(i=0; i<tree_list.size(); i++)
-    {
-        for(auto iter :tree_list[i].getLeafNode()){
+    std::cout << "" << std::endl;
+    for (i=0; i<tree_list.size(); i++) {
+        for (auto iter :tree_list[i].getLeafNode()) {
             std::cout<< iter->index ;
         }
         std::cout<<std::endl;
     }
 
-    /*std::vector<Tree> tree_list;
-    tree_list.push_back(test_tree);
-    tree_list.push_back(test_tree_2);
-    tree_list.push_back(test_tree_3);*/
-    
     //test graph
     std::map<int, std::vector<int>> routes;
     routes.clear();
@@ -490,28 +484,27 @@ int test_gating()
     TreeToGraph(tree_list, graph);
     graph.printGraph();
     graph.mwis(routes);
-    for(int j=0; j < tree_list.size(); j++){
-        if(routes.count(tree_list[j].getId())){
+    for (int j = 0; j < tree_list.size(); j++) {
+        if (routes.count(tree_list[j].getId())) {
             tree_list[j].pruning(routes[tree_list[j].getId()]);
             tree_list[j].printTree(tree_list[j].getRoot());
         }   
     }
-    for(i=0; i < tree_list.size(); i++){
+    for (i=0; i < tree_list.size(); i++) {
         cv::Rect_<float> result_vector;
-        if(tree_list[i].sentResult(result_vector)){
-            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        if (tree_list[i].sentResult(result_vector)) {
+            std::cout << "ID is "<< tree_list[i].getId() << ", Result is "
+                        << result_vector<<std::endl;
         }
     }
-    for(i=0; i < tree_list.size(); i++){
+    for (i=0; i < tree_list.size(); i++) {
         cv::Rect_<float> result_vector;
-        if(tree_list[i].sentResult(routes[tree_list[i].getId()],result_vector)){
-            std::cout<<"ID is "<< tree_list[i].getId() << ", Result is "<< result_vector<<std::endl;
+        if (tree_list[i].sentResult(routes[tree_list[i].getId()], 
+            result_vector)) {
+            std::cout << "ID is " << tree_list[i].getId() << ", Result is "
+                        << result_vector<<std::endl;
         }
     }
-
-    //test tracker
-
-
 }
 
 int test_read_txt()
@@ -528,14 +521,13 @@ int test_read_txt()
 
     int i;
     std::map<int, std::vector<cv::Rect_<float>>>::iterator it;
-    for (it=detector.frame_det_map.begin(); it!=detector.frame_det_map.end();it++)
-    {
+    for (it = detector.frame_det_map.begin(); it != detector.frame_det_map.end();
+         it++) {
         auto value1 = it->first;
         auto value2 = it->second;
-        std::cout<<value1<<" ";
-        for(i=0; i<value2.size(); i++)
-        {
-            std::cout<<value2[i];
+        std::cout << value1 <<" ";
+        for (i=0; i<value2.size(); i++) {
+            std::cout << value2[i];
         }
         std::cout<<std::endl;
     }
@@ -543,13 +535,10 @@ int test_read_txt()
 
 }
 
-int test_detector_inference()
-{
+int test_detector_inference() {
     int frame = 1050;
-    std::vector<cv::Rect_<float>> destination;//random
-    std::vector<float> destination_score;//random
-    //destination.push_back(cv::Rect(1,2,3,4));
-    //destination.clear();
+    std::vector<cv::Rect_<float>> destination;
+    std::vector<float> destination_score;
 
     std::string root = "/nfs-data/tracking/MOT16/train/";
     std::string seq = "MOT16-07";
@@ -562,20 +551,16 @@ int test_detector_inference()
 
     detector.inference(frame, destination, destination_score);
     
-    //std::cout<<destination.size()<<std::endl;
-    std::cout<<frame<<" ";
+    std::cout << frame << " ";
     int i;
-    for(i=0;i<destination.size();i++)
-    {
-        std::cout<<destination[i];
-        std::cout<<" score "<<destination_score[i];
+    for(i = 0; i < destination.size(); i++) {
+        std::cout << destination[i];
+        std::cout << " score " << destination_score[i];
     }
     std::cout<<std::endl;
-
 }
 
-int test_NMS()
-{
+int test_NMS() {
     int N=5;
 
     std::string root = "/nfs-data/tracking/MOT16/train/";
@@ -588,8 +573,6 @@ int test_NMS()
     detector.read_txt(detPath);
 
     MHT_tracker tracker;
-
-
     std::vector<cv::Rect_<float>> det_result;
     std::vector<float> det_result_score;
     std::vector<cv::Rect_<float>> det_result_selected;
@@ -603,39 +586,35 @@ int test_NMS()
     std::string curr_img;
     cv::Mat img;
 
-    for(int frame =1 ;frame<30; frame++)//files.size()
+    for(int frame = 1; frame < 30; frame++)
     {
         detector.inference(frame, det_result, det_result_score);
-        std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
-        // for(int i=1;i<det_result.size(); i++)
-        // {
-        //     std::cout<<" det "<<i<<" ";
-        // }
+        std::cout << "frame:" << frame << " det_result size:" << det_result.size()
+                    << std::endl;
         
-        det_result_selected = tracker.NMS( det_result, det_result_score);
-        for(int j=0;j<det_result_selected.size(); j++)
-        {
-            std::cout<<" det_selected "<<j+1<<" box:"<<det_result_selected[j]<<std::endl;
+        det_result_selected = tracker.NMS(det_result, det_result_score);
+        for (int j = 0; j < det_result_selected.size(); j++) {
+            std::cout << " det_selected " << j+1 << " box:" << det_result_selected[j] 
+                        << std::endl;
         }
-        std::cout<<std::endl;
+        std::cout << std::endl;
         det_result.clear();
         det_result_score.clear();
     }
-
 }
 
-int test_all()
-{   
+int test_all() {
     int N=10;
-   
+    //detection file
     int filelength;
     std::string root = "/nfs-data/tracking/MOT16/train/";
-    std::string seq = "MOT16-10";
+    std::string seq = "MOT16-13";
     root = root + seq + "/";
     std::string imgPath = root + "img1/";
     std::string detPath = root + "det/det.txt";
-    
-    //get_rec_color();
+    std::vector<std::string> files;
+    listDir(imgPath.c_str(), files, true);
+    sort(files.begin(), files.end());
 
     Detector detector;
     MHT_tracker tracker;
@@ -643,115 +622,35 @@ int test_all()
 
     std::vector<cv::Rect_<float>> det_result;
     std::vector<float> det_result_score;
-    /*detector.inference(2, det_result);
-    for(int i=0;i<det_result.size();i++)
-    {
-        std::cout<<det_result[i];
-    }
-    std::cout<<std::endl;*/
-
     byavs::TrackeObjectCPUs tracking_results;
-    byavs::TrackeObjectCPUs predicting_results;
-
-
-    std::vector<std::string> files;
-    listDir(imgPath.c_str(), files, true);
-    sort(files.begin(), files.end());
 
     std::string curr_img;
     cv::Mat img;
     int filesize = files.size();
-    std::cout<<"total frame:"<<filesize<<std::endl;
-    for(int frame =1 ;frame<filesize+N; frame++)//files.size()
-    {
+    std::cout << "total frame:" << filesize << std::endl;
+    for (int frame =1; frame < filesize + N; frame++) {
         detector.inference(frame, det_result, det_result_score);
+        std::cout << "frame:" << frame << " det_result size:" << det_result.size()
+                    <<std::endl;
 
-        std::cout<<"frame:"<<frame<<" det_result size:"<<det_result.size()<<std::endl;
-        //for(int j=0;j<det_result.size();j++)
-        //{
-        //    std::cout<<det_result[j];
-        //}
-        //std::cout<<std::endl;
+        tracker.inference(det_result, det_result_score, tracking_results);
+        std::cout << "after inference, tracking_results size:" << tracking_results.size()
+                    << std::endl;
 
-        tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
-        std::cout<<"after inference, tracking_results size:"<<tracking_results.size()<<std::endl;
-        //std::cout<<"after gating:"<<std::endl;
-        //or(int i=0;i<tracker.get_tree_list().size();i++)
-        //{
-        //   tracker.get_tree_list()[i].printTree(tracker.get_tree_list()[i].getRoot());
-        //   std::cout<<std::endl;
-        //
-
-        //std::cout<<"current leaf_node:"<<std::endl;
-        //for(int i=0; i<tracker.get_tree_list().size(); i++)
-        //{
-        //    for(auto iter :tracker.get_tree_list()[i].getLeafNode())
-        //    {
-        //    std::cout<< iter->index ;
-        //    }
-        //std::cout<<std::endl;
-        //}
-
-        /*save det_result after NMS*/
-        if(det_result.size()!=0)
-        {
-            det_result = tracker.NMS( det_result, det_result_score);
-        }
-        
-        // std::string det_img_path = files[frame];
-        // cv::Mat detimg = cv::imread(det_img_path);
-        // visualize(frame, detimg, det_result);
-        //visualize(frame, detimg, predicting_results, 'K');
-
-        /*save tracking results after all*/
-        if(frame >= N)
-        {
-            //std::cout<<" "<<tracking_results.size()<<std::endl;
+        //save tracking results
+        if (frame >= N) {
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
             visualize(frame-N+1, img, tracking_results);
             writeResult(frame-N+1,tracking_results);
         }
         
-        // curr_img = files[frame-1];
-        // //curr_img = files[frame];
-        // img = cv::imread(curr_img);
-        // visualize(frame, img, tracking_results);
-    
-        // if((frame ==filesize-1) && (count_n<N))
-        // {
-        //     filesize++;
-        //     count_n++;
-        //     std::cout<<filesize<<std::endl;
-        // }
-       
         det_result.clear();
         tracking_results.clear();
-        
-
     }
-    
-    // {
-    //     test_tracker.get_tree_list()[i].printTree(test_tracker.get_tree_list()[i].getRoot());
-    //     std::cout<<std::endl;
-    // }
-    
-    // std::cout<<""<<std::endl;
-    // for(i=0; i<test_tracker.get_tree_list().size(); i++)
-    // {
-    //     for(auto iter :test_tracker.get_tree_list()[i].getLeafNode()){
-    //         std::cout<< iter->index ;
-    //     }
-    //     std::cout<<std::endl;
-    //}
-    //-----------------------------------------------------
-    //visualize the results
-
-    
 }
 
-int test_writeResult()
-{
+int test_writeResult() {
     byavs::TrackeObjectCPUs tracking_results;
     byavs::TrackeObjectCPU track;
     byavs::BboxInfo box0;
@@ -763,7 +662,7 @@ int test_writeResult()
     track.id = 1;
     tracking_results.push_back(track);
     //std::cout<<track.id;
-    writeResult(1,tracking_results);
+    writeResult(1, tracking_results);
 }
 
 
@@ -782,49 +681,7 @@ int test_mwis(){
     MHT_tracker tracker;
     detector.read_txt(detPath);
 
-    // int N=10;
-    // int count_n = 0;
-    // int filelength;
-    // std::string root = "/nfs-data/tracking/MOT16/train/";
-    // std::string seq = "MOT16-13";
-    // root = root + seq + "/";
-    // std::string imgPath = root + "img1/";
-    // std::string detPath = root + "det/det.txt";
-
-    // Detector detector;
-    // MHT_tracker tracker;
-    // detector.read_txt(detPath);
-
-    // std::vector<cv::Rect_<float>> det_result;
-    // std::vector<float> det_result_score;
-    // /*detector.inference(2, det_result);
-    // for(int i=0;i<det_result.size();i++)
-    // {
-    //     std::cout<<det_result[i];
-    // }
-    // std::cout<<std::endl;*/
-
-    // byavs::TrackeObjectCPUs tracking_results;
-    // byavs::TrackeObjectCPUs predicting_results;
-
     std::vector<std::string> files;
     listDir(imgPath.c_str(), files, true);
-    sort(files.begin(), files.end());
-
-    // std::string curr_img;
-    // cv::Mat img;
-    // int filesize = files.size();
-    // std::cout<<"total frame:"<<filesize<<std::endl;
-    // for(int frame=518 ;frame<filesize+N; frame++)//files.size()
-    // {
-    //     detector.inference(frame, det_result, det_result_score);
-
-    //     std::cout<<"frame:"<<frame<<std::endl;
-
-    //     tracker.inference(det_result, det_result_score, tracking_results, predicting_results);
-       
-    //     det_result.clear();
-    //     tracking_results.clear();
-
-    // }    
+    sort(files.begin(), files.end()); 
 }

@@ -1,4 +1,4 @@
-#ifndef __TREE_NODE_H_/*capitalize class name*/
+#ifndef __TREE_NODE_H_
 #define __TREE_NODE_H_
 
 #include <iostream>
@@ -8,60 +8,62 @@
 #include <deque>
 #include "kalman_tracker.h"
 
-typedef struct treeNode{
+typedef struct treeNode {
     cv::Rect_<float> box;
     float score;
     int level;
     int index;
     /* One node can only have one parent, if 
-    different node gating this same box or node to be chirld,
-    this same box should be different chirlden nodes in different parents node
+    different node gating this same box or node to be child,
+    this same box should be different children nodes in different parents node
     */
     std::shared_ptr<treeNode> parent;
     std::vector<std::shared_ptr<treeNode>> children;
     KalmanTracker kalman_tracker;
 } treeNode;
 
-class Tree{
-    private:
-        static int tree_id;
-        int id, N, label;
-        std::shared_ptr<treeNode> root_node;
-        std::shared_ptr<treeNode> head_node;
-        std::vector<std::shared_ptr<treeNode>> leaf_node;
-    public:
+class Tree {
+ private:
+  static int tree_id;
+  int id, N, label;
+  std::shared_ptr<treeNode> root_node;
+  std::shared_ptr<treeNode> head_node;
+  std::vector<std::shared_ptr<treeNode>> leaf_node;
+ public:
+  Tree(std::shared_ptr<treeNode> root, int label, int N);
+    
+  //public number
+  // miss_times records the miss_object 
+  // by counting how many times the tree isn't gated or confirmed
+  int miss_times;
+  // hit_times records the miss_object 
+  // by counting how many times the tree is confirmed
+  // currently DEPRECATED
+  //int hit_times;
 
-        Tree(std::shared_ptr<treeNode> root, int label, int N);
-        
-        /*public number*/
-        int miss_times;
-        int hit_times;
-        
-        /*set function*/
-        int setHead();
-        
-        /*get function*/
-        int getId();
-        int getLabel();
-        int getN();
-        std::shared_ptr<treeNode> getRoot();
-        std::shared_ptr<treeNode> getHead();
-        std::vector<std::shared_ptr<treeNode>> getLeafNode();
+  //set function
+  int setHead();
 
-        int addNode(int, std::shared_ptr<treeNode>);
-        int changeLeaf();
-        int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
-        int pruning(std::vector<int> route);
-        int generateLeafNode();
-        int preTravel(std::shared_ptr<treeNode>);
+  //get function
+  int getId();
+  int getLabel();
+  int getN();
+  std::shared_ptr<treeNode> getRoot();
+  std::shared_ptr<treeNode> getHead();
+  std::vector<std::shared_ptr<treeNode>> getLeafNode();
 
-        int sentResult(std::vector<int>, cv::Rect_<float>&);
-        int sentResult(cv::Rect_<float>&);
-        void printTree(std::shared_ptr<treeNode> root);
+  int addNode(int, std::shared_ptr<treeNode>);
+  int changeLeaf();
+  int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
+  int pruning(std::vector<int> route);
+  int generateLeafNode();
+  int preTravel(std::shared_ptr<treeNode>);
 
-        int createICH();//create inconfirmed head_node
+  int sentResult(std::vector<int>, cv::Rect_<float>&);
+  int sentResult(cv::Rect_<float>&);
+  void printTree(std::shared_ptr<treeNode> root);
 
-
+  int createICH();//create inconfirmed head_node
 };
 
 #endif
