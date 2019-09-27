@@ -86,5 +86,5 @@ int main() {
   end = clock();
   duration = (double)(end - start)/CLOCKS_PER_SEC;
   std::cout << "Tracking time cost : " << duration <<" s " << std::endl;
-  std::cout << "fps: " << duration/filesize << "s/frame" << std::endl;
+  std::cout << "fps: " << filesize/duration << "frames/s" << std::endl;
 }
