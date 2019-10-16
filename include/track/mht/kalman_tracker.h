@@ -1,3 +1,11 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Yuan Yue
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The class Kalman filter is to operate in a Vex dimension
+****************************************************************************/
 #ifndef _KALMAN_TRACKER_H_
 #define _KALMAN_TRACKER_H_
 

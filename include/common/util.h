@@ -1,3 +1,23 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/common
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The following functions are tools, in every chapter
+                   *preorderTraversal:Pretraversal
+                   *backTraversal:Post traversal
+                   *TreeToGraph:Transfers a tree to a graph
+                   *visualize:Visualizes the tracking results
+                   *listDir:Opens a dir and gets information
+                   *VexSort:compare the vex score between A and B 
+                            and return the bigger
+                   *VexSortUp:compare the vex score between A and B and 
+                    return the smaller
+                   *get_ov_n1:Calculate the overlap base on rect1
+                   *get_ov_n2:Calculate the overlap base on rect2
+                   *writeResult:Write result in files
+****************************************************************************/
 #ifndef __UTIL_H_
 #define __UTIL_H_
 

@@ -111,7 +111,7 @@ int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results,
 }
 
 /*
-Visualizes the tracking results in only in the script test.c
+Visualizes the tracking results in only in the script test.cpp
 Input:frame: the frame number; img: the kth image; results: tracking results
 */
 int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results) {
@@ -272,6 +272,7 @@ double get_ov_n2 (cv::Rect_<float> rec1, cv::Rect_<float> rec2) {
 
 /*
 Write result in files
+Input: frame number, tracking results, dir to save and txt to save
 */
 int writeResult (int frame, byavs::TrackeObjectCPUs tracking_results, 
                 std::string result_dir, std::string txt_name) {

@@ -1,3 +1,12 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying & Yuan Yue
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The class is to read the information from the detect 
+                    results
+****************************************************************************/
 #ifndef _DETECTOR_H_
 #define _DETECTOR_H_
 

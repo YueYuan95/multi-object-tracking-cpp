@@ -1,4 +1,21 @@
-
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*Operations of detected result and beginning to track
+                   *inference:inference of detect result and beginning of tracking
+                   *Pre-selects the detect result, excluding the overlaps
+                   *gating:Updates the tracking tree family by gating
+                   *sovle_mwis:choses an MWIS method
+                   *pruning:pruns the unselected routes combining the ICH theory
+                   *sentResult:confirms tracking results
+                   *backTraversal:post traverse a tree
+                   *TreeToGraph:transfers tree to graph
+                   *computeDistance:computes the cost_matrix of Hunguarian Algorithm
+                   *get functions: return the tree list
+****************************************************************************/
 #ifndef _MHT_TRACKER_H_
 #define _MHT_TRACKER_H_
 

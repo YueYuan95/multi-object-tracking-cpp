@@ -1,3 +1,21 @@
+/**************************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The struct, treenode, is a node of a tree
+                   *The class, Tree, is to form tracking tree family
+                   *addNode:Adds leaf to a tree
+                   *changeLeaf:Updates the current leaf_node
+                   *pruning:pruns the branches of a headnode, which is the first index of a route
+                   *preTravel:pre traversal
+                   *generateLeafNode:pre traversal without input
+                   *sentResult:inference funtion of sending tracking results
+                   *printTree:print the tree level by level
+                   *createICH: create ICH head node for inconfirmed tree
+                   *get functions: return the values of a tree
+*****************************************************************************************/
 
 #ifndef __TREE_NODE_H_
 #define __TREE_NODE_H_

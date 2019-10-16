@@ -1,3 +1,13 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/common
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The following functions are to test functions in 
+                    every chapter
+****************************************************************************/
+
 #ifndef _TEST_H_
 #define _TEST_H_
 

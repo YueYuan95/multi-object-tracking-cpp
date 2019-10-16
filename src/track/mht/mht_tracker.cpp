@@ -49,6 +49,9 @@ int MHT_tracker::inference (std::vector<cv::Rect_<float>> det_result,
     pruning(path);
 }
 
+/*
+Pre-selects the detect result, excluding the overlaps
+*/
 std::vector<cv::Rect_<float>> MHT_tracker::NMS (
     std::vector<cv::Rect_<float>> det_result,
     std::vector<float> det_result_score) {
@@ -251,11 +254,12 @@ int MHT_tracker::sovle_mwis (Graph graph, std::map<int, std::vector<int>>& path)
     //graph.mwis(path);
 }
 
-
-int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
 /*
  pruns the unselected routes combining the ICH theory
+ Input: the confirmed tracking path
  */
+int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
+
     for (int i = 0; i < tree_list.size();i++) {
         if (path.count(tree_list[i].getId())) {  //if confirmed
             tree_list[i].pruning(path[tree_list[i].getId()]);

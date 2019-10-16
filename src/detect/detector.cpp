@@ -4,7 +4,8 @@ Copyright(C)：AVS
   *Author:  // Li Haoying & Yuan Yue
   *Version:  // 2
   *Date:  //2019-10-16
-  *Description:  //*The class is to read the information from the detect results
+  *Description:  //*The class is to read the information from the detect 
+                    results
 ****************************************************************************/
 #include "detector.h"
 

@@ -6,7 +6,7 @@ Copyright(C)：AVS
   *Date:  //2019-10-16
   *Description:  //*The struct, treenode, is a node of a tree
                    *The class, Tree, is to form tracking tree family
-****************************************************************************/
+*****************************************************************************************/
 
 #include "mht_tree.h"
 #include <iostream>
@@ -126,6 +126,9 @@ int Tree::pruning(std::vector<int> route) {
     }
 }
 
+/*
+pre traversal
+*/
 int Tree::preTravel(std::shared_ptr<treeNode> node) {
     if (node->children.size() == 0){
         leaf_node.push_back(node);
@@ -136,7 +139,9 @@ int Tree::preTravel(std::shared_ptr<treeNode> node) {
     }
 }
 
-
+/*
+pre traversal without input
+*/
 int Tree::generateLeafNode() {
     leaf_node.clear();
     if (head_node->children.size() == 0){
