@@ -1,3 +1,4 @@
+
 #ifndef __TREE_NODE_H_
 #define __TREE_NODE_H_
 
@@ -41,17 +42,6 @@ class Tree {
   // currently DEPRECATED
   //int hit_times;
 
-  //set function
-  int setHead();
-
-  //get function
-  int getId();
-  int getLabel();
-  int getN();
-  std::shared_ptr<treeNode> getRoot();
-  std::shared_ptr<treeNode> getHead();
-  std::vector<std::shared_ptr<treeNode>> getLeafNode();
-
   int addNode(int, std::shared_ptr<treeNode>);
   int changeLeaf();
   int addNode(std::map<int, std::vector<std::shared_ptr<treeNode>>> dict);
@@ -64,6 +54,15 @@ class Tree {
   void printTree(std::shared_ptr<treeNode> root);
 
   int createICH();//create inconfirmed head_node
+  //get function
+  int getId();
+  int getLabel();
+  int getN();
+  std::shared_ptr<treeNode> getRoot();
+  std::shared_ptr<treeNode> getHead();
+  std::vector<std::shared_ptr<treeNode>> getLeafNode();
+
+  
 };
 
 #endif

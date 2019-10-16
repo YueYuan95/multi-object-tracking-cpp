@@ -1,8 +1,19 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/common
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The following functions are tools, in every chapter
+****************************************************************************/
 #include "util.h"
 
+/*
+Pretraversal
+*/
 int preorderTraversal (treeNode tree_node, std::vector<int>& path, 
                        std::vector<std::vector<int>>& path_list) {
-    
+
     path.push_back(tree_node.index);
     if (tree_node.children.size() == 0){
         path_list.push_back(path);
@@ -14,6 +25,7 @@ int preorderTraversal (treeNode tree_node, std::vector<int>& path,
     }
 }
 
+/*Post traversal*/
 int backTraversal (treeNode tree_node, std::shared_ptr<treeNode> head_node,
          std::vector<int>& path, std::vector<std::vector<int>>& path_list, 
          int N) {
@@ -44,8 +56,10 @@ int backTraversal (treeNode tree_node, std::shared_ptr<treeNode> head_node,
     }
 }
 
+/* Transfers a tree to a graph*/
 int TreeToGraph(std::vector<Tree> tree_list, Graph& graph) {
-// transfers a tree to a graph
+
+
     std::vector<int> path; 
     std::vector<std::vector<int>> path_list;
     std::vector<VexNode> graph_node_list;
@@ -74,9 +88,10 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph) {
     graph = Graph(graph_node_list);
 }
 
+/*Visualizes the tracking results */
 int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results, 
                 std::string result_dir) {
-//visualizes the tracking results
+
     for (int j=0; j < results.size(); j++) {
         int id = results[j].id;
 
@@ -95,8 +110,12 @@ int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results,
     cv::imwrite(result_dir + std::to_string(frame) + ".jpg", img);
 }
 
+/*
+Visualizes the tracking results in only in the script test.c
+Input:frame: the frame number; img: the kth image; results: tracking results
+*/
 int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results) {
-//visualizes the tracking results in test.cpp
+
     for(int j=0; j < results.size(); j++) {
         int id = results[j].id;
 
@@ -116,9 +135,13 @@ int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results) {
                 + std::to_string(frame) + ".jpg", img);
 }
 
+/*
+Saves the detection result after NMS
+DEPRECATED, it was previously used to save det_result after NMS
+*/
 int visualize (int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_result) {  
-//save the detection result after NMS
-//DEPRECATED
+
+
     for (int j=0; j < detect_result.size(); j++) {
         std::string id = std::to_string(j+1);
 
@@ -131,10 +154,13 @@ int visualize (int frame, cv::Mat img, std::vector<cv::Rect_<float>> detect_resu
     cv::imwrite("det_result_MOT16-11" + std::to_string(frame) + ".jpg", img);
 }
 
+/*
+save the Kalman prediction if Kalman filter is used
+DEPRECATED,beacase it is not stable
+*/
 int visualize (int frame, cv::Mat img, 
                 byavs::TrackeObjectCPUs results, char filter) {  
-//save the Kalman prediction if Kalman filter is used
-//DEPRECATED
+
     for (int j=0; j < results.size(); j++) {
         std::string id = std::to_string(results[j].id);
 
@@ -154,8 +180,13 @@ int visualize (int frame, cv::Mat img,
     cv::imwrite("Kalman_predict/" + std::to_string(frame) + ".jpg", img);
 }
 
+/*
+Opens a dir and gets information
+Input:dir name, filename and default
+*/
 void listDir (const char *name, std::vector<std::string> &fileNames, 
                 bool lastSlash) {
+
     DIR *dir;
     struct dirent *entry;
     struct stat statbuf;
@@ -192,11 +223,19 @@ void listDir (const char *name, std::vector<std::string> &fileNames,
         closedir(dir);
 }
 
+/* 
+compare the vex score between A and B and return the bigger
+*/
 bool VexSort (VexNode a, VexNode b) {
+
     return (a.score > b.score);
 }
 
+/* 
+compare the vex score between A and B and return the smaller
+*/
 bool VexSortUp (VexNode a, VexNode b) {
+
     return (a.score < b.score);
 }
 
@@ -211,23 +250,32 @@ double get_iou (cv::Rect_<float> detection, cv::Rect_<float> tracker) {
    return (double)(in/un);
 }
 
+/* 
+Calculate the overlap base on rect1
+*/
 double get_ov_n1 (cv::Rect_<float> rec1, cv::Rect_<float> rec2) {
-    //overlap base on rect1
+
     float in = (rec1 & rec2).area();
     float un = rec1.area();
     return (double)(in/un);
 }
 
+/*
+Calculate the overlap base on rect2
+*/
 double get_ov_n2 (cv::Rect_<float> rec1, cv::Rect_<float> rec2) {
-    //overlap base on rect2
+
     float in = (rec1 & rec2).area();
     float un = rec2.area();
     return (double)(in/un);
 }
 
+/*
+Write result in files
+*/
 int writeResult (int frame, byavs::TrackeObjectCPUs tracking_results, 
                 std::string result_dir, std::string txt_name) {
-//  write result in files
+
     std::ofstream outfile(result_dir + txt_name, std::ios::app);
 
     if (!outfile.is_open()) {
@@ -252,8 +300,11 @@ int writeResult (int frame, byavs::TrackeObjectCPUs tracking_results,
     return 0;
 }
 
+/*
+WriteResult a specific file
+*/
 int writeResult (int frame, byavs::TrackeObjectCPUs tracking_results) {
-//writeResult a specific file
+
     std::ofstream outfile("tracking_result_0925/MOT16-11/MOT16-11.txt", 
                             std::ios::app);
     //std::ofstream outfile(result_dir + txt_name, std::ios::app);

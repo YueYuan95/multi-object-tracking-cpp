@@ -1,3 +1,12 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Yuan Yue
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The class Kalman filter is to operate in a Vex dimension
+****************************************************************************/
+
 #include "kalman_tracker.h"
 
 int KalmanTracker::trk_count = 1;
@@ -47,7 +56,11 @@ KalmanTracker::KalmanTracker(cv::Rect_<float> init_box, int label) {
 
 }
 
-int KalmanTracker::predict() {  
+/*
+Predict the boxes
+*/
+int KalmanTracker::predict() { 
+ 
     cv::Mat predicted_mat = m_kalman_filter.predict();
     //std::cout<<"success"<<std::endl;
     m_age += 1;
@@ -68,7 +81,12 @@ int KalmanTracker::predict() {
 
 }
 
+/*
+Updates the tracking boxes
+Input:detect results
+*/
 int KalmanTracker::update(cv::Rect_<float> det_result) {
+
     //measurement
     m_measurement.at<float>(0,0) = det_result.x + det_result.width / 2;
     m_measurement.at<float>(1,0) = det_result.y + det_result.height / 2;
@@ -95,6 +113,19 @@ int KalmanTracker::update(cv::Rect_<float> det_result) {
     return 1;
 }
 
+int KalmanTracker::setState(int state){
+    m_state = state;
+    return m_state;
+}
+
+int KalmanTracker::setDescriptor(std::vector<float> descriptor) {
+    m_descriptor = descriptor;
+    return 1;
+}
+
+/*
+The get functions
+*/
 cv::Rect_<float> KalmanTracker::getRectBox(float cx, float cy, float area, 
                                            float ratio) {
     float w, h;
@@ -115,16 +146,6 @@ cv::Rect_<float> KalmanTracker::getRectBox(float cx, float cy, float area,
 		y = 0;
 
     return cv::Rect_<float>(int(x),int(y),int(w),int(h));
-}
-
-int KalmanTracker::setState(int state){
-    m_state = state;
-    return m_state;
-}
-
-int KalmanTracker::setDescriptor(std::vector<float> descriptor) {
-    m_descriptor = descriptor;
-    return 1;
 }
 
 cv::Rect_<float> KalmanTracker::getBbox() {

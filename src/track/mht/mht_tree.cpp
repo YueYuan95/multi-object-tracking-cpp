@@ -1,3 +1,13 @@
+/**************************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The struct, treenode, is a node of a tree
+                   *The class, Tree, is to form tracking tree family
+****************************************************************************/
+
 #include "mht_tree.h"
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -8,7 +18,13 @@
 
 int Tree::tree_id = 1;
 
-Tree::Tree (std::shared_ptr<treeNode> root, int i, int n) {    
+/*
+Forms tracking tree family
+Input: tree root node, label and N
+*/
+Tree::Tree (std::shared_ptr<treeNode> root, int i, int n) {  
+
+
     id = tree_id;
     tree_id++;
     label = i;
@@ -20,14 +36,23 @@ Tree::Tree (std::shared_ptr<treeNode> root, int i, int n) {
     //hit_times = 0;  //DEPRECATED
 }
 
+/*
+Adds leaf to a tree
+The inputs are the node's index(label) and the node itself
+*/
 int Tree::addNode (int node_index, std::shared_ptr<treeNode> tree_Node) {
+
+
     tree_Node->parent = leaf_node[node_index];
     tree_Node->children.clear();
     leaf_node[node_index]->children.push_back(tree_Node);   
 }
 
+/*  
+Updates the current leaf_node 
+*/
 int Tree::changeLeaf () { 
-// uodate the current leaf_node 
+
     if(leaf_node.size() == 0) return 1;
     if(leaf_node.size() == 1 && leaf_node[0]->children.size() == 0) return 1;
     std::vector<std::shared_ptr<treeNode>> candidate;
@@ -40,9 +65,14 @@ int Tree::changeLeaf () {
     leaf_node = candidate;    
 }
 
+/*
+search the indexes' nodes in leaf_node
+then add the nodes' children
+the inputs is the dictionary of a route
+*/
 int Tree::addNode (std::map<int, std::vector<std::shared_ptr<treeNode>>> dict) {
-//search the indexes' nodes in leaf_node
-//then add the nodes' children
+
+
     std::map<int, std::vector<std::shared_ptr<treeNode>>>::iterator it;
     it = dict.begin();
     std::vector<std::shared_ptr<treeNode>> sub_children_node;
@@ -61,9 +91,14 @@ int Tree::addNode (std::map<int, std::vector<std::shared_ptr<treeNode>>> dict) {
     }
     leaf_node = sub_children_node; 
 }
-        
-int Tree::pruning(std::vector<int> route)
-{
+
+
+/*
+pruns the branches of a headnode, which is the first index of a route
+the input is the route
+*/   
+int Tree::pruning(std::vector<int> route) {
+
     if ((leaf_node[0]->level - head_node->level) < (N-1)) {       
         return 1;
     }
@@ -112,7 +147,12 @@ int Tree::generateLeafNode() {
     }
 }
 
+/* 
+inference funtion of sending tracking results
+Input: the tracking result
+*/
 int Tree::sentResult (std::vector<int> route, cv::Rect_<float>& result) {
+
     if (route[0] == 0) {
         return 0;
     }
@@ -124,7 +164,13 @@ int Tree::sentResult (std::vector<int> route, cv::Rect_<float>& result) {
     } 
 }
 
+
+/*
+inference function of sending tracking results
+Input: the tracking result
+*/
 int Tree::sentResult (cv::Rect_<float>& result) {
+
     if (leaf_node[0]->level >= N) {
         result = head_node->box;
         return 1;
@@ -133,8 +179,11 @@ int Tree::sentResult (cv::Rect_<float>& result) {
     }
 }
 
+/*
+print the tree node level by level
+*/
 void Tree::printTree (std::shared_ptr<treeNode> root) {
-// print the tree node level by level
+
     if (root == NULL) {
         return;
     }
@@ -176,11 +225,15 @@ void Tree::printTree (std::shared_ptr<treeNode> root) {
     std::cout<<std::endl;
 }
 
+/* 
+An ICH node appears when the tree is not confirmed
+index:-1, box: head_node's box, score:0.0001, children: the head_node's children
+the ICH node will become the head_node of a tree after pruning
+*/
 int Tree::createICH() {
-// an ICH node appears when the tree is not confirmed
-// index:-1, box: head_node's box, score:0.0001, children: the head_node's children
-// the ICH node will become the head_node of a tree after pruning
-    if (leaf_node[0]->level - head_node->level == (N-1)) {  //exclude the first N frames
+
+    //exclude the first N frames
+    if (leaf_node[0]->level - head_node->level == (N-1)) {  
         int i, j;
         std::shared_ptr<treeNode> ICH_ptr(new treeNode);
         
@@ -194,6 +247,7 @@ int Tree::createICH() {
         ICH_ptr->score = 0.01;
         ICH_ptr->index = -1;
         ICH_ptr->box = head_node->box;
+        // if Kalman theory is used:
         //ICH_ptr->kalman_tracker = head_node->kalman_tracker; 
         head_node = ICH_ptr;
 
@@ -218,6 +272,8 @@ int Tree::createICH() {
         return 1;
     }
 }
+
+// get functions:
 
 int Tree::getId() {
     return id;

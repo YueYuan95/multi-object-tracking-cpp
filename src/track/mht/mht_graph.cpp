@@ -1,3 +1,8 @@
+/***************************************************************************************
+Author: Yuan Yue
+The Class, Graph, is to solve MWIS and chose the right route 
+***************************************************************************************/
+
 #include "mht_graph.h"
 
 Graph::Graph(){
@@ -53,9 +58,9 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
                         vex_node_list[j].path[k] != 0) {
                        if (vex_node_list[i].path[k] != -1 && 
                             vex_node_list[j].path[k] != -1) {
-                            m_adj_mat[i][j] = 1;
+                            m_adj_mat[i][j] = 1;//yuantu, when there is an edge
                             m_adj_mat[j][i] = 1;
-                            m_dej_mat[i][j] = 0;
+                            m_dej_mat[i][j] = 0;//butu
                             m_dej_mat[j][i] = 0;
                             break;
                        }
@@ -67,6 +72,9 @@ Graph::Graph(std::vector<VexNode> vex_node_list){
     m_score = 0.0;
 }
 
+/*
+Depth-first traversal
+*/
 int Graph::DFS(int n, int ns, int dep, float score) {  
     if (ns == 0) {
         if (score > max && m_vetex_list.size() > m_max_clique.size()) {
@@ -115,8 +123,12 @@ int Graph::DFS(int n, int ns, int dep, float score) {
     return 1;
 }
 
+/*
+Generate global hypothesis by MWIS
+Input: different node combination of a route
+*/
 int Graph::mwis(std::map<int, std::vector<int>>& routes) {
-// generate global hypothesis by MWIS
+
     m_max_clique.clear();
     routes.clear();
     int n = m_node_list.size();
@@ -157,8 +169,11 @@ int Graph::mwis(std::map<int, std::vector<int>>& routes) {
 
 int Graph::deal_candiate (int i, int max_index, std::vector<int>& candiate_vex, 
                 std::vector<int> neb, std::vector<int>& m_max_clique) {
+/*
+               
+*/
     if (neb.size() == 0) {
-        candiate_vex[i] = -1;
+        candiate_vex[i] = -1;//if the route node is independent
         m_max_clique.push_back(i);
         return 1;
     }
@@ -179,9 +194,13 @@ int Graph::deal_candiate (int i, int max_index, std::vector<int>& candiate_vex,
     }
 }
 
+/* 
+Generates global hypothesis by MWIS
+Generate MWIS by greedy algorithem
+Input: different node combination of a route
+*/
 int Graph::mwis_greed(std::map<int, std::vector<int>>& routes) {
-// generate global hypothesis by MWIS
-// generate MWIS by greed algorithem
+
     std::vector<int> candiate_vex;
     std::vector<int> neb;
 
@@ -200,8 +219,8 @@ int Graph::mwis_greed(std::map<int, std::vector<int>>& routes) {
             int max_index = i;
             float max_score = m_node_list[i].score;
             for (int j = 0; j < candiate_vex.size(); j++){
-                if (candiate_vex[j] != -1){
-                    if (m_adj_mat[i][candiate_vex[j]]){
+                if (candiate_vex[j] != -1){//if the node exists 
+                    if (m_adj_mat[i][candiate_vex[j]]){//and connects the current node
                         //std::cout<<candiate_vex[j]<< " ";
                         neb.push_back(candiate_vex[j]);
                         if (m_node_list[candiate_vex[j]].score > max_score) {
@@ -230,6 +249,9 @@ int Graph::mwis_greed(std::map<int, std::vector<int>>& routes) {
     }
 }
 
+/*
+Prints the graph
+*/
 int Graph::printGraph() {
     std::cout << "Adj Mat is" << std::endl;
     for (auto row : m_adj_mat) {

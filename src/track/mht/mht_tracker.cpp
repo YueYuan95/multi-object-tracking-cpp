@@ -1,5 +1,18 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*Operations of detected result and beginning to track
+****************************************************************************/
+
 #include "mht_tracker.h"
 
+/*
+The inference of detect result and beginning of tracking
+Input: detect results, detect score and a vector to save the tracking results
+*/
 int MHT_tracker::inference (std::vector<cv::Rect_<float>> det_result, 
                             std::vector<float> det_result_score, 
                             byavs::TrackeObjectCPUs& results) {
@@ -93,13 +106,19 @@ std::vector<cv::Rect_<float>> MHT_tracker::NMS (
     return  detection;
 }
 
+/*
+Updates the tracking tree family by gating
+Input:detect results
+*/
 int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
     
     int i, j;
     float x1, y1, x2, y2, distance ;
     float distance_thre = 40;//threshold of the distance,changeable
     float iou_thre = 0.4; //threshold of IOU score
-    //float thre = iou_thre * exp(-distance_thre); //DEPRECATED
+    //used in another candadate gating methed
+    //float thre = iou_thre * exp(-distance_thre); 
+    
     float maxScaleDiff = 1.4;
     float xx1, yy1, xx2, yy2, w, h, IOU;//IOU is the score
     float zero = 0;
@@ -107,7 +126,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
     std::vector<Tree> new_tree_list;
     new_tree_list.clear();
     
-    //pushes the leaf_node of the trees into a vector
+    // pushes the leaf_node of the trees into a vector
     std::vector<std::shared_ptr<treeNode>> leaf_node_list;
     leaf_node_list.clear();
     for (i = 0; i < tree_list.size(); i++) {
@@ -116,7 +135,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
         }
     }
     
-    //matches each detected box to leaf_nodes in the leaf_node_list
+    // matches each detected box to leaf_nodes in the leaf_node_list
     for (i = 0; i < det_result.size(); i++) {
             success_flag = false;
 
@@ -128,18 +147,22 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
                 //caculates the central coordinate of the leaf_node box
                 x2 = leaf_node_list[j]->box.x + leaf_node_list[j]->box.width/2;
                 y2 = leaf_node_list[j]->box.y + leaf_node_list[j]->box.height/2;
-                //KalmanTracker temp_kalman = leaf_node_list[j]->kalman_tracker;///
+                // the following comments works if Kalman fiter theory is used:
+                //KalmanTracker temp_kalman = leaf_node_list[j]->kalman_tracker;
                 //temp_kalman.predict();///
-                //cv::Rect_<float> predict_box = temp_kalman.getBbox();///
+                //cv::Rect_<float> predict_box = temp_kalman.getBbox();
                 //x2 = predict_box.x + predict_box.width/2;
                 //y2 = predict_box.y + predict_box.height/2;
                 //cv::Mat P = temp_kalman.getKalmanFilter().errorCovPre;
                 //double cov = P.at<float>(0,0);
                 //std::cout<<"erroCovPre: "<<P<<std::endl;
-                //std::cout<<"cov: "<<cov<<std::endl;//P(cv::Range(0,1),cv::Range(0,1))
-                distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));//caculates the Euclidean distance
+                //std::cout<<"cov: "<<cov<<std::endl;
+                //caculates the Euclidean distance
+                distance = sqrt(pow(x1-x2,2)+pow(y1-y2,2));
+                // calculates the M distance
                 //distance = sqrt((pow(x1-x2,2)+pow(y1-y2,2))/cov);
                 IOU = get_iou(det_result[i], leaf_node_list[j]->box);
+                // the IOU based on Kalman theory
                 //IOU = get_iou(det_result[i], predict_box);
                 
                 if (IOU/(1+distance) > iou_thre/(1+distance_thre)) {
@@ -150,9 +173,11 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
                         det_node_ptr->box = det_result[i];
                         det_node_ptr->index = i+1;
                         det_node_ptr->score = IOU;
-                        //det_node_ptr->score = IOU/(1+distance); //DEPRECATED
+                        // another method to score
+                        //det_node_ptr->score = IOU/(1+distance); 
                         det_node_ptr->level = leaf_node_list[j]->level+1;
                         det_node_ptr->parent = leaf_node_list[j];
+                        // the following comments works if Kalman fiter theory is used:
                         //det_node_ptr->kalman_tracker = leaf_node_list[j]->kalman_tracker;
                         //det_node_ptr->kalman_tracker.update(det_result[i]);
                         // det_node_ptr->box = det_node_ptr->kalman_tracker.getBbox();
@@ -171,8 +196,11 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
                 std::shared_ptr<treeNode> det_node_ptr(new treeNode);
                 det_node_ptr->box = det_result[i];
                 det_node_ptr->index = i+1;
-                det_node_ptr->score = 0.01;//new tree's head_node's score
-                det_node_ptr->level = 1;//initialize the level of each tree/node 1
+                //new tree's head_node's score
+                det_node_ptr->score = 0.01;
+                //initialize the level of each tree/node 1
+                det_node_ptr->level = 1;
+                // if Kalman filter is used
                 //det_node_ptr->kalman_tracker = KalmanTracker(det_result[i], 3);
 
                 Tree gate(det_node_ptr,3,N);//label=3,N=3
@@ -194,6 +222,7 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
             zero_node_ptr->score = 0;
             //zero_node_ptr->score = tree_list[i].getLeafNode()[j]->score;
             zero_node_ptr->box = leaf_node_list[i]->box;
+            // if Kalman filter is used
             // zero_node_ptr->kalman_tracker.predict();
              // zero_node_ptr->box = zero_node_ptr->kalman_tracker.getBbox();
             zero_node_ptr->level = leaf_node_list[i]->level+1;
@@ -210,33 +239,23 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
     return 1;
 }
 
+/* choses an MWIS method
+ the first one is MWIS by greedy algorithm
+ the seconde one is traditional MWIS
+ Inputs: graph, a map of paths
+*/
 int MHT_tracker::sovle_mwis (Graph graph, std::map<int, std::vector<int>>& path) {
-// choses an MWIS method
-// the first one is MWIS by greedy algorithm
-// the seconde one is traditional MWIS
+
 
     graph.mwis_greed(path);
     //graph.mwis(path);
 }
 
-/*int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
-    
-    for(int i=0; i < tree_list.size();i++){
-        
-        if(path.count(tree_list[i].getId())){
-            tree_list[i].pruning(path[tree_list[i].getId()]);
-            tree_list[i].miss_times = 0;
-            tree_list[i].hit_times += 1;
-        }else{
-            tree_list[i].miss_times += 1;
-            tree_list[i].hit_times = 0;
-        }
-
-    }
-}*/
 
 int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
-// pruns the unselected routes
+/*
+ pruns the unselected routes combining the ICH theory
+ */
     for (int i = 0; i < tree_list.size();i++) {
         if (path.count(tree_list[i].getId())) {  //if confirmed
             tree_list[i].pruning(path[tree_list[i].getId()]);
@@ -254,11 +273,13 @@ int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
             } else if ((count_path_zero == N-1) && 
                        (path[tree_list[i].getId()][0] == 0)) {
                 tree_list[i].miss_times += 1;
-            } else {  //confirmes and gates
+            } else {  
+                //confirmes and gates
                 tree_list[i].miss_times = 0;
             }
         }
-        else { //inconfirmed
+        else { 
+            // for inconfirmed trees
             tree_list[i].createICH();
             tree_list[i].miss_times += 1;
         }
@@ -267,33 +288,12 @@ int MHT_tracker::pruning(std::map<int, std::vector<int>> path){
     }
 }
 
-// DEPRECATED
-/*int MHT_tracker::sentResult(byavs::TrackeObjectCPUs& results){
-
-    
-    for(int i=0; i < tree_list.size();){
-        if(tree_list[i].miss_times < miss_time_thrd){
-            if(tree_list[i].hit_times > hit_time_thrd){
-                cv::Rect_<float> bbox;
-                byavs::BboxInfo box;
-                byavs::TrackeObjectCPU trk_obj_cpu;
-                tree_list[i].sentResult(bbox);
-                trk_obj_cpu.label = tree_list[i].getLabel();
-                trk_obj_cpu.id = tree_list[i].getId();
-                trk_obj_cpu.box = {(int)bbox.x, (int)bbox.y, (int)bbox.width, (int)bbox.height};
-                results.push_back(trk_obj_cpu);
-            }
-            i++; 
-        }else{
-            tree_list.erase(tree_list.begin()+i);
-        }
-        
-    }
-
-}*/
-
+/* 
+confirms tracking results
+Input: a vector to save the tracking results
+*/
 int MHT_tracker::sentResult (byavs::TrackeObjectCPUs& results) {
-// confirms tracking results
+
     for (int i = 0; i < tree_list.size();) {
         //if the id is not missed
         if (tree_list[i].miss_times < miss_time_thrd) {
@@ -320,12 +320,18 @@ int MHT_tracker::sentResult (byavs::TrackeObjectCPUs& results) {
     }
 }
 
+/*
+post traverse a tree
+Input: tree node, head node of a tree, one of the path, the path's score 
+       the path list containing the score
+*/
 int MHT_tracker::backTraversal (treeNode tree_node, 
                         std::shared_ptr<treeNode> head_node, 
                         std::vector<int>& path, 
                         std::vector<float>& path_score, 
                         std::vector<std::vector<int>>& path_list, 
                         std::vector<std::vector<float>>& path_score_list,int N) {
+
     path.push_back(tree_node.index);
     path_score.push_back(tree_node.score); 
     // When the depth of the tree is not big than N
@@ -358,8 +364,12 @@ int MHT_tracker::backTraversal (treeNode tree_node,
     }
 }
 
+/*
+transfers tree to graph
+Input:graph
+*/
 int MHT_tracker::TreeToGraph (Graph& graph) {
-// transters tree to graph
+
     std::vector<int> path;
     std::vector<float> path_score;
     std::vector<std::vector<int>> path_list;
@@ -367,15 +377,15 @@ int MHT_tracker::TreeToGraph (Graph& graph) {
     std::vector<VexNode> graph_node_list;
     
     for (auto tree : tree_list) {
-        //preorderTraversal(tree.getHead(),path, path_list);
+        
         for (auto leaf : tree.getLeafNode()){
             path.clear();
             path_score.clear();
             backTraversal(*(leaf), tree.getHead(), path, path_score, path_list, 
                             path_score_list,tree.getN());
         }
-
-        if ( path_list.size() > 100) { //selects the top 100 routes
+        //selects the top 100 routes
+        if ( path_list.size() > 100) { 
             std::vector<VexNode> temp_node_list;
             for (int i = 0; i < path_list.size(); i++) {
                 VexNode graph_node;
@@ -408,8 +418,6 @@ int MHT_tracker::TreeToGraph (Graph& graph) {
          path_list.clear();
          path_score_list.clear();
     }
-    
-    //std::sort(graph_node_list.begin(), graph_node_list.end(), VexSortUp);
 
     graph = Graph(graph_node_list);
 
@@ -424,10 +432,14 @@ int MHT_tracker::TreeToGraph (Graph& graph) {
     }
 }
 
+/*
+computes the cost_matrix of Hunguarian Algorithm\
+Input: two dectect boxes
+*/
 std::vector<std::vector<double>> MHT_tracker::computeDistance (
-                                        std::vector<cv::Rect_<float>> det_result0, 
-                                        std::vector<cv::Rect_<float>> det_result) {
-//computes the cost_matrix of Hunguarian Algorithm
+                                std::vector<cv::Rect_<float>> det_result0, 
+                                std::vector<cv::Rect_<float>> det_result) {
+
     int det_num0 = det_result0.size();
     int det_num = det_result.size();
     //IOU treshold in NMS, the pair with iou>ov_thre will be deleted
@@ -455,6 +467,9 @@ std::vector<std::vector<double>> MHT_tracker::computeDistance (
     return cost_matrix;
 }
  
+/*
+get functions
+*/
 std::vector<Tree> MHT_tracker::get_tree_list() {
     return tree_list;
 }

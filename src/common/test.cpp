@@ -1,9 +1,14 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/common
+  *Author:  // Li Haoying
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The following functions are to test functions in 
+                    every chapter
+****************************************************************************/
+
 #include "test.h"
-/* *===================================
- * Test Unit 
- *
- *===================================
-*/
 
 int test_graph() {
     std::vector<VexNode> vex_node_list;

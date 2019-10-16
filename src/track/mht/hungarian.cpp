@@ -1,4 +1,5 @@
-///////////////////////////////////////////////////////////////////////////////
+/***************************************************************************************
+Author: Yuan Yue
 // Hungarian.cpp: Implementation file for Class Hungarian:.
 // 
 // This is a C++ wrapper with slight modification of a hungarian algorithm implementation by Markus Buehren.
@@ -7,7 +8,8 @@
 // 
 // Both this code and the orignal code are published under the BSD license.
 // by Cong Ma, 2016
-// 
+**************************************************************************************/
+
 #include <cmath>
 #include <cfloat>
 #include "hungarian.h"
@@ -49,7 +51,6 @@ double HungarianAlgorithm::Solve(std::vector<std::vector<double>>& DistMatrix,
 	
 }
 
-//********************************************************//
 void HungarianAlgorithm::assignmentoptimal(int *assignment, double *cost, 
                                             double *distMatrixIn, 
 											int nOfRows, int nOfColumns) {
@@ -173,7 +174,6 @@ void HungarianAlgorithm::assignmentoptimal(int *assignment, double *cost,
 	return;
 }
 
-/********************************************************/
 void HungarianAlgorithm::buildassignmentvector(int *assignment, 
                                                 bool *starMatrix, 
 												int nOfRows, 
@@ -192,7 +192,7 @@ void HungarianAlgorithm::buildassignmentvector(int *assignment,
 			}
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::computeassignmentcost(int *assignment, double *cost, 
                                                 double *distMatrix, 
 												int nOfRows) {
@@ -205,7 +205,7 @@ void HungarianAlgorithm::computeassignmentcost(int *assignment, double *cost,
 	}
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::step2a(int *assignment, double *distMatrix, 
                                 bool *starMatrix, bool *newStarMatrix, 
 								bool *primeMatrix, bool *coveredColumns, 
@@ -231,7 +231,7 @@ void HungarianAlgorithm::step2a(int *assignment, double *distMatrix,
 	        coveredColumns, coveredRows, nOfRows, nOfColumns, minDim);
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::step2b(int *assignment, double *distMatrix, 
                                 bool *starMatrix, bool *newStarMatrix, 
 								bool *primeMatrix, bool *coveredColumns, 
@@ -255,7 +255,7 @@ void HungarianAlgorithm::step2b(int *assignment, double *distMatrix,
 	}
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::step3(int *assignment, double *distMatrix, 
                                 bool *starMatrix, bool *newStarMatrix, 
 								bool *primeMatrix, bool *coveredColumns, 
@@ -301,7 +301,7 @@ void HungarianAlgorithm::step3(int *assignment, double *distMatrix,
 	        coveredColumns, coveredRows, nOfRows, nOfColumns, minDim);
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::step4(int *assignment, double *distMatrix, 
                                 bool *starMatrix, bool *newStarMatrix, 
 								bool *primeMatrix, bool *coveredColumns, 
@@ -358,7 +358,7 @@ void HungarianAlgorithm::step4(int *assignment, double *distMatrix,
 	        coveredColumns, coveredRows, nOfRows, nOfColumns, minDim);
 }
 
-/********************************************************/
+
 void HungarianAlgorithm::step5(int *assignment, double *distMatrix, 
                                 bool *starMatrix, bool *newStarMatrix, 
 								bool *primeMatrix, bool *coveredColumns, 

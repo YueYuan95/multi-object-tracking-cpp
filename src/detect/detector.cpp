@@ -1,8 +1,19 @@
+/***************************************************************************
+Copyright(C)：AVS
+  *FileName:  // multiple-object-tracking-cpp/include
+  *Author:  // Li Haoying & Yuan Yue
+  *Version:  // 2
+  *Date:  //2019-10-16
+  *Description:  //*The class is to read the information from the detect results
+****************************************************************************/
 #include "detector.h"
 
-
+/*
+Reads the det_result from file
+Input: detect file name
+*/
 int Detector::read_txt(std::string det_file) {
-// reads the det_result from file
+
     std::string detFileName;
     detFileName = det_file;
 
@@ -41,6 +52,9 @@ int Detector::read_txt(std::string det_file) {
     detectionFile.close();
 }
 
+/*
+splits the name of the detect file
+*/
 void Detector::split_string(const std::string& s, std::vector<std::string>& v, 
                             const std::string& c) {
     std::string::size_type pos1, pos2;
@@ -55,9 +69,13 @@ void Detector::split_string(const std::string& s, std::vector<std::string>& v,
         v.push_back(s.substr(pos1));
 }
 
+/*
+Puts the det_result into the detination vector
+Input: frame number, a vector tp save detect result, 
+       a vector to save detect score
+*/
 int Detector::inference(int frame, std::vector<cv::Rect_<float>>& destination, 
                          std::vector<float>& destination_score) {
-// put the det_result into the detination vector
     int i;
     cv::Rect_<float> zero_box = cv::Rect(0,0,0,0);
     if (frame <= frame_det_map.size()) {
