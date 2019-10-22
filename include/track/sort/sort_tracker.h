@@ -2,10 +2,17 @@
 #define __SORT_TRACKER_H_
 
 #include <iostream>
+#include <vector>
 #include <math.h>
+#include <set>
+#include <algorithm>
 
+#include "kalman_tracker.h"
+#include "hungarian.h"
 #include "util.h"
 #include "byavs.h"
+
+#define USE_DEEP 0
 
 class SORT_tracker{
 
@@ -15,17 +22,22 @@ class SORT_tracker{
     
     private:
         
-        std::vector<Tracker> m_tracked_trackers;
-        std::vector<Tracker> m_lost_trackers;
-        std::vector<Tracker> m_removed_trackers;
+        std::vector<Tracker> m_trackers;
 
-        int generate_candidate_trackers();
+        std::vector<int> m_tracked_trackers;
+        std::vector<int> m_lost_trackers;
+        std::vector<int> m_removed_trackers;
+
+        int generate_candidate_trackers(std::vector<int>&, std::vector<int>, std::vector<int>);
         int compute_apperance_distance();
-        int compute_iou_distance();
+        int compute_iou_distance(std::vector<std::vector<double>>&, std::vector<int>, std::vector<cv::Rect_<float>>);
         int predict();
-        int match();
+        int matching(std::vector<std::vector<double>>, std::map<int, int>&, std::vector<int>&, 
+                    std::vector<int>&);
         int init_new_tracker();
         int update_state();
+        int deal_reactivate_tracker();
+        int deal_remove_tracker();
 };
 
 #endif
