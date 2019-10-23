@@ -13,6 +13,7 @@
 #include "byavs.h"
 
 #define USE_DEEP 0
+#define MAX_MISS_TIME 30
 
 class SORT_tracker{
 
@@ -29,15 +30,16 @@ class SORT_tracker{
         std::vector<int> m_removed_trackers;
 
         int generate_candidate_trackers(std::vector<int>&, std::vector<int>, std::vector<int>);
-        int compute_apperance_distance();
-        int compute_iou_distance(std::vector<std::vector<double>>&, std::vector<int>, std::vector<cv::Rect_<float>>);
-        int predict();
+        int compute_detection_feature(cv::Mat, std::vector<cv::Rect_<float>>, 
+                                      std::vector<std::vector<float>>&);
+        int compute_feature_distance(std::vector<std::vector<double>>&, std::vector<int>, 
+                                     std::vector<std::vector<float>>);
+        int compute_iou_distance(std::vector<std::vector<double>>&, std::vector<int>, 
+                                 std::vector<cv::Rect_<float>>);
         int matching(std::vector<std::vector<double>>, std::map<int, int>&, std::vector<int>&, 
                     std::vector<int>&);
-        int init_new_tracker();
-        int update_state();
-        int deal_reactivate_tracker();
-        int deal_remove_tracker();
+
+        int deal_duplicate_tracker(std::vector<int>&, std::vector<int>);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "sort_tracker.h"
 
-int SORT_tracker::inference(byavs::GpuImg image){
+int SORT_tracker::inference(cv::Mat image){
 
     std::vector<int> activated_trackers;
     std::vector<int> refind_trackers;
@@ -55,7 +55,7 @@ int SORT_tracker::inference(byavs::GpuImg image){
     if(USE_DEEP){
         // deep feature match
         std::vector<std::vector<float>> det_feature;
-        compute_detection_feature(image, det_feature);
+        compute_detection_feature(image, detection_boxes, det_feature);
 
         std::vector<std::vector<float>> feature_cost_matrix;
         feature_cost_matrix.clear();
@@ -161,10 +161,10 @@ int SORT_tracker::inference(byavs::GpuImg image){
    }
 
    /*
-   *  Step 6 : Update states
+   *  Step 6 : Mark the miss time achieve the threshold
    * */
    for(int i=0; i < lost_trackers.size(); i++){
-       if(m_trackers[lost_trackers[i]].getBeginFrame() - currect_frame > m_miss_time){
+       if(m_trackers[lost_trackers[i]].getBeginFrame() - currect_frame > MAX_MISS_TIME){
             m_trackers[lost_trackers[i]].mark_removed();
             removed_trackers.push_back(lost_trackers[i]);
        }
@@ -183,23 +183,27 @@ int SORT_tracker::inference(byavs::GpuImg image){
    }
 
    //remove the re-find tracker from `m_lost_tracker`
-   deal_reactivate_tracker(m_lost_tracker, m_tracked_trackers);
+   deal_duplicate_tracker(m_lost_tracker, m_tracked_trackers);
 
    for(auto i : lost_trackers){
        m_lost_trackers.push_back(i);
    }
 
    //remove the need to delete tracker from `m_lost_tracker`
-   deal_remove_tracker(m_lost_tracker, removed_trackers);
-
-   //delete the tracker that need to remove
-   for(int i=0; i < removed_trackers.size(); i++){
-       //remove
-   }
+   deal_duplicate_tracker(m_lost_tracker, removed_trackers);
 
    /**
     * Step 8 : output
    */
+
+   //output and delete the tracker that need to remove
+   for(int i=0; i < m_trackers.size(); i++){
+       //output and delete
+       if(m_trackers[i].getState() == STATE_REMOVE){
+            //TODO: Set the finish tracking flag to True 
+            m_trackers.earse(m_tracker.begin()+i);
+       }
+   }
 
    //add new tracker
    for(int i=0; i < new_tracker_list.size(); i++){
@@ -232,6 +236,18 @@ int SORT_tracker::generate_candidate_trackers(std::vector<int>& candidate,
     }
 
 }
+
+int SORT_tracker::compute_detection_feature(cv::Mat image, std::vector<cv::Rect_<float>> detection_boxes, 
+                std::vector<std::vector<float>>& detection_features){
+    //TODO: Using a single ReID model to extract the object feature
+}
+
+int SORT_tracker::compute_feature_distance(std::vector<std::vector<double>>& cost_matrix, std::vector<int> traker_index, 
+                std::vector<std::vector<float>> detection_features){
+    //TODO: compute the distance of features
+}
+
+
 
 int SORT_tracker::compute_iou_distance(std::vector<std::vector<double>> &cost_matrix, 
                 std::vector<int> tracker_index, std::vector<cv::Rect_<float>> detection_boxes){
@@ -292,6 +308,17 @@ int SORT_tracker::matching(std::vector<std::vector<double>> cost_matrix, std::ma
 
         for(auto i : unmatched_detection){
             um_detection.push_back(i);
+        }
+    }
+
+}
+
+int deal_duplicate_tracker(std::vector<int>& lost_tracker, std::vector<int> tracker_list){
+
+    for(int i=0; i < lost_tracker.size(); i++){
+        int * location_index = find(tracker_list.begin(), tracker_list.end(), lost_tracker[i]);
+        if((location_index - tracker_list.begin()) < tracker_list.size()){
+           lost_tracker.earse(lost_tracker.begin()+i);
         }
     }
 
