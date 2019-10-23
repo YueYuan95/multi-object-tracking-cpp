@@ -13,30 +13,10 @@
 
 int main() {
 
-  // the fuction in comment line is used for testing
-
-  //test_graph();
-    
-  //test_tree();
-  
-  //test_treeTograph();
-
-  //test_gating();
-
-  //test_detector_to_do();
-
-  //test_detector_inference();
-
-  //test_NMS();
-  
-  //test_writeResult();
-
-  //test_all();
-
-  //test_mwis();
-
   // run the sequence
+
   int N=10;
+
   //detection file
   std::string root = "/nfs-data/tracking/MOT16/train/";
   std::string seq = "MOT16-11";

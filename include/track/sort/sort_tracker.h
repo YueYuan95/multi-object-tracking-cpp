@@ -1,5 +1,5 @@
-#ifndef __SORT_TRACKER_H_
-#define __SORT_TRACKER_H_
+#ifndef __SORT_TRACKER_H__
+#define __SORT_TRACKER_H__
 
 #include <iostream>
 #include <vector>
@@ -7,19 +7,21 @@
 #include <set>
 #include <algorithm>
 
+#include "sort_base_tracker.h"
 #include "kalman_tracker.h"
 #include "hungarian.h"
 #include "util.h"
 #include "byavs.h"
 
-#define USE_DEEP 0
-#define MAX_MISS_TIME 30
+using namespace sort;
 
 class SORT_tracker{
 
     public:
-        int inference(const std::string& model_dir, const byavs::TrackeParas& pas,                      const int gpu_id);
-        int inference();
+        int inference(const std::string& model_dir, const byavs::TrackeParas& pas, 
+                      const int gpu_id);
+        int inference(std::vector<cv::Rect_<float>>, std::vector<float>, 
+                      byavs::TrackeObjectCPUs);
     
     private:
         

@@ -1,6 +1,7 @@
 #include "sort_tracker.h"
 
-int SORT_tracker::inference(cv::Mat image){
+int SORT_tracker::inference(std::vector<cv::Rect_<float>> det_boxes, std::vector<float> detection_score, 
+            byavs::TrackeObjectCPUs& result){
 
     std::vector<int> activated_trackers;
     std::vector<int> refind_trackers;
@@ -9,7 +10,7 @@ int SORT_tracker::inference(cv::Mat image){
 
     std::vector<cv::Rect_<float>> detection_boxes
     detection_boxes.clear();
-
+    detection_boxes = det_boxes;
     /*
      * Step 1 : join the activate tracker and lost trackers
      *          generate the candidate tracker
@@ -19,7 +20,7 @@ int SORT_tracker::inference(cv::Mat image){
     unconfirmed_trackers.clear();                                   //new Tracker
     tracked_trackers.clear();
     for(auto i : m_tracked_trackers){
-        if(m_trackers[i].IsActivate()){
+        if(m_trackers[i].isActivate()){
             tracked_trackers.push_back(i);
         }else{
             unconfirmed_trackers.push_back(i);
@@ -52,8 +53,9 @@ int SORT_tracker::inference(cv::Mat image){
     um_tracker.clear();
     um_detection.clear();
 
-    if(USE_DEEP){
+    if(sort::USE_DEEP){
         // deep feature match
+        cv::Mat image;  // TODO: Get the image from DetectionObject
         std::vector<std::vector<float>> det_feature;
         compute_detection_feature(image, detection_boxes, det_feature);
 
@@ -80,13 +82,13 @@ int SORT_tracker::inference(cv::Mat image){
     std::vector<cv::Rect_<float>> remain_boxes;
     remain_tracker.clear();
     remain_boxes.clear();
-    if(USE_DEEP){
+    if(sort::USE_DEEP){
         for(int i=0; i < um_tracker.size(); i++){
             if(m_trackers[candidate[um_tracker[i]]].getState() == STATE_TRACKED){
                 remain_tracker.push_back(candidate[um_tracker[i]]);
             }
         }
-
+        //TODO: Only using the miss time is equal to 1, others mark as losted
         for(int i=0; i < um_detection.size(); i++){
             remain_boxes.push_back(detection_boxes[um_detection[i]]);
         }
@@ -161,10 +163,10 @@ int SORT_tracker::inference(cv::Mat image){
    }
 
    /*
-   *  Step 6 : Mark the miss time achieve the threshold
+   *  Step 6 : Mark the removed target when miss time achieve the threshold
    * */
    for(int i=0; i < lost_trackers.size(); i++){
-       if(m_trackers[lost_trackers[i]].getBeginFrame() - currect_frame > MAX_MISS_TIME){
+       if(m_trackers[lost_trackers[i]].getMissTime() > sort::MAX_MISS_TIME){
             m_trackers[lost_trackers[i]].mark_removed();
             removed_trackers.push_back(lost_trackers[i]);
        }
@@ -201,6 +203,17 @@ int SORT_tracker::inference(cv::Mat image){
        //output and delete
        if(m_trackers[i].getState() == STATE_REMOVE){
             //TODO: Set the finish tracking flag to True 
+            byavs::TrackeObjectCPU remove_object;
+            remove_object.camID = 0;
+            remove_object.channelID = 0;
+            remove_object.id = 0;
+            remove_object.label = 0;
+            remove_object.box = {m_trackers[i].getBox().x, m_trackers[i].y,
+                    m_trackers[i].getBox().width, m_trackers[i].getBox().height};
+            remove_object.return_state = true;
+            remove_object.match_flag = 0;
+            remove_object.score = 0.0;
+            result.push_back(remove_object);
             m_trackers.earse(m_tracker.begin()+i);
        }
    }
@@ -213,10 +226,25 @@ int SORT_tracker::inference(cv::Mat image){
    for(int i=0; i < m_trackers.size(); i++){
        if(m_trackers[i].getState() == STATE_TRACKED){
            //output
+            byavs::TrackeObjectCPU output_object;
+            output_object.camID = 0;
+            output_object.channelID = 0;
+            output_object.id = 0;
+            output_object.label = 0;
+            output_object.box = {m_trackers[i].getBox().x, m_trackers[i].y,
+                    m_trackers[i].getBox().width, m_trackers[i].getBox().height};
+            output_object.return_state = true;
+            output_object.match_flag = 0;
+            output_object.score = 0.0;
+            result.push_back(output_object);
        }
    }
 }
 
+int inference(const std::string& model_dir, const byavs::TrackeParas& pas, 
+              const int gpu_id){
+    return 1;
+}
 
 int SORT_tracker::generate_candidate_trackers(std::vector<int>& candidate, 
                 std::vector<int> tracked_tracker, std::vector<int> m_lost_trackers){
