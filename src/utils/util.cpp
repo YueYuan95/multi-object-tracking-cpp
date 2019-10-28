@@ -91,20 +91,22 @@ int TreeToGraph(std::vector<Tree> tree_list, Graph& graph) {
 /*Visualizes the tracking results */
 int visualize (int frame, cv::Mat img, byavs::TrackeObjectCPUs results, 
                 std::string result_dir) {
-
+    std::cout<<"results size: "<<results.size()<<std::endl;
     for (int j=0; j < results.size(); j++) {
         int id = results[j].id;
-
-        cv::Point left_top = cv::Point(results[j].box.topLeftX, 
-                                        results[j].box.topLeftY);
-        cv::Point right_bottom = cv::Point(results[j].box.topLeftX 
-                                            + results[j].box.width, 
-                                           results[j].box.topLeftY
-                                            + results[j].box.height);
-       
+        // std::cout<<"id : "<<id<<std::endl;
+        cv::Point left_top = cv::Point(float(results[j].box.topLeftX), 
+                                        float(results[j].box.topLeftY));
+        cv::Point right_bottom = cv::Point(float(results[j].box.topLeftX 
+                                            + results[j].box.width), 
+                                           float(results[j].box.topLeftY
+                                            + results[j].box.height));
+        //std::cout<<"create point"<<std::endl;
+        // std::cout<<left_top<<std::endl;
+        // std::cout<<right_bottom<<std::endl;
         cv::putText(img, std::to_string(id), left_top, 
-                    CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(255,0,0),3,8);
-        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 1, 0);
+                    CV_FONT_HERSHEY_SIMPLEX, 1 ,cv::Scalar(0,255,0),3,8);
+        cv::rectangle(img, left_top, right_bottom, cv::Scalar(255,0,0), 3, 8, 0);
     }
     cv::resize(img, img, cv::Size(img.cols/2,img.rows/2),0,00, CV_INTER_LINEAR);
     cv::imwrite(result_dir + std::to_string(frame) + ".jpg", img);
@@ -283,17 +285,14 @@ int writeResult (int frame, byavs::TrackeObjectCPUs tracking_results,
         std::cerr << "Error: can not find file " << std::endl;
     }
     if (outfile.is_open()) {
-        if (frame==1) {
-            std::cout << tracking_results.size() << std::endl;
-        }
         for (int i=0; i<tracking_results.size(); i++) {
             
-            outfile << frame<<", "<< tracking_results[i].id << ", "
-                << tracking_results[i].box.topLeftX << ", " 
-                << tracking_results[i].box.topLeftY << ", "
-                << tracking_results[i].box.width << ", "
-                << tracking_results[i].box.height << ", "
-                << "-1, " << "-1, " << "-1, " << "-1, " << "\n";
+            outfile << frame<<","<< tracking_results[i].id <<","
+                << tracking_results[i].box.topLeftX << "," 
+                << tracking_results[i].box.topLeftY << ","
+                << tracking_results[i].box.width << ","
+                << tracking_results[i].box.height << ","
+                << "-1," << "-1," << "-1," << "-1" << "\n";
             
         }
         outfile.close();

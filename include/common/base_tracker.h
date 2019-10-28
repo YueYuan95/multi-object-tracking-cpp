@@ -22,10 +22,9 @@ class Tracker{
         static int id;
         int m_id;
         int m_state;
-        int m_age;
         int m_time_since_update;
         int m_label;
-        bool is_activate;
+        bool m_activate;
         cv::KalmanFilter m_kalman_filter;
         cv::Rect_<float> m_box;
 
@@ -39,7 +38,6 @@ class Tracker{
         int get_miss_time();
         cv::Rect_<float> get_box();
 
-        int re_activate();
         int mark_lost();
         int mark_removed();
 

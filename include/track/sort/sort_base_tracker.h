@@ -19,26 +19,34 @@ namespace sort{
 class Tracker{
 
     private:
-        int state;
-        int miss_time;
-        bool is_activate;
+        static int id;
+        int m_id;
+        int m_state;
+        int m_time_since_update;
+        int m_label;
+        bool m_activate;
+        cv::Mat m_measurement;
         cv::KalmanFilter m_kalman_filter;
         cv::Rect_<float> m_box;
 
     public:
-        int isActivate();
+        Tracker(cv::Rect_<float> init_box, int label);
+        bool is_activate();
         int predict();
-        int update();
+        int update(cv::Rect_<float>);
 
-        int getState();
-        int getMissTime();
-        int re_activate();
+        int get_id();
+        int get_state();
+        int get_label();
+        cv::Rect_<float> get_box();
+        int get_miss_time();
+        cv::Rect_<float> get_rect_box(float, float, float, float);
 
         int mark_lost();
         int mark_removed();
 
 
-}
+};
 
 };
 

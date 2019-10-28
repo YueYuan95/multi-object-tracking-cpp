@@ -39,6 +39,10 @@ Copyright(C)：AVS
 #include "mht_graph.h"
 #include "mht_tracker.h"
 #include "byavs.h"
+//#include "glog/logging.h"
+
+#define debug std::cout<<"[Time: "<<__TIMESTAMP__<<", File: "<<__FILE__<<" "<<"Line: "<<__LINE__<<" ] "
+#define debugend std::endl;
 
 int TreeToGraph(std::vector<Tree>, Graph&);
 int GraphToTree(Graph, std::vector<std::vector<int>>&);

@@ -15,13 +15,13 @@
 
 using namespace sort;
 
-class SORT_tracker{
+class SortTracker{
 
     public:
         int inference(const std::string& model_dir, const byavs::TrackeParas& pas, 
                       const int gpu_id);
         int inference(std::vector<cv::Rect_<float>>, std::vector<float>, 
-                      byavs::TrackeObjectCPUs);
+                      byavs::TrackeObjectCPUs&);
     
     private:
         

@@ -2,23 +2,23 @@
 
 using namespace sort;
 
-int Tracker::id = 0;
+int Tracker::id = 1;
 
 Tracker::Tracker(cv::Rect_<float> init_box, int label){
 
     m_id = id;
+    id++;
     m_state = STATE_NEW;
-    m_age = 1;
     m_time_since_update = 0;
     m_label = label;
-    is_activate = false;
+    m_activate = false;
     m_box = init_box;
 
     //Init KalmanFilter
     int stateNum = 7;
     int measureNum = 4;
-    m_kalman_filter = cv::KalmanFilter(stateNum, measureNum, 0);
-    m_measurement = cv::Mat::zeros(measureNum, 1, CV_32F);
+    m_kalman_filter = cv::KalmanFilter(stateNum, measureNum, CV_32FC1);
+    m_measurement = cv::Mat::zeros(measureNum, 1, CV_32FC1);
 
     m_kalman_filter.transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) << 
         1, 0, 0, 0, 1, 0, 0,
@@ -28,10 +28,15 @@ Tracker::Tracker(cv::Rect_<float> init_box, int label){
         0, 0, 0, 0, 1, 0, 0,
         0, 0, 0, 0, 0, 1, 0,
         0, 0, 0, 0, 0, 0, 1);
+        
+    // std::cout<<m_kalman_filter.transitionMatrix.type()<<std::endl;
+    // std::cout<<CV_64FC1<<std::endl;
+    // std::cout<<CV_32FC2<<std::endl;
+    // std::cout<<CV_64FC2<<std::endl;
 
     cv::setIdentity(m_kalman_filter.measurementMatrix);
     cv::setIdentity(m_kalman_filter.processNoiseCov, cv::Scalar::all(1e-2));
-    cv::setIdentity(m_kalman_filter.measurementNoiseCov, cv::Scalar::all(1e-2));
+    cv::setIdentity(m_kalman_filter.measurementNoiseCov, cv::Scalar::all(1e-1));
     cv::setIdentity(m_kalman_filter.errorCovPost, cv::Scalar::all(1));
 
     // State is [center_x, center_y, area, width/height]
@@ -42,17 +47,18 @@ Tracker::Tracker(cv::Rect_<float> init_box, int label){
 
 }
 
-bool Tracker::isActivate(){
-    return is_activate;
+bool Tracker::is_activate(){
+    return m_activate;
 }
 
 int Tracker::predict(){
     
     cv::Mat predicted_mat = m_kalman_filter.predict();
+    std::cout<<std::endl;
 
     m_time_since_update += 1;
    
-    cv::Rect_<float> predict_box = getRectBox(predicted_mat.at<float>(0,0), 
+    cv::Rect_<float> predict_box = get_rect_box(predicted_mat.at<float>(0,0), 
                                                 predicted_mat.at<float>(1,0),
                                                 predicted_mat.at<float>(2,0), 
                                                 predicted_mat.at<float>(3,0));
@@ -70,63 +76,74 @@ int Tracker::update(cv::Rect_<float> det_result) {
     m_measurement.at<float>(2,0) = det_result.area();
     m_measurement.at<float>(3,0) = det_result.width / det_result.height;
 
-    //states
-    m_time_since_update = 0;
+    // std::cout<<"Correct：";
+    // std::cout<<m_measurement<<std::endl;
+    // cv::Mat uncorrect_mat = m_kalman_filter.statePost;
+    // std::cout<<"x: "<<uncorrect_mat.at<float>(0,0)<<" y: "<<uncorrect_mat.at<float>(1,0);
+    // std::cout<<" area: "<<uncorrect_mat.at<float>(2,0)<<" ratio: "<<uncorrect_mat.at<float>(3,0)<<std::endl;
 
     m_kalman_filter.correct(m_measurement);
 
     //use corrected position to do something
     cv::Mat corrected_mat = m_kalman_filter.statePost;
 
-    cv::Rect_<float> corrected_box = getRectBox(corrected_mat.at<float>(0,0), 
+    // std::cout<<"x: "<<m_measurement.at<float>(0,0)<<" y: "<<m_measurement.at<float>(1,0);
+    // std::cout<<" area: "<<m_measurement.at<float>(2,0)<<" ratio: "<<m_measurement.at<float>(3,0)<<std::endl;
+
+    // std::cout<<"x: "<<corrected_mat.at<float>(0,0)<<" y: "<<corrected_mat.at<float>(1,0);
+    // std::cout<<" area: "<<corrected_mat.at<float>(2,0)<<" ratio: "<<corrected_mat.at<float>(3,0)<<std::endl;
+
+    cv::Rect_<float> corrected_box = get_rect_box(corrected_mat.at<float>(0,0), 
                                                 corrected_mat.at<float>(1,0),
                                                 corrected_mat.at<float>(2,0), 
                                                 corrected_mat.at<float>(3,0));
                      
     m_box = corrected_box;
+    
+
+    //states
+    m_time_since_update = 0;
+    m_state = STATE_TRACKED;
+    m_activate = true;
 
     return 1;
 }
 
-int Tracker::get_state(){
+int Tracker::get_id(){
+    return m_id;
+}
 
+int Tracker::get_state(){
+    return m_state;
 }
 
 int Tracker::get_label(){
-
+    return m_label;
 }
 
 int Tracker::get_miss_time(){
-
+    return m_time_since_update;
 }
 
 cv::Rect_<float> Tracker::get_box(){
-
-}
-
-int Tracker::re_activate(){
-
+    return m_box;
 }
 
 int Tracker::mark_lost(){
-
+    m_state = STATE_LOST;
+    return STATE_LOST;
 }
 
 int Tracker::mark_removed(){
-    
+    m_state = STATE_REMOVE;
+    return STATE_REMOVE;
 }
 
 cv::Rect_<float> Tracker::get_rect_box(float cx, float cy, float area, 
                                     float ratio) {
-    float w, h;
-    if (area < 0 || ratio < 0) {      
-        w = m_history[m_history.size()-1].width;
-        h = m_history[m_history.size()-1].height;
-    } else {
-        w = sqrt(area * ratio);
-        h = area / w;
-    }
 
+    float w = sqrt(area * ratio);
+    float h = area / w;
     float x = (cx - w/2);
     float y = (cy - h/2);
 

@@ -16,8 +16,13 @@ SET(CUDA_NVCC_FLAGS --disable-warnings;-std=c++11;-O3;-gencode arch=compute_75,c
 message(${CUDA_NVCC_FLAGS})
 
 # opencv
-link_directories("/home/yuany/opencv-346/lib")
+#link_directories("/usr/local/include")
+#link_directories("/usr/local/include/opencv")
+#include_directories("/usr/local/lib")
+
 include_directories("/home/yuany/opencv-346/include")
+include_directories("/home/yuany/opencv-346/include/opencv")
+link_directories("/home/yuany/opencv-346/lib")
 
 # 4. tensorRT
 include_directories(/usr/local/TensorRT-5.1.2.2/include)

@@ -250,8 +250,8 @@ int MHT_tracker::gating(std::vector<cv::Rect_<float>> det_result) {
 int MHT_tracker::sovle_mwis (Graph graph, std::map<int, std::vector<int>>& path) {
 
 
-    graph.mwis_greed(path);
-    //graph.mwis(path);
+    //graph.mwis_greed(path);
+    graph.mwis(path);
 }
 
 /*
