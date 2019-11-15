@@ -10,6 +10,7 @@
 #include "sort_base_tracker.h"
 #include "kalman_tracker.h"
 #include "hungarian.h"
+#include "feature_extract.h"
 #include "util.h"
 #include "byavs.h"
 
@@ -18,10 +19,14 @@ using namespace sort;
 class SortTracker{
 
     public:
-        int inference(const std::string& model_dir, const byavs::TrackeParas& pas, 
-                      const int gpu_id);
-        int inference(std::vector<cv::Rect_<float>>, std::vector<float>, 
-                      byavs::TrackeObjectCPUs&);
+        int init(byavs::PedFeatureParas, std::string, int);
+
+        int inference(const byavs::TrackeInputGPU, byavs::TrackeObjectGPUs&);
+
+        friend int crop_gpu_mat(byavs::GpuMat, std::vector<cv::Rect_<float>>, 
+                       std::vector<bdavs::AVSGPUMat>&);
+                       
+        friend double get_feature_distance(std::vector<float> feature_a, std::vector<float> feature_b);
     
     private:
         
@@ -31,10 +36,12 @@ class SortTracker{
         std::vector<int> m_lost_trackers;
         std::vector<int> m_removed_trackers;
 
+        FeatureExtract extractor;
+
         int generate_candidate_trackers(std::vector<int>&, std::vector<int>, std::vector<int>);
-        int compute_detection_feature(cv::Mat, std::vector<cv::Rect_<float>>, 
+        int compute_detection_feature(byavs::GpuMat, std::vector<cv::Rect_<float>>, 
                                       std::vector<std::vector<float>>&);
-        int compute_feature_distance(std::vector<std::vector<double>>&, std::vector<int>, 
+        int compute_feature_distance(std::vector<std::vector<double>>&, std::vector<int>, std::vector<cv::Rect_<float>>,
                                      std::vector<std::vector<float>>);
         int compute_iou_distance(std::vector<std::vector<double>>&, std::vector<int>, 
                                  std::vector<cv::Rect_<float>>);

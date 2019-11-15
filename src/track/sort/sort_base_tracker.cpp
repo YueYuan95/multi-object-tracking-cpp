@@ -13,6 +13,23 @@ Tracker::Tracker(cv::Rect_<float> init_box, int label){
     m_label = label;
     m_activate = false;
     m_box = init_box;
+    init_kalman_filter();
+}
+
+Tracker::Tracker(cv::Rect_<float> init_box, int label, std::vector<float> features){
+    
+    m_id = id;
+    id++;
+    m_state = STATE_NEW;
+    m_time_since_update = 0;
+    m_label = label;
+    m_activate = false;
+    m_box = init_box;
+    m_feature = features;
+    init_kalman_filter();
+}
+
+int Tracker::init_kalman_filter(){
 
     //Init KalmanFilter
     int stateNum = 7;
@@ -40,10 +57,10 @@ Tracker::Tracker(cv::Rect_<float> init_box, int label){
     cv::setIdentity(m_kalman_filter.errorCovPost, cv::Scalar::all(1));
 
     // State is [center_x, center_y, area, width/height]
-    m_kalman_filter.statePost.at<float>(0, 0) = init_box.x + init_box.width/2;
-    m_kalman_filter.statePost.at<float>(1, 0) = init_box.y + init_box.height/2;
-    m_kalman_filter.statePost.at<float>(2, 0) = init_box.area();
-    m_kalman_filter.statePost.at<float>(3, 0) = init_box.width/init_box.height;
+    m_kalman_filter.statePost.at<float>(0, 0) = m_box.x + m_box.width/2;
+    m_kalman_filter.statePost.at<float>(1, 0) = m_box.y + m_box.height/2;
+    m_kalman_filter.statePost.at<float>(2, 0) = m_box.area();
+    m_kalman_filter.statePost.at<float>(3, 0) = m_box.width/m_box.height;
 
 }
 
@@ -54,7 +71,6 @@ bool Tracker::is_activate(){
 int Tracker::predict(){
     
     cv::Mat predicted_mat = m_kalman_filter.predict();
-    std::cout<<std::endl;
 
     m_time_since_update += 1;
    
@@ -109,6 +125,62 @@ int Tracker::update(cv::Rect_<float> det_result) {
     return 1;
 }
 
+int Tracker::update(cv::Rect_<float> det_result, std::vector<float> feature){
+
+    //measurement
+    m_measurement.at<float>(0,0) = det_result.x + det_result.width / 2;
+    m_measurement.at<float>(1,0) = det_result.y + det_result.height / 2;
+    m_measurement.at<float>(2,0) = det_result.area();
+    m_measurement.at<float>(3,0) = det_result.width / det_result.height;
+
+    // std::cout<<"Correct：";
+    // std::cout<<m_measurement<<std::endl;
+    // cv::Mat uncorrect_mat = m_kalman_filter.statePost;
+    // std::cout<<"x: "<<uncorrect_mat.at<float>(0,0)<<" y: "<<uncorrect_mat.at<float>(1,0);
+    // std::cout<<" area: "<<uncorrect_mat.at<float>(2,0)<<" ratio: "<<uncorrect_mat.at<float>(3,0)<<std::endl;
+
+    m_kalman_filter.correct(m_measurement);
+
+    //use corrected position to do something
+    cv::Mat corrected_mat = m_kalman_filter.statePost;
+
+    // std::cout<<"x: "<<m_measurement.at<float>(0,0)<<" y: "<<m_measurement.at<float>(1,0);
+    // std::cout<<" area: "<<m_measurement.at<float>(2,0)<<" ratio: "<<m_measurement.at<float>(3,0)<<std::endl;
+
+    // std::cout<<"x: "<<corrected_mat.at<float>(0,0)<<" y: "<<corrected_mat.at<float>(1,0);
+    // std::cout<<" area: "<<corrected_mat.at<float>(2,0)<<" ratio: "<<corrected_mat.at<float>(3,0)<<std::endl;
+
+    cv::Rect_<float> corrected_box = get_rect_box(corrected_mat.at<float>(0,0), 
+                                                corrected_mat.at<float>(1,0),
+                                                corrected_mat.at<float>(2,0), 
+                                                corrected_mat.at<float>(3,0));
+                     
+    m_box = corrected_box;
+    
+
+    //states
+    m_time_since_update = 0;
+    m_state = STATE_TRACKED;
+    m_feature = feature;
+    m_activate = true;
+
+    return 1;
+
+}
+
+int Tracker::reset_kf_update(cv::Rect_<float> det_result, std::vector<float> features){
+
+    m_box = det_result;
+    m_feature = features;
+    m_time_since_update = 0;
+    m_state = STATE_TRACKED;
+    m_activate = true;
+    init_kalman_filter();
+    return 1;
+
+}
+
+
 int Tracker::get_id(){
     return m_id;
 }
@@ -119,6 +191,10 @@ int Tracker::get_state(){
 
 int Tracker::get_label(){
     return m_label;
+}
+
+std::vector<float> Tracker::get_features(){
+    return m_feature;
 }
 
 int Tracker::get_miss_time(){
@@ -153,4 +229,8 @@ cv::Rect_<float> Tracker::get_rect_box(float cx, float cy, float area,
 		y = 0;
 
     return cv::Rect_<float>(int(x),int(y),int(w),int(h));
+}
+
+int Tracker::reset_static_id(){
+    Tracker::id = 1;
 }

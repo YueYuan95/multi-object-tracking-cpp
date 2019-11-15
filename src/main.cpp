@@ -25,21 +25,43 @@ int main(int argc, char * argv[]) {
   * 
   * 3. Show tracking result with colored bounding boxes and output the txt files. 
   * 
-  * 4. Auto Factory
+  * 4. Auto Factory, Abstract class
   * 
   * 5. Reading confige from `ini` file
   * 
-  * 6. Run test can output the banchmark result
+  * 6. pass data to python program
   * 
-  * 7. Owner
+  * 6. Better file struct (main, test)
+  * 
+  * 7. Run test can output the banchmark result
+  * 
+  * 8. Owner
+  * 
+  * 9. Docker
+  * 
   */
 
   int N=10;
-  bool visualization = false;
-  bool save_txt = true;
+  bool visualization = true;
+  bool save_txt = false;
+  bool test_set = false;
+
   //detection file
-  std::string root = "/nfs-data/tracking/MOT16/train/";
-  std::vector<std::string> sequence{"MOT16-02","MOT16-04","MOT16-05","MOT16-09","MOT16-10","MOT16-11","MOT16-13"};
+  std::string root;     // "/nfs-data/tracking/MOT16/train/";
+  std::vector<std::string> sequence; //{"MOT16-02","MOT16-04","MOT16-05","MOT16-09","MOT16-10","MOT16-11","MOT16-13"}
+
+  //use `switch` is better 
+  root = test_set ? "/root/tracking/MOT16/test/":"/root/tracking/MOT16/train/";
+  if(test_set){
+    sequence = {"MOT16-01", "MOT16-03", "MOT16-06", "MOT16-07", "MOT16-08", "MOT16-12", "MOT16-14"};
+  }else{
+    sequence = {"MOT16-02","MOT16-04","MOT16-05","MOT16-09","MOT16-10","MOT16-11","MOT16-13"};
+  }
+
+  double avg_fps = 0.00;
+
+  sequence = {"MOT16-02"};
+
   for(int i=0; i < sequence.size(); i++){
 
     std::string seq = sequence[i];
@@ -53,6 +75,11 @@ int main(int argc, char * argv[]) {
     std::string result_dir = "result/";
     std::string result_img_dir = result_dir + seq + "/";
     std::string result_txt_dir = result_dir + "txt/";
+    if(test_set){
+      result_txt_dir = result_txt_dir + "test/";
+    }else{
+      result_txt_dir = result_txt_dir + "train/";
+    }
     std::string txt_name = seq + ".txt";
 
     std::string command = "mkdir -p " + result_img_dir + "&&" + "mkdir -p " + result_txt_dir;
@@ -61,6 +88,11 @@ int main(int argc, char * argv[]) {
     Detector detector;
     //MHT_tracker tracker;
     SortTracker tracker;
+    byavs::PedFeatureParas ped_feature_paras;
+    int gpu_id = 0;
+    std::string ped_model_dir = "/root/data";
+    tracker.init(ped_feature_paras, ped_model_dir, gpu_id);
+
     detector.read_txt(detPath);
 
     std::vector<cv::Rect_<float>> det_result;
@@ -70,37 +102,48 @@ int main(int argc, char * argv[]) {
     std::string curr_img;
     cv::Mat img;
 
-    double start, end, duration;
-    std::cout << "total frame:" << files.size() <<std::endl;
+    byavs::TrackeInputGPU  inputs;
+    byavs::TrackeObjectGPUs outputs;
+
+    int file_size = files.size();
+    //file_size = 50;
+    double start, end, duration, fps;
     start = clock();
-    for (int frame = 1; frame < files.size(); frame++) {
-        detector.inference(frame, det_result, det_result_score);
+    for (int frame = 1; frame < file_size; frame++) {
         
-        tracker.inference(det_result, det_result_score, tracking_results);
+        detector.inference(frame, det_result, det_result_score);
+        convert_to_tracking_input(files[frame], det_result, det_result_score, inputs);
+        tracker.inference(inputs, outputs);
         std::cout << "frame:" << frame  << " "
                   << " det_result size:" << " "
                   << det_result.size()    << " "
                   << "tracking_results size:" << " "
-                  << tracking_results.size() << std::endl;
+                  << outputs.size() << std::endl;
 
         //save tracking results
         if (visualization) {
           curr_img = files[frame];
           img = cv::imread(curr_img);
-          visualize(frame, img, tracking_results, result_img_dir);
+          visualize(frame, img, outputs, result_img_dir);
         }
-        if (save_txt){
-          writeResult(frame, tracking_results, result_txt_dir, txt_name);
+        if(save_txt){
+          writeResult(frame, outputs, result_txt_dir, txt_name);
         }
-        
         det_result.clear();
-        tracking_results.clear();
+        det_result_score.clear();
+        cudaFree(inputs.gpuImg.data);
+        inputs.objs.clear();
+        outputs.clear();
     }
     end = clock();
     duration = (double)(end - start)/CLOCKS_PER_SEC;
-    std::cout << "Tracking time cost : " << duration <<" s " << std::endl;
-    std::cout << "fps: " << files.size()/duration << "frames/s" << std::endl;
+    fps = files.size()/duration;
+    avg_fps += fps;
+    std::cout<< "dataset is "<<seq<<" , its" << "fps is " << fps<< "frames/s" << std::endl;
   }
+  avg_fps = avg_fps/sequence.size();
+  std::cout<<"Test "<<sequence.size()<<" dataset, average FPS is "<<avg_fps<<"frames/s"<<std::endl;
+  
   //google::ShutdownGoogleLogging();
 
 }

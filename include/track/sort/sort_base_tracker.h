@@ -8,8 +8,8 @@
 
 namespace sort{
 
-#define USE_DEEP 0
-#define MAX_MISS_TIME 30
+#define USE_DEEP 1
+#define MAX_MISS_TIME 15
 
 #define STATE_NEW 0
 #define STATE_TRACKED 1
@@ -28,19 +28,29 @@ class Tracker{
         cv::Mat m_measurement;
         cv::KalmanFilter m_kalman_filter;
         cv::Rect_<float> m_box;
+        std::vector<float> m_feature;
 
     public:
         Tracker(cv::Rect_<float> init_box, int label);
+        Tracker(cv::Rect_<float> init_box, int label, std::vector<float> features);
+        
+        static int reset_static_id();
+
+        int init_kalman_filter();
         bool is_activate();
         int predict();
         int update(cv::Rect_<float>);
+        int update(cv::Rect_<float>, std::vector<float>);
 
         int get_id();
         int get_state();
         int get_label();
+        std::vector<float> get_features();
         cv::Rect_<float> get_box();
         int get_miss_time();
         cv::Rect_<float> get_rect_box(float, float, float, float);
+
+        int reset_kf_update(cv::Rect_<float> det_result, std::vector<float> features);
 
         int mark_lost();
         int mark_removed();
