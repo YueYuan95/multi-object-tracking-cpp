@@ -6,6 +6,7 @@
 
 #include "sort_tracker.h"
 #include "mht_tracker.h"
+#include "multi_tracker.h"
 #include "detector.h"
 #include "util.h"
 #include "test.h"
@@ -42,8 +43,8 @@ int main(int argc, char * argv[]) {
   */
 
   int N=10;
-  bool visualization = true;
-  bool save_txt = false;
+  bool visualization = false;
+  bool save_txt = true;
   bool test_set = false;
 
   //detection file
@@ -60,7 +61,7 @@ int main(int argc, char * argv[]) {
 
   double avg_fps = 0.00;
 
-  sequence = {"MOT16-02"};
+  //sequence = {"MOT16-04"};
 
   for(int i=0; i < sequence.size(); i++){
 
@@ -87,7 +88,8 @@ int main(int argc, char * argv[]) {
 
     Detector detector;
     //MHT_tracker tracker;
-    SortTracker tracker;
+    //SortTracker tracker;
+    MultiTracker tracker;
     byavs::PedFeatureParas ped_feature_paras;
     int gpu_id = 0;
     std::string ped_model_dir = "/root/data";
@@ -106,7 +108,7 @@ int main(int argc, char * argv[]) {
     byavs::TrackeObjectGPUs outputs;
 
     int file_size = files.size();
-    //file_size = 50;
+    //file_size = 145;
     double start, end, duration, fps;
     start = clock();
     for (int frame = 1; frame < file_size; frame++) {
