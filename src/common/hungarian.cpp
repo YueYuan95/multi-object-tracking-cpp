@@ -1,5 +1,4 @@
 /***************************************************************************************
-Author: Yuan Yue
 // Hungarian.cpp: Implementation file for Class Hungarian:.
 // 
 // This is a C++ wrapper with slight modification of a hungarian algorithm implementation by Markus Buehren.

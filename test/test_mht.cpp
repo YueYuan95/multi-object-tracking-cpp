@@ -647,29 +647,13 @@ int test_all() {
             curr_img = files[frame-N];
             img = cv::imread(curr_img);
             visualize(frame-N+1, img, tracking_results);
-            writeResult(frame-N+1,tracking_results);
+            //writeResult(frame-N+1,tracking_results);
         }
         
         det_result.clear();
         tracking_results.clear();
     }
 }
-
-int test_writeResult() {
-    byavs::TrackeObjectCPUs tracking_results;
-    byavs::TrackeObjectCPU track;
-    byavs::BboxInfo box0;
-    box0.topLeftX = 1;
-    box0.topLeftY = 2;
-    box0.width = 3;
-    box0.height = 4;
-    track.box = box0;
-    track.id = 1;
-    tracking_results.push_back(track);
-    //std::cout<<track.id;
-    writeResult(1, tracking_results);
-}
-
 
 int test_mwis(){
 
@@ -689,4 +673,47 @@ int test_mwis(){
     std::vector<std::string> files;
     listDir(imgPath.c_str(), files, true);
     sort(files.begin(), files.end()); 
+}
+
+int test_km(){
+
+    int row = 30;
+    int col = 40;
+    std::vector<int> assign;
+    assign.clear();
+    std::vector<std::vector<double>> cost_matrix_hung;
+    cost_matrix_hung.resize(row, std::vector<double>(col, 0.0));
+    for(int i=0; i<row; i++){
+        for(int j=0; j<col; j++){
+            cost_matrix_hung[i][j] = rand()%101/(double)101;;
+            //std::cout<<cost_matrix_hung[i][j]<<" ";
+        }
+        //std::cout<<std::endl;
+    }
+
+    HungarianAlgorithm algorithm;
+    algorithm.Solve(cost_matrix_hung, assign);
+    for(auto i : assign){
+        std::cout<<i<<","<<assign[i]<<std::endl;
+    }
+
+    std::cout<<"HungarianAlgorithm is over"<<std::endl;
+    
+    assign.clear();
+    std::vector<std::vector<float>> cost_matrix;
+    cost_matrix.resize(row, std::vector<float>(col, 0.0));
+    for(int i=0; i<row; i++){
+        for(int j=0; j<col; j++){
+            cost_matrix[i][j] = rand()%101/(float)101;;
+            //std::cout<<cost_matrix[i][j]<<" ";
+        }
+        //std::cout<<std::endl;
+    }
+    
+    KM km_algorithm;
+    km_algorithm.solve(cost_matrix, assign);
+
+    for(auto i : assign){
+        std::cout<<i<<","<<assign[i]<<std::endl;
+    }
 }
