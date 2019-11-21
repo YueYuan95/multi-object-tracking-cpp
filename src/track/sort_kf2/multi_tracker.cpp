@@ -28,12 +28,18 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
     *   Step 1 : Predict and Extract Feature
     */
     // debug<<"step1"<<debugend;
+    double start, end;
+    start = clock();
     for(int i=0; i < m_tracker_list.size(); i++){
         m_tracker_list[i].predict(kf);
     }
+    end = clock();
+    debug<<"kalmanfilter cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
 
+    start = clock();
     compute_detection_feature(input.gpuImg, detection_boxes, detection_feature);
-
+    end = clock();
+    debug<<"compute detection feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     /*
     *   Step 2 : Match
     * */
@@ -76,6 +82,7 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
        //output and delete
        if((*it).is_deleted()){
             //TODO: Set the finish tracking flag to True
+            //TODO: free the samples in dm
             if((*it).get_hits() > n_init){
                 byavs::TrackeObjectGPU remove_object;
                 remove_object.camID = input.camID;
@@ -114,6 +121,8 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
    *    Step 5 : Update distance metric
    * */
 //    debug<<"step5"<<debugend;
+
+   debug<<"tracker size is "<< m_tracker_list.size() << debugend;
    
    std::vector<int> tracker_ids;
    std::vector<std::vector<float>> features;

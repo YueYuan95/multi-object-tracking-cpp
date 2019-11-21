@@ -25,7 +25,11 @@ int LinearAssignment::min_cost_matching(DistanceMetric dm, KalmanTrackerV2 kf, s
         temp_tracker_ids.push_back(tracker_list[tracker_indexs[i]].get_id());
     }
 
+    double start, end;
+    start = clock();
     dm.distance(cost_matrix, temp_features_list, temp_tracker_ids);
+    end = clock();
+    debug<<"compute feature distance cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     debug<<"cost matrix"<<debugend;
     for(int i=0; i < cost_matrix.size(); i++){
         for(int j=0; j < cost_matrix[i].size(); j++){
@@ -33,7 +37,11 @@ int LinearAssignment::min_cost_matching(DistanceMetric dm, KalmanTrackerV2 kf, s
         }
         std::cout<<std::endl;
     }
+
+    start = clock();
     gate_cost_matrix(kf, cost_matrix, tracker_list, tracker_indexs, dt_boxes, detection_indexs);
+    end = clock();
+    debug<<"compute gate_cost_matrix cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     
     debug<<"after gate cost matrix"<<debugend;
     for(int i=0; i < cost_matrix.size(); i++){
@@ -47,7 +55,10 @@ int LinearAssignment::min_cost_matching(DistanceMetric dm, KalmanTrackerV2 kf, s
     //Hungari Algorithm
     std::vector<int> assign;
     assign.clear();
+    start = clock();
     hung_algo.Solve(cost_matrix, assign);
+    end = clock();
+    debug<<"hungarian cost time : "<<(double)(end -start)/CLOCKS_PER_SEC * 1000<<" ms" <<debugend;
 
     //TODO: use set to get unmatched detections
     for(int i=0; i < detection_indexs.size(); i++){

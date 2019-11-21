@@ -44,7 +44,7 @@ int main(int argc, char * argv[]) {
 
   int N=10;
   bool visualization = false;
-  bool save_txt = true;
+  bool save_txt = false;
   bool test_set = false;
 
   //detection file
@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
 
   double avg_fps = 0.00;
 
-  //sequence = {"MOT16-04"};
+  sequence = {"MOT16-04"};
 
   for(int i=0; i < sequence.size(); i++){
 
@@ -108,19 +108,23 @@ int main(int argc, char * argv[]) {
     byavs::TrackeObjectGPUs outputs;
 
     int file_size = files.size();
-    //file_size = 145;
+    file_size = 30;
     double start, end, duration, fps;
-    start = clock();
     for (int frame = 1; frame < file_size; frame++) {
-        
         detector.inference(frame, det_result, det_result_score);
         convert_to_tracking_input(files[frame], det_result, det_result_score, inputs);
+        start = clock();
         tracker.inference(inputs, outputs);
+        end = clock();
+        duration += (end - start);
         std::cout << "frame:" << frame  << " "
-                  << " det_result size:" << " "
-                  << det_result.size()    << " "
+                  << "det_result size:" << " "
+                  << det_result.size()    << ", "
                   << "tracking_results size:" << " "
-                  << outputs.size() << std::endl;
+                  << outputs.size() << ", "
+                  << "cost time :"
+                  << (double)(end - start)/ CLOCKS_PER_SEC * 1000 << " ms "
+                  << std::endl;
 
         //save tracking results
         if (visualization) {
@@ -137,8 +141,7 @@ int main(int argc, char * argv[]) {
         inputs.objs.clear();
         outputs.clear();
     }
-    end = clock();
-    duration = (double)(end - start)/CLOCKS_PER_SEC;
+    duration = (double)duration/CLOCKS_PER_SEC;
     fps = files.size()/duration;
     avg_fps += fps;
     std::cout<< "dataset is "<<seq<<" , its" << "fps is " << fps<< "frames/s" << std::endl;
