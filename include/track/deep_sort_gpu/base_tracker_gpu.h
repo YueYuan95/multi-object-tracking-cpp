@@ -2,12 +2,14 @@
 #define _BASE_TRACKER_GPU_H_
 
 #include <iostream>
+#include <queue>
 #include <opencv2/core/core.hpp>
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 #include "kalman_tracker_v2.h"
 #include "tracker_param.h"
+#include "util.h"
 
 class BaseTrackerGPU{
 
@@ -24,6 +26,11 @@ class BaseTrackerGPU{
 
         tracker_state m_state;
         
+        // Use `queue` is not convience in `get feature()`;
+        // std::queue<float*> m_free_d_memory;
+        // std::queue<float*> m_feature;
+        size_t size;
+        std::vector<float*> m_free_d_memory;
         std::vector<float*> m_feature;
 
     public:
@@ -47,6 +54,7 @@ class BaseTrackerGPU{
         std::vector<float*> get_features();
 
         void clear_features();
+        void release_memory();
 };
 
 #endif

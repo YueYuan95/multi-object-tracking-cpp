@@ -64,7 +64,7 @@ int main(int argc, char * argv[]) {
 
   double avg_fps = 0.00;
 
-  //sequence = {"MOT16-05"};
+  //sequence = {"MOT16-04"};
 
   for(int i=0; i < sequence.size(); i++){
 
@@ -145,6 +145,7 @@ int main(int argc, char * argv[]) {
         inputs.objs.clear();
         outputs.clear();
     }
+    tracker.release();
     duration = (double)duration/CLOCKS_PER_SEC;
     fps = files.size()/duration;
     avg_fps += fps;

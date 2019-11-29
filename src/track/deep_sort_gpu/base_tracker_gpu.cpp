@@ -13,12 +13,20 @@ BaseTrackerGPU::BaseTrackerGPU(cv::Mat mean, cv::Mat covariance, int tracker_id,
 
     m_state = Tentative;
 
-    size_t size = FEATURE_SIZE * sizeof(float);
-    float *temp_feature;
-    cudaMalloc(&temp_feature, size);
-    cudaMemcpy(temp_feature, feature, size,
-                cudaMemcpyHostToDevice);
-    m_feature.push_back(temp_feature);
+    size = FEATURE_SIZE * sizeof(float);
+    m_free_d_memory.clear();
+    m_feature.clear();
+    for(int i=0; i < n_init; i++){
+        float *temp_feature;
+        cudaMalloc(&temp_feature, size);
+        m_free_d_memory.push_back(temp_feature);
+    }
+
+    cudaMemcpy(m_free_d_memory[0], feature, size,
+            cudaMemcpyHostToDevice);
+    m_feature.push_back(m_free_d_memory[0]);
+    m_free_d_memory.erase(m_free_d_memory.begin());
+    
 }
 
 int BaseTrackerGPU::predict(KalmanTrackerV2 kf){
@@ -34,12 +42,10 @@ int BaseTrackerGPU::update(KalmanTrackerV2 kf, cv::Rect_<float> detection,
 
     kf.update(m_mean, m_covariance, detection);
     //TODO: Malloc in the construct function
-    size_t size = FEATURE_SIZE * sizeof(float);
-    float * temp_feature;
-    cudaMalloc(&temp_feature, size);
-    cudaMemcpy(temp_feature, feature, size,
-                cudaMemcpyHostToDevice);
-    m_feature.push_back(temp_feature);
+    cudaMemcpy(m_free_d_memory[0], feature, size,
+            cudaMemcpyHostToDevice);
+    m_feature.push_back(m_free_d_memory[0]);
+    m_free_d_memory.erase(m_free_d_memory.begin());
 
     m_hits += 1;
     m_time_since_update = 0;
@@ -120,10 +126,26 @@ std::vector<float*> BaseTrackerGPU::get_features(){
 }
 
 void BaseTrackerGPU::clear_features(){
-    // m_feature = -1;
+    // NOT really clear
+    double start, end;
     for(int i=0; i<m_feature.size(); i++){
-        cudaFree(m_feature[i]);
+        start = clock();
+        m_free_d_memory.push_back(m_feature[i]);
+        end = clock();
+        debug<<"tracker single cuda free cost time : "<<(double)(end - start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     }
     m_feature.clear();
+}
 
+void BaseTrackerGPU::release_memory(){
+
+    for(int i=0; i < m_feature.size(); i++){
+        cudaFree(m_feature[i]);
+    }
+    for(int j=0; j < m_free_d_memory.size(); j++){
+        cudaFree(m_free_d_memory[j]);
+    }
+
+    m_feature.clear();
+    m_free_d_memory.clear();
 }

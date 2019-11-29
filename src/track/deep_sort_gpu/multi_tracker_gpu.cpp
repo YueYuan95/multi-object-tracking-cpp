@@ -5,13 +5,17 @@ int MultiTrackerGPU::init(byavs::PedFeatureParas ped_feature_paras, std::string 
     extractor.init(ped_feature_paras, ped_model_dir, gpu_id);
     size_t size = FEATURE_SIZE * sizeof(float);
     cudaMalloc(&m_single_feature, size);
+
+    size = 50 * FEATURE_SIZE * sizeof(float);
+    cudaMalloc(&detection_feature.elements, size);
+
 }
 
 int MultiTrackerGPU::inference(const byavs::TrackeInputGPU input, byavs::TrackeObjectGPUs& output){
 
     std::vector<cv::Rect_<float>> detection_boxes;
     std::vector<int> detection_label;
-    FeatureMatrix detection_feature;
+    //FeatureMatrix detection_feature;
     detection_boxes.clear();
     detection_label.clear();
 
@@ -26,9 +30,6 @@ int MultiTrackerGPU::inference(const byavs::TrackeInputGPU input, byavs::TrackeO
 
     detection_feature.height = FEATURE_SIZE;
     detection_feature.width = detection_boxes.size();
-    size_t size = detection_feature.width * detection_feature.height * sizeof(float);
-    cudaMalloc(&detection_feature.elements, size);
-
     debug<<"detection size : "<<detection_boxes.size()<<debugend;
 
     /*     
@@ -117,12 +118,12 @@ int MultiTrackerGPU::inference(const byavs::TrackeInputGPU input, byavs::TrackeO
                 remove_object.score = 0.0;
                 //debug<<"remove object id is "<<remove_object.id<<debugend;
                 dm.remove_object(remove_object.id);
-                it->clear_features();
+                it->release_memory();
                 output.push_back(remove_object);
             }
             it = m_tracker_list.erase(it);
        }else{
-           if((*it).is_confirmed()){
+           if((*it).is_confirmed() && (*it).get_time_since_update() < 5){
                 byavs::TrackeObjectGPU remove_object;
                 remove_object.camID = input.camID;
                 remove_object.channelID = input.channelID;
@@ -149,27 +150,38 @@ int MultiTrackerGPU::inference(const byavs::TrackeInputGPU input, byavs::TrackeO
 
    debug<<"tracker size is "<< m_tracker_list.size() << debugend;
    
+   double update_start = clock();
    start = clock();
    std::vector<int> tracker_ids;
    std::vector<std::vector<float>> features;
    tracker_ids.clear();
    features.clear();
 
-    // debug<<"step5.1"<<debugend;
+   // debug<<"step5.1"<<debugend;
    //get the featrue and confirmed tracker id list
    for(int i =0; i < m_tracker_list.size(); i++){
        if(m_tracker_list[i].is_confirmed()){
            for(int j=0; j < m_tracker_list[i].get_features().size(); j++){
-                dm.partial_fit(m_tracker_list[i].get_id(), m_tracker_list[i].get_features()[j]); 
+                double single_start = clock();
+                dm.partial_fit(m_tracker_list[i].get_id(), m_tracker_list[i].get_features()[j]);
+                debug<<"single update feature cost time : "<<(double)(clock() - single_start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
            }
+           double tracker_free_start = clock();
            m_tracker_list[i].clear_features();
+           debug<<"tracker free feature cost time : "<<(double)(clock() - tracker_free_start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
        }
    }
 //    debug<<"step6"<<debugend;
-
-   cudaFree(detection_feature.elements);
    end = clock();
    debug<<"update feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
+   
+   start = clock();
+   //cudaFree(detection_feature.elements);
+   end = clock();
+   debug<<"free feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
+
+   end = clock();
+   debug<<"update cost time : "<<(double)(end -update_start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
 
 }
 
@@ -351,4 +363,10 @@ int MultiTrackerGPU::get_object_feature(int index, FeatureMatrix detect_feature,
 
     GetObjectFeature(index, detect_feature, object_feature);
 
+}
+
+int MultiTrackerGPU::release(){
+
+    cudaFree(m_single_feature);
+    cudaFree(detection_feature.elements);
 }

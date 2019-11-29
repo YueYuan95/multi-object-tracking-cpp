@@ -30,6 +30,7 @@ class MultiTrackerGPU{
         int next_id = 1;
         int cascade_depth = 30;
         float *m_single_feature;
+        FeatureMatrix detection_feature;
     
     public:
         int inference(const byavs::TrackeInputGPU, byavs::TrackeObjectGPUs&);
@@ -41,6 +42,7 @@ class MultiTrackerGPU{
         int compute_detection_feature(byavs::GpuMat, std::vector<cv::Rect_<float>>, 
                 FeatureMatrix&);
         int get_object_feature(int, FeatureMatrix, float *);
+        int release();
 
 };
 
