@@ -1,18 +1,19 @@
-#include "multi_tracker.h"
+#include "multi_tracker_gpu.h"
 
-int MultiTracker::init(byavs::PedFeatureParas ped_feature_paras, std::string ped_model_dir, int gpu_id){
+int MultiTrackerGPU::init(byavs::PedFeatureParas ped_feature_paras, std::string ped_model_dir, int gpu_id){
      
     extractor.init(ped_feature_paras, ped_model_dir, gpu_id);
+    size_t size = FEATURE_SIZE * sizeof(float);
+    cudaMalloc(&m_single_feature, size);
 }
 
-int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObjectGPUs& output){
+int MultiTrackerGPU::inference(const byavs::TrackeInputGPU input, byavs::TrackeObjectGPUs& output){
 
     std::vector<cv::Rect_<float>> detection_boxes;
     std::vector<int> detection_label;
-    std::vector<std::vector<float>> detection_feature;
+    FeatureMatrix detection_feature;
     detection_boxes.clear();
     detection_label.clear();
-    detection_feature.clear();
 
     for(int i=0; i < input.objs.size(); i++){
 
@@ -21,8 +22,14 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
         int label = input.objs[i].label;
         detection_boxes.push_back(box);
         detection_label.push_back(label);
-
     }
+
+    detection_feature.height = FEATURE_SIZE;
+    detection_feature.width = detection_boxes.size();
+    size_t size = detection_feature.width * detection_feature.height * sizeof(float);
+    cudaMalloc(&detection_feature.elements, size);
+
+    debug<<"detection size : "<<detection_boxes.size()<<debugend;
 
     /*     
     *   Step 1 : Predict and Extract Feature
@@ -38,8 +45,12 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
 
     start = clock();
     compute_detection_feature(input.gpuImg, detection_boxes, detection_feature);
+
     end = clock();
     debug<<"compute detection feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
+   
+    //show_device_data(detection_feature, "detect_feature");
+
     /*
     *   Step 2 : Match
     * */
@@ -47,25 +58,34 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
     std::map<int, int> matches;
     std::vector<int> um_tracker;
     std::vector<int> um_detection;
-
+    
+    start = clock();
     match(matches, um_tracker, um_detection, detection_boxes, detection_feature);
+    end = clock();
+    debug<<"match cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
 
     /*
     *   Step 3 : Update State
     * */
-//    debug<<"step3"<<debugend;
+   //debug<<"step3"<<debugend;
+   start = clock();
    for(std::map<int,int>::iterator iter=matches.begin(); iter != matches.end(); iter++){
-       m_tracker_list[iter->first].update(kf, detection_boxes[iter->second], detection_feature[iter->second]);
+       get_object_feature(iter->second, detection_feature, m_single_feature);
+       m_tracker_list[iter->first].update(kf, detection_boxes[iter->second], m_single_feature);
    }
 
    for(int i=0; i < um_tracker.size(); i++){
        m_tracker_list[um_tracker[i]].mark_missed();
    }
 
+   //show_device_data(detection_feature, "detection_feature");
    for(int i=0; i < um_detection.size(); i++){
-       initiate_tracker(detection_label[um_detection[i]], detection_boxes[um_detection[i]], detection_feature[um_detection[i]]);
+       get_object_feature(um_detection[i], detection_feature, m_single_feature);
+       //show_device_data(m_single_feature, "get_object_feature");
+       initiate_tracker(detection_label[um_detection[i]], detection_boxes[um_detection[i]], m_single_feature);
    }
-
+    end = clock();
+    debug<<"update and initiate cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     // debug<<"tracker size : "<<m_tracker_list.size()<<debugend;
 
     debug<<debugend;
@@ -78,6 +98,7 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
    *    Step 4 : Push Result and delete the deleted trackers
    */
 //   debug<<"step4"<<debugend;
+    start = clock();
    for(auto it = m_tracker_list.begin(); it != m_tracker_list.end();){
        //output and delete
        if((*it).is_deleted()){
@@ -95,6 +116,8 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
                 remove_object.match_flag = 0;
                 remove_object.score = 0.0;
                 //debug<<"remove object id is "<<remove_object.id<<debugend;
+                dm.remove_object(remove_object.id);
+                it->clear_features();
                 output.push_back(remove_object);
             }
             it = m_tracker_list.erase(it);
@@ -116,6 +139,8 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
            it++;
        }
    }
+   end = clock();
+   debug<<"send cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
 
    /*
    *    Step 5 : Update distance metric
@@ -124,6 +149,7 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
 
    debug<<"tracker size is "<< m_tracker_list.size() << debugend;
    
+   start = clock();
    std::vector<int> tracker_ids;
    std::vector<std::vector<float>> features;
    tracker_ids.clear();
@@ -134,20 +160,21 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
    for(int i =0; i < m_tracker_list.size(); i++){
        if(m_tracker_list[i].is_confirmed()){
            for(int j=0; j < m_tracker_list[i].get_features().size(); j++){
-               tracker_ids.push_back(m_tracker_list[i].get_id());
-               features.push_back(m_tracker_list[i].get_features()[j]);
+                dm.partial_fit(m_tracker_list[i].get_id(), m_tracker_list[i].get_features()[j]); 
            }
            m_tracker_list[i].clear_features();
        }
    }
 //    debug<<"step6"<<debugend;
 
-   dm.partial_fit(features, tracker_ids); 
+   cudaFree(detection_feature.elements);
+   end = clock();
+   debug<<"update feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
 
 }
 
-int MultiTracker::match(std::map<int, int>& matches, std::vector<int>& um_trackers, std::vector<int>& um_detection,
-        std::vector<cv::Rect_<float>> detection_boxes, std::vector<std::vector<float>> detection_feature){
+int MultiTrackerGPU::match(std::map<int, int>& matches, std::vector<int>& um_trackers, std::vector<int>& um_detection,
+        std::vector<cv::Rect_<float>> detection_boxes, FeatureMatrix detection_feature){
     
     std::vector<int> confirmed_trackers;
     std::vector<int> unconfirmed_trackers;
@@ -248,11 +275,11 @@ int MultiTracker::match(std::map<int, int>& matches, std::vector<int>& um_tracke
     return 1;
 }
 
-int MultiTracker::initiate_tracker(int label, cv::Rect_<float> detection_box, std::vector<float> detection_feature){
+int MultiTrackerGPU::initiate_tracker(int label, cv::Rect_<float> detection_box, float* detection_feature){
 
     std::vector<cv::Mat> init_mean_cova = kf.initiate(detection_box);
 
-    BaseTracker new_tracker(init_mean_cova[0], init_mean_cova[1], next_id, label, detection_feature);
+    BaseTrackerGPU new_tracker(init_mean_cova[0], init_mean_cova[1], next_id, label, detection_feature);
     m_tracker_list.push_back(new_tracker);
 
     next_id += 1;
@@ -260,15 +287,68 @@ int MultiTracker::initiate_tracker(int label, cv::Rect_<float> detection_box, st
     return 1;
 }
 
-int MultiTracker::compute_detection_feature(byavs::GpuMat image, std::vector<cv::Rect_<float>> detection_boxes, 
-                std::vector<std::vector<float>>& detection_features){
+int MultiTrackerGPU::compute_detection_feature(byavs::GpuMat image, std::vector<cv::Rect_<float>> detection_boxes, 
+                FeatureMatrix& detection_features){
  
     std::vector<bdavs::AVSGPUMat> gpu_mats;
+    std::vector<std::vector<float>> temp_detection_features;
+    temp_detection_features.clear();
     //crop_gpu_mat do malloc, so we need to free memory
     crop_gpu_mat(image, detection_boxes, gpu_mats);
-    extractor.inference(gpu_mats, detection_features);
+    extractor.inference(gpu_mats, temp_detection_features);
     //TODO: Free `gpu_mats`
     release_avs_gpu_mat(gpu_mats);
 
+    int width = temp_detection_features.size();
+    int height = FEATURE_SIZE;
+    size_t size =  width * height * sizeof(float);
+    float *convert_feature = (float*)malloc(size);
+
+    debug<<debugend;
+    // std::cout<<temp_detection_features[0].size()<<std::endl;
+    for(int i=0; i < width; i++){
+        for(int j=0; j < height; j++){
+            // if(i==0){
+            //     std::cout<<temp_detection_features[i][j]<<" ";
+            //     if(j % 256 == 0) std::cout<<std::endl;
+            // }
+            convert_feature[j*width+i] = temp_detection_features[i][j];
+        }
+    }
+    // std::cout<<std::endl;
+    // debug<< "convert_feature" <<debugend;
+    // for(int i=0; i < height; i++){
+    //     for(int j=0; j < width; j++){
+    //         if(j==0){
+    //             std::cout<<convert_feature[i*width+j]<<" ";
+    //         }
+    //     }
+    // }
+    // std::cout<<std::endl;
+
+
+    cudaMemcpy(detection_features.elements, convert_feature, size, cudaMemcpyHostToDevice);
+
+    // float *h_featrue = (float*)malloc(size*sizeof(float));
+    // cudaMemcpy(h_featrue, detection_features.elements, size, cudaMemcpyDeviceToHost);
+    // debug<<debugend;
+    
+    // std::cout<<std::endl;
+    // debug<< "h_feature" <<debugend;
+    // for(int i=0; i < height; i++){
+    //     for(int j=0; j < width; j++){
+    //         if(j==0){
+    //             std::cout<<convert_feature[i*width+j]<<" ";
+    //         }
+    //     }
+    // }
+    // std::cout<<std::endl;
+
+    
+}
+
+int MultiTrackerGPU::get_object_feature(int index, FeatureMatrix detect_feature, float *object_feature){
+
+    GetObjectFeature(index, detect_feature, object_feature);
 
 }
