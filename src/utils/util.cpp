@@ -598,3 +598,34 @@ double get_vector_time(std::vector<float> a, std::vector<float> b){
 
     return distance;
 }
+
+int show_device_data(FeatureMatrix feature_matrix, std::string flag){
+    
+    debug<<flag<<debugend;
+    size_t size = feature_matrix.height*feature_matrix.width*sizeof(float);
+    float *feature = (float*)malloc(size);
+    cudaMemcpy(feature, feature_matrix.elements, size, cudaMemcpyDeviceToHost);
+    for(int i=0; i < feature_matrix.height; i++){
+        for(int j=0; j < feature_matrix.width; j++){
+            if(i < 40){
+                std::cout<<feature[i*feature_matrix.width+j]<<" ";
+            }
+        }
+        if(i < 40) std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+    free(feature);
+}
+
+int show_device_data(float* feature_float, std::string flag){
+    
+    debug<<flag<<debugend;
+    size_t size = FEATURE_SIZE*sizeof(float);
+    float *feature = (float*)malloc(size);
+    cudaMemcpy(feature, feature_float, size, cudaMemcpyDeviceToHost);
+    for(int i=0; i < FEATURE_SIZE; i++){
+        std::cout<<feature[i]<<" ";
+    }
+    std::cout<<std::endl;
+    free(feature);
+}

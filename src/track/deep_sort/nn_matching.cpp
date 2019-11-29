@@ -33,6 +33,10 @@ int DistanceMetric::distance(std::vector<std::vector<double>>& cost_matrix, std:
             double min_distance = 100000;
             for(int k=0; k < m_samples[tracker_ids[i]].size(); k++){
                 //TODO: use enum to find the correct function
+                if(tracker_ids[i] == 16){
+                    debug<<"object id 16 feature:"<<debugend;
+                    for(int h=0; h < FEATURE_SIZE; h++) std::cout<<m_samples[tracker_ids[i]][k][h]<<" ";
+                }
                 double distance = compute_euclidean_distance(m_samples[tracker_ids[i]][k], features[j]);
                 //std::cout<<"nn matching, line 36 : "<<distance<<std::endl;
                 min_distance =  distance  < min_distance? distance : min_distance; 

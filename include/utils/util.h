@@ -44,6 +44,8 @@ Copyright(C)：AVS
 #include "byavs.h"
 #include "NetOperator.h"
 #include "extractor.h"
+#include "cuda_fun_param.h"
+#include "tracker_param.h"
 //#include "glog/logging.h"
 
 #define debug std::cout<<"[Time: "<<__TIMESTAMP__<<", File: "<<__FILE__<<" "<<"Line: "<<__LINE__<<" ] "
@@ -90,5 +92,10 @@ int crop_gpu_mat(bdavs::AVSGPUMat, std::vector<cv::Rect_<float>>, std::vector<bd
 int release_avs_gpu_mat(std::vector<bdavs::AVSGPUMat> &);
 int normalization(std::vector<std::vector<double>>&);
 std::vector<float> norm(std::vector<float>);
+
+
+//Device to Host
+int show_device_data(FeatureMatrix, std::string);
+int show_device_data(float* feature_float, std::string flag);
 
 #endif

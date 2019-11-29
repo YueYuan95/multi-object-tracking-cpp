@@ -1,37 +1,29 @@
-## MHT 
-Multiple Hypothesis Tracking Revised
+## REQURE ENVIRONMENT
+
+1. TensorRT-5.1.2.2
+
+2. Opencv-4.x.x
+
+3. CUDA.10.1
+
+## MOT2016 RESULT
+
+### DeepSORT
 
 
-----------
-## Method and parameters
-#Gating in mht_tracker.cpp
-Gating: IOU/(1_distance)>0.4/(1+40)
-Scoring: IOU
-New tree's root score = ICH score = 0.01 0r 0.0001 (no difference)
-maxScaleDiff = 1.4
+    SPEED: 120FPS(Average)
+    Object Number            |    10~20      |   20~30     |
+    Consum Time(One Frame)   |    Under 10ms | Under 30ms  |
 
-#in mht_tracker.h
-N = 10
-miss_time threshold = N+10 
+             IDF1   IDP   IDR  Rcll  Prcn  GT  MT  PT  ML   FP    FN  IDs  FM  MOTA  MOTP
+    MOT16-09 53.9% 64.8% 46.2% 58.0% 81.4%  25  5  16   4  695  2208  44   91 43.9% 0.262
+    MOT16-04 45.6% 72.8% 33.1% 40.4% 88.8%  83  6  43  34 2430 28335  91  364 35.1% 0.214
+    MOT16-02 25.5% 70.0% 15.6% 19.1% 85.7%  54  6  12  36  566 14433  39   84 15.7% 0.243
+    MOT16-13 22.7% 78.4% 13.3% 14.9% 87.9% 107  5  23  79  234  9743  19   59 12.7% 0.277
+    MOT16-11 57.7% 75.7% 46.6% 53.8% 87.4%  69 11  24  34  711  4235  27   46 45.8% 0.212
+    MOT16-05 46.2% 80.4% 32.5% 34.6% 85.7% 125  7  52  66  395  4459  17   75 28.6% 0.241
+    MOT16-10 37.3% 65.0% 26.1% 35.8% 89.0%  54  4  18  32  546  7910  33  111 31.1% 0.253
+    OVERALL  41.5% 72.1% 29.2% 35.4% 87.5% 517 44 188 285 5577 71323 270  830 30.1% 0.229
 
-#mwis in mht_tracker.cpp
-MWIS: mwis_greedy
+### MHT(Developing)
 
-# NMS in mht.cpp
-score_diff = 2
-
-# computerdistance in mht.cpp
-NMS overlap threshold  = 0.35 
-
-#create_ICH in tree.cpp
-ICH socre: 0.01 or 0.0001 (no difference)
-
-
-----------
-## TO Do
-1.Establish a file to save the tracking results, eg:tracking_result_0925
-2.Establish files to save tracking results for a specific sequence in 1, eg:MOT16-13. The tracking result images and .txt file are saved in it.
-3.The name of the tracking result txt is the name of the sequence
-
-## Run
-Run the main.cpp to test a sequence

@@ -11,6 +11,9 @@
 #include "util.h"
 #include "test.h"
 
+#include "tracker_param.h"
+#include "multi_tracker_gpu.h"
+
 int main(int argc, char * argv[]) {
 
   //google::InitGoogleLogging(argv[0]);
@@ -44,7 +47,7 @@ int main(int argc, char * argv[]) {
 
   int N=10;
   bool visualization = false;
-  bool save_txt = false;
+  bool save_txt = true;
   bool test_set = false;
 
   //detection file
@@ -61,7 +64,7 @@ int main(int argc, char * argv[]) {
 
   double avg_fps = 0.00;
 
-  sequence = {"MOT16-04"};
+  //sequence = {"MOT16-04"};
 
   for(int i=0; i < sequence.size(); i++){
 
@@ -89,7 +92,8 @@ int main(int argc, char * argv[]) {
     Detector detector;
     //MHT_tracker tracker;
     //SortTracker tracker;
-    MultiTracker tracker;
+    MultiTrackerGPU tracker;
+    //MultiTracker tracker;
     byavs::PedFeatureParas ped_feature_paras;
     int gpu_id = 0;
     std::string ped_model_dir = "/root/data";
@@ -108,7 +112,7 @@ int main(int argc, char * argv[]) {
     byavs::TrackeObjectGPUs outputs;
 
     int file_size = files.size();
-    file_size = 30;
+    //file_size = 50;
     double start, end, duration, fps;
     for (int frame = 1; frame < file_size; frame++) {
         detector.inference(frame, det_result, det_result_score);
@@ -141,6 +145,7 @@ int main(int argc, char * argv[]) {
         inputs.objs.clear();
         outputs.clear();
     }
+    tracker.release();
     duration = (double)duration/CLOCKS_PER_SEC;
     fps = files.size()/duration;
     avg_fps += fps;
