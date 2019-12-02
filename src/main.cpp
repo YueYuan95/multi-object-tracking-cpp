@@ -47,7 +47,7 @@ int main(int argc, char * argv[]) {
 
   int N=10;
   bool visualization = false;
-  bool save_txt = false;
+  bool save_txt = true;
   bool test_set = false;
 
   //detection file
