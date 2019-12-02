@@ -369,4 +369,5 @@ int MultiTrackerGPU::release(){
 
     cudaFree(m_single_feature);
     cudaFree(detection_feature.elements);
+    dm.release();
 }

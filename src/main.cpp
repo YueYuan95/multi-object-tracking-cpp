@@ -47,7 +47,7 @@ int main(int argc, char * argv[]) {
 
   int N=10;
   bool visualization = false;
-  bool save_txt = true;
+  bool save_txt = false;
   bool test_set = false;
 
   //detection file
@@ -112,7 +112,7 @@ int main(int argc, char * argv[]) {
     byavs::TrackeObjectGPUs outputs;
 
     int file_size = files.size();
-    //file_size = 50;
+    //file_size = 10;
     double start, end, duration, fps;
     for (int frame = 1; frame < file_size; frame++) {
         detector.inference(frame, det_result, det_result_score);

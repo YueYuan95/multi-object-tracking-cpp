@@ -41,13 +41,13 @@ int MultiTracker::inference(const byavs::TrackeInputGPU input, byavs::TrackeObje
     end = clock();
     debug<<"compute detection feature cost time : "<<(double)(end -start)/CLOCKS_PER_SEC*1000<<" ms" <<debugend;
     
-    debug<<"detection feature"<<debugend;
-    for(int i=0; i < detection_feature.size(); i++){
-        for(int j=0; j < detection_feature[i].size(); j++){
-            std::cout<<detection_feature[i][j]<<" "; 
-        }
-        std::cout<<std::endl;
-    }
+    // debug<<"detection feature"<<debugend;
+    // for(int i=0; i < detection_feature.size(); i++){
+    //     for(int j=0; j < detection_feature[i].size(); j++){
+    //         std::cout<<detection_feature[i][j]<<" "; 
+    //     }
+    //     std::cout<<std::endl;
+    // }
     
     /*
     *   Step 2 : Match
@@ -280,4 +280,8 @@ int MultiTracker::compute_detection_feature(byavs::GpuMat image, std::vector<cv:
     release_avs_gpu_mat(gpu_mats);
 
 
+}
+
+int MultiTracker::release(){
+    return 1;
 }

@@ -14,10 +14,16 @@ class DistanceMetricGPU{
     private:
 
         int m_budget = 30;
+        int m_max_detection = 50;
+        int m_max_tracker = 50;
+        int *m_detection_idxs, *m_d_detection_idxs;
         std::map<int, FeatureMatrix> m_samples;
 
+        FeatureMatrix m_all_cost, m_d_single_cost, m_d_all_cost;
+
+
     public:
-        
+        DistanceMetricGPU();
         int partial_fit(int, int, FeatureMatrix);
         int partial_fit(int, float*);
         int distance(std::vector<std::vector<double>>&, std::vector<int>,
@@ -26,6 +32,7 @@ class DistanceMetricGPU{
                     std::vector<BaseTrackerGPU>);
 
         int remove_object(int);
+        int release();
 
 };
 

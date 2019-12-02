@@ -19,7 +19,7 @@ __global__ void EuclideanMetricKernel(FeatureMatrix A, int idx_size, int *indexs
     }
     if(i == idx_size) return;
 
-    if (row>=A.height||col>=B.width || row >= C.height || col > C.width) return;
+    if (row>=A.height||col>=B.width) return;
 
     for (int e = 0; e < A.width; ++e){
         Cvalue += (A.elements[row * A.width + e] - B.elements[e * B.width + col])

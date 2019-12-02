@@ -36,6 +36,7 @@ class MultiTracker{
         int initiate_tracker(int label, cv::Rect_<float> detection_box, std::vector<float> detection_feature);
         int compute_detection_feature(byavs::GpuMat, std::vector<cv::Rect_<float>>, 
                 std::vector<std::vector<float>>&);
+        int release();
 
 };
 
